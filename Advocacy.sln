@@ -45,6 +45,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sensors.Environmental.Y4000
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Displays.TftSpi", "..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\Displays.TftSpi\Driver\Displays.TftSpi.csproj", "{626D23FD-E72F-4BB5-A23E-F8309773D3B3}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meadow.Modbus", "..\Meadow.Modbus\src\Meadow.Modbus\Meadow.Modbus.csproj", "{547BEFBE-E544-4F05-8275-4F6319408B8F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -171,6 +173,10 @@ Global
 		{626D23FD-E72F-4BB5-A23E-F8309773D3B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{626D23FD-E72F-4BB5-A23E-F8309773D3B3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{626D23FD-E72F-4BB5-A23E-F8309773D3B3}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{547BEFBE-E544-4F05-8275-4F6319408B8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{547BEFBE-E544-4F05-8275-4F6319408B8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{547BEFBE-E544-4F05-8275-4F6319408B8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{547BEFBE-E544-4F05-8275-4F6319408B8F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -193,6 +199,7 @@ Global
 		{3F4FDF1B-3AFC-4534-94D2-189640227937} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
 		{04028F03-7D98-4028-852E-68CB56A3DB3F} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
 		{626D23FD-E72F-4BB5-A23E-F8309773D3B3} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
+		{547BEFBE-E544-4F05-8275-4F6319408B8F} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {59B85D60-3E0C-446F-8620-3B88DCA35E21}
