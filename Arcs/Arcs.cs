@@ -17,20 +17,33 @@ namespace Arcs
 
         Color arcColor = Color.Cyan;
 
-        readonly int arcRadius = 60;
+        readonly int arcRadius = 40;
 
         public override Task Run()
         {
-            int angle = 0;
+            int start = -10;
+            int end = 0;
 
-            graphics.Stroke = 9;
+            graphics.Stroke = 1;
 
             while (true)
             {
                 graphics.Clear();
 
-                graphics.DrawArc(120, 120, arcRadius, new Angle(angle += 5), new Angle(360), arcColor.WithHue(angle / 360.0), true);
-                angle = angle % 360;
+                end += 10;
+
+                if (end <= 180)
+                {
+                    start += 5;
+                }
+                else
+                {
+                    start += 15;
+                }
+                start %= 360;
+                end %= 360;
+
+                graphics.DrawArc(120, 120, arcRadius, new Angle(start), new Angle(end), arcColor.WithHue(start / 360.0), true);
 
                 graphics.Show();
             }
