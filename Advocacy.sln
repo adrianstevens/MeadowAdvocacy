@@ -55,6 +55,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RotatingCube", "RotatingCub
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arcs", "Arcs\Arcs.csproj", "{004FD32C-E716-4CAD-8560-935C129395A6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Displays.Max7219", "..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\Displays.Max7219\Driver\Displays.Max7219.csproj", "{A2DB49B2-8B47-410E-8C46-BEFF58FEA2F2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeskClock", "DeskClock\DeskClock.csproj", "{E05BFF19-2073-4420-A13F-FDEE8D5DA9A1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -207,6 +211,18 @@ Global
 		{004FD32C-E716-4CAD-8560-935C129395A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{004FD32C-E716-4CAD-8560-935C129395A6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{004FD32C-E716-4CAD-8560-935C129395A6}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{A2DB49B2-8B47-410E-8C46-BEFF58FEA2F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2DB49B2-8B47-410E-8C46-BEFF58FEA2F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2DB49B2-8B47-410E-8C46-BEFF58FEA2F2}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{A2DB49B2-8B47-410E-8C46-BEFF58FEA2F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2DB49B2-8B47-410E-8C46-BEFF58FEA2F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2DB49B2-8B47-410E-8C46-BEFF58FEA2F2}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{E05BFF19-2073-4420-A13F-FDEE8D5DA9A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E05BFF19-2073-4420-A13F-FDEE8D5DA9A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E05BFF19-2073-4420-A13F-FDEE8D5DA9A1}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{E05BFF19-2073-4420-A13F-FDEE8D5DA9A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E05BFF19-2073-4420-A13F-FDEE8D5DA9A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E05BFF19-2073-4420-A13F-FDEE8D5DA9A1}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -232,6 +248,7 @@ Global
 		{547BEFBE-E544-4F05-8275-4F6319408B8F} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
 		{E574F344-2951-44BB-ABF4-047FE128ED68} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
 		{C434F9E1-C36E-44C8-96F4-F5AA5E67B75F} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
+		{A2DB49B2-8B47-410E-8C46-BEFF58FEA2F2} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {59B85D60-3E0C-446F-8620-3B88DCA35E21}
