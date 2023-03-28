@@ -29,10 +29,10 @@ namespace Skeeball
         {
             Players = new Dictionary<PlayerPosition, Player>
             {
-                { PlayerPosition.One, new Player() },
-                { PlayerPosition.Two, new Player() },
-                { PlayerPosition.Three, new Player() },
-                { PlayerPosition.Four, new Player() }
+                { PlayerPosition.One, new Player() { Position = PlayerPosition.One }  },
+                { PlayerPosition.Two, new Player() { Position = PlayerPosition.Two } },
+                { PlayerPosition.Three, new Player() { Position = PlayerPosition.Three } },
+                { PlayerPosition.Four, new Player() { Position = PlayerPosition.Four } }
             };
 
             HighScoresClassic = new List<int>();
@@ -42,7 +42,7 @@ namespace Skeeball
             Reset();
         }
 
-        void Reset()
+        public void Reset()
         {
             CurrentState = GameState.ReadyToStart;
             CurrentPlayerPosition = PlayerPosition.One;
@@ -61,10 +61,34 @@ namespace Skeeball
             StartGame();
         }
 
-        public void StartGame()
+        public bool StartGame()
         {
+            if (CurrentState != GameState.ReadyToStart)
+            {
+                return false;
+            }
+
             Reset();
             CurrentState = GameState.Playing;
+            return true;
+        }
+
+        public int GetScore(PlayerPosition player)
+        {
+            if (player > NumberOfPlayers)
+            {
+                return 0;
+            }
+            return Players[player].Score;
+        }
+
+        public int GetBallsRemaining(PlayerPosition player)
+        {
+            if (player > NumberOfPlayers)
+            {
+                return 0;
+            }
+            return Players[player].BallsRemaining;
         }
 
         public void ThrowBall(PointValue pointValue)
@@ -86,6 +110,7 @@ namespace Skeeball
         private void ThrowBallClassic(PointValue pointValue)
         {
             Players[CurrentPlayerPosition].Score += (int)pointValue;
+            Players[CurrentPlayerPosition].BallsRemaining--;
 
             SwitchTurn();
         }
@@ -94,9 +119,9 @@ namespace Skeeball
         {
             Players[CurrentPlayerPosition].Score += (int)pointValue;
 
-            if (pointValue == PointValue.Fifty)
+            if (pointValue != PointValue.Fifty)
             {
-                Players[CurrentPlayerPosition].BallsRemaining += (int)pointValue;
+                Players[CurrentPlayerPosition].BallsRemaining--;
             }
 
             SwitchTurn();

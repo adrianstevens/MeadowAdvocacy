@@ -30,7 +30,7 @@ namespace AirQualityTracker
             RegisterGPSData();
             gps.StartUpdating();
 
-            projLab.Display.Clear(Color.Red);
+            projLab.Display.Fill(Color.Red);
             projLab.Display.Show();
 
             graphics = new MicroGraphics(projLab.Display)

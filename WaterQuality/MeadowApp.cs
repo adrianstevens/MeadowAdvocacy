@@ -2,9 +2,6 @@
 using Meadow.Devices;
 using Meadow.Foundation;
 using Meadow.Foundation.Sensors.Environmental;
-using Meadow.Hardware;
-using Meadow.Logging;
-using Meadow.Peripherals.Sensors.Location.Gnss;
 using System;
 using System.Threading.Tasks;
 
@@ -19,7 +16,7 @@ namespace AirQualityTracker
         {
             Console.WriteLine("Run...");
 
-            projLab.Display.Clear(Color.Red);
+            projLab.Display.Fill(Color.Red);
             projLab.Display.Show();
 
             return base.Run();
@@ -41,10 +38,10 @@ namespace AirQualityTracker
                 try
                 {
                     var address = await sensor.GetISDN();
-                   // var serial = await sensor.GetSerialNumber();
+                    // var serial = await sensor.GetSerialNumber();
                     Console.WriteLine($"{address}");
                 }
-                catch (Exception ex) 
+                catch (Exception ex)
                 {
                     Resolver.Log.Error($"Exception: {ex}");
                 }

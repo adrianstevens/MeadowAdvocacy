@@ -99,7 +99,7 @@ namespace DeskClock
 
             var today = await ClockService.GetTime();
 
-            Device.SetClock(today.Subtract(new TimeSpan(7, 0, 0)));
+            Device.PlatformOS.SetClock(today.Subtract(new TimeSpan(7, 0, 0)));
         }
     }
 }

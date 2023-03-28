@@ -5,6 +5,8 @@
         public int BallsRemaining { get; set; }
         public int Score { get; set; }
 
+        public SkeeballGame.PlayerPosition Position { get; set; }
+
         private static readonly int DefaultBallsPerGame = 9;
 
         public Player()
