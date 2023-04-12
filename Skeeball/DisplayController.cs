@@ -55,7 +55,6 @@ namespace Skeeball
             {
                 graphics.Clear();
                 graphics.DrawText(xOffset, 0, "SKEEBALL", color, ScaleFactor.X8);
-                DrawState();
             }
 
             graphics.Clear();
@@ -76,6 +75,7 @@ namespace Skeeball
 
             DrawTitleColor(colorBase);
             graphics.Show();
+            Thread.Sleep(50);
 
             DrawTitleColor(colorOverlay);
             graphics.Show();
@@ -84,20 +84,8 @@ namespace Skeeball
         public void DrawPointsAwarded(int points, int totalScore)
         {
             graphics.Clear();
-
             graphics.DrawText(2, 0, "SKEEBALL", Color.Red, ScaleFactor.X8);
-
-            DrawState();
-
             graphics.Show();
-        }
-
-        void DrawState()
-        {
-            graphics.DrawText(2, 60, "Current Player", Color.White, ScaleFactor.X2);
-            graphics.DrawText(2, 80, "Score", Color.White, ScaleFactor.X2);
-            graphics.DrawText(2, 100, "Balls remaining", Color.White, ScaleFactor.X3);
-
         }
     }
 }

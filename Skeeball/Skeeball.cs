@@ -5,9 +5,9 @@ namespace Skeeball
 {
     public partial class SkeeballGame
     {
-        public GameMode CurrentGameMode { get; private set; }
+        public GameMode CurrentGameMode { get; private set; } = GameMode.Classic;
 
-        public GameState CurrentState { get; private set; }
+        public GameState CurrentState { get; private set; } = GameState.Initializing;
 
         public Player CurrentPlayer => Players[CurrentPlayerPosition];
 
@@ -63,7 +63,7 @@ namespace Skeeball
 
         public bool StartGame()
         {
-            if (CurrentState != GameState.ReadyToStart)
+            if (CurrentState == GameState.Playing || CurrentState == GameState.Initializing)
             {
                 return false;
             }
@@ -91,11 +91,11 @@ namespace Skeeball
             return Players[player].BallsRemaining;
         }
 
-        public void ThrowBall(PointValue pointValue)
+        public bool ThrowBall(PointValue pointValue)
         {
             if (CurrentState != GameState.Playing)
             {
-                return;
+                return false;
             }
 
             switch (CurrentGameMode)
@@ -105,6 +105,8 @@ namespace Skeeball
                 case GameMode.BonusBall:
                     ThrowBonusBall(pointValue); break;
             }
+
+            return true;
         }
 
         private void ThrowBallClassic(PointValue pointValue)
@@ -131,7 +133,14 @@ namespace Skeeball
         {
             if (NumberOfPlayers == PlayerPosition.One)
             {
-                return;
+                if (IsGameOver())
+                {
+                    EndGame();
+                }
+                else
+                {
+                    return;
+                }
             }
 
             CurrentPlayerPosition++;
@@ -179,6 +188,8 @@ namespace Skeeball
             {
                 AddScore(Players[(PlayerPosition)i].Score);
             }
+
+            CurrentState = GameState.GameOver;
         }
 
         private void AddScore(int score)

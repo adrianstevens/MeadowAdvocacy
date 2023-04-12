@@ -80,31 +80,44 @@ namespace Skeeball
 
         private void Right_RightButton_Clicked(object sender, EventArgs e)
         {
-            game.ThrowBall(SkeeballGame.PointValue.Twenty);
-            ShowScore(SkeeballGame.PointValue.Twenty);
+            ThrowBall(SkeeballGame.PointValue.Twenty);
         }
 
         private void Right_DownButton_Clicked(object sender, EventArgs e)
         {
-            game.ThrowBall(SkeeballGame.PointValue.Ten);
-            ShowScore(SkeeballGame.PointValue.Ten);
+            ThrowBall(SkeeballGame.PointValue.Ten);
         }
 
         private void Right_LeftButton_Clicked(object sender, EventArgs e)
         {
-            game.ThrowBall(SkeeballGame.PointValue.Forty);
-            ShowScore(SkeeballGame.PointValue.Forty);
+            ThrowBall(SkeeballGame.PointValue.Forty);
         }
 
         private void Right_UpButton_Clicked(object sender, EventArgs e)
         {
-            game.ThrowBall(SkeeballGame.PointValue.Fifty);
-            ShowScore(SkeeballGame.PointValue.Fifty);
+            ThrowBall(SkeeballGame.PointValue.Fifty);
+        }
+
+        void ThrowBall(SkeeballGame.PointValue pointValue)
+        {
+            if (!game.ThrowBall(pointValue))
+            {
+                return;
+            }
+
+            ShowScore(pointValue);
+
+            if (game.CurrentState == SkeeballGame.GameState.GameOver)
+            {
+                displayController.DrawText("GAMEOVER", Color.Red);
+                Thread.Sleep(500);
+                displayController.ScrollTextOn("YOUR SCORE:", Color.Red);
+                displayController.FlashText($"{game.CurrentPlayer.Score}", Color.LawnGreen, Color.Cyan);
+            }
         }
 
         private void SelectButton_Clicked(object sender, EventArgs e)
         {
-
         }
 
         private void StartButton_Clicked(object sender, EventArgs e)
@@ -118,6 +131,7 @@ namespace Skeeball
         public override Task Run()
         {
             displayController.DrawTitle();
+            game.Reset();
 
             return base.Run();
         }
@@ -130,16 +144,8 @@ namespace Skeeball
         void ShowScore(SkeeballGame.PointValue value)
         {
             displayController.FlashText($"{(int)value}", Color.Blue, Color.Violet);
-            displayController.DrawText($"{game.CurrentPlayer.Score}", Color.White);
-            Thread.Sleep(1000);
-            ShowBallsRemaining();
+            displayController.DrawText($"{game.CurrentPlayer.Score} ({game.CurrentPlayer.BallsRemaining})", Color.White);
         }
-
-        void UpdateScore(SkeeballGame.PointValue points)
-        {
-
-        }
-
 
         void DisplayTest()
         {

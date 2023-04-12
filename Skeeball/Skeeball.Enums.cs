@@ -21,17 +21,18 @@
 
         public enum PlayerPosition
         {
-            One,
+            One = 1,
             Two,
             Three,
             Four,
-            Count
         }
 
         public enum GameState
         {
+            Initializing,
             ReadyToStart,
-            Playing
+            Playing,
+            GameOver
         }
     }
 }
