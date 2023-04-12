@@ -92,11 +92,8 @@ namespace DeskClock
             Console.WriteLine("Init complete");
             return base.Initialize();
         }
-
         async Task UpdateClock()
         {
-            //    var result = await Device.WiFiAdapter.Connect(Secrets.WIFI_NAME, Secrets.WIFI_PASSWORD);
-
             var today = await ClockService.GetTime();
 
             Device.PlatformOS.SetClock(today.Subtract(new TimeSpan(7, 0, 0)));
