@@ -71,6 +71,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sensors.Hid.Tsc2004", "..\M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KeyboardWing", "..\Meadow.Foundation.Featherwings\Source\KeyboardWing\Driver\KeyboardWing.csproj", "{64E7B672-A7F9-4798-8D04-FA4361FCBDD9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SongPlayer", "SongPlayer\SongPlayer.csproj", "{B01E8561-7B79-4590-B052-BAA94173F002}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -271,6 +273,12 @@ Global
 		{64E7B672-A7F9-4798-8D04-FA4361FCBDD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{64E7B672-A7F9-4798-8D04-FA4361FCBDD9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{64E7B672-A7F9-4798-8D04-FA4361FCBDD9}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{B01E8561-7B79-4590-B052-BAA94173F002}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B01E8561-7B79-4590-B052-BAA94173F002}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B01E8561-7B79-4590-B052-BAA94173F002}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{B01E8561-7B79-4590-B052-BAA94173F002}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B01E8561-7B79-4590-B052-BAA94173F002}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B01E8561-7B79-4590-B052-BAA94173F002}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
