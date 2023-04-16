@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace SongPlayer
 {
-    public class SoundEffects
+    public class SystemSounds
     {
         /// <summary>
-        /// Represents the different sound effects that can be played by the <see cref="PiezoSoundPlayer"/> class.
+        /// Represents the different sound effects that can be played by the <see cref="SystemSounds"/> class.
         /// </summary>
-        public enum Effect
+        public enum SystemSoundEffect
         {
             /// <summary>
             /// A simple beep sound effect.
@@ -78,60 +78,60 @@ namespace SongPlayer
         private readonly int defaultPause;
         private readonly IToneGenerator toneGenerator;
 
-        public SoundEffects(IToneGenerator toneGenerator, int defaultDuration = 100, int defaultPause = 50)
+        public SystemSounds(IToneGenerator toneGenerator, int defaultDuration = 100, int defaultPause = 50)
         {
             this.toneGenerator = toneGenerator;
             this.defaultDuration = defaultDuration;
             this.defaultPause = defaultPause;
         }
 
-        public async Task PlayEffect(Effect effect)
+        public async Task PlayEffect(SystemSoundEffect effect)
         {
             switch (effect)
             {
-                case Effect.Beep:
+                case SystemSoundEffect.Beep:
                     await PlayBeep();
                     break;
-                case Effect.Success:
+                case SystemSoundEffect.Success:
                     await PlaySuccess();
                     break;
-                case Effect.Failure:
+                case SystemSoundEffect.Failure:
                     await PlayFailure();
                     break;
-                case Effect.Warning:
+                case SystemSoundEffect.Warning:
                     await PlayWarning();
                     break;
-                case Effect.Alarm:
+                case SystemSoundEffect.Alarm:
                     await PlayAlarm();
                     break;
-                case Effect.Tick:
+                case SystemSoundEffect.Tick:
                     await PlayTick();
                     break;
-                case Effect.Chime:
+                case SystemSoundEffect.Chime:
                     await PlayChime();
                     break;
-                case Effect.Buzz:
+                case SystemSoundEffect.Buzz:
                     await PlayBuzz();
                     break;
-                case Effect.Fanfare:
+                case SystemSoundEffect.Fanfare:
                     await PlayFanfare();
                     break;
-                case Effect.Alert:
+                case SystemSoundEffect.Alert:
                     await PlayAlert();
                     break;
-                case Effect.Click:
+                case SystemSoundEffect.Click:
                     await PlayClick();
                     break;
-                case Effect.Pop:
+                case SystemSoundEffect.Pop:
                     await PlayPop();
                     break;
-                case Effect.PowerUp:
+                case SystemSoundEffect.PowerUp:
                     await PlayPowerUp();
                     break;
-                case Effect.PowerDown:
+                case SystemSoundEffect.PowerDown:
                     await PlayPowerDown();
                     break;
-                case Effect.Notification:
+                case SystemSoundEffect.Notification:
                     await PlayNotification();
                     break;
                 default:

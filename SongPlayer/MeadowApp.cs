@@ -9,8 +9,9 @@ using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static SongPlayer.GameSounds;
 using static SongPlayer.Note;
-using static SongPlayer.SoundEffects;
+using static SongPlayer.SystemSounds;
 
 namespace SongPlayer
 {
@@ -24,6 +25,8 @@ namespace SongPlayer
         public async override Task Run()
         {
             Console.WriteLine("Run...");
+
+            await GameEffectsTest(projLab.Speaker);
 
             await SoundEffectsTest(projLab.Speaker);
 
@@ -43,12 +46,12 @@ namespace SongPlayer
 
             Console.WriteLine("Play happy birthday");
             SongPlayer happyBirthday = new SongPlayer(projLab.Speaker);
-            happyBirthday.AddNote(new Note(NotePitch.C, 4, NoteDuration.Quarter));
-            happyBirthday.AddNote(new Note(NotePitch.C, 4, NoteDuration.Quarter));
-            happyBirthday.AddNote(new Note(NotePitch.D, 4, NoteDuration.Half));
-            happyBirthday.AddNote(new Note(NotePitch.C, 4, NoteDuration.Half));
-            happyBirthday.AddNote(new Note(NotePitch.F, 4, NoteDuration.Half));
-            happyBirthday.AddNote(new Note(NotePitch.E, 4, NoteDuration.Whole));
+            happyBirthday.AddNote(new Note(NotePitch.C, 3, NoteDuration.Quarter));
+            happyBirthday.AddNote(new Note(NotePitch.C, 3, NoteDuration.Quarter));
+            happyBirthday.AddNote(new Note(NotePitch.D, 3, NoteDuration.Half));
+            happyBirthday.AddNote(new Note(NotePitch.C, 3, NoteDuration.Half));
+            happyBirthday.AddNote(new Note(NotePitch.F, 3, NoteDuration.Half));
+            happyBirthday.AddNote(new Note(NotePitch.E, 3, NoteDuration.Whole));
          
             await happyBirthday.Play(160); 
 
@@ -66,11 +69,25 @@ namespace SongPlayer
             return base.Initialize();
         }
 
+        async Task GameEffectsTest(IToneGenerator piezo)
+        {
+            var player = new GameSounds(piezo);
+
+            foreach (GameSoundEffect effect in Enum.GetValues(typeof(GameSoundEffect)))
+            {
+                Console.WriteLine($"Playing {effect} game effect...");
+                await player.PlayEffect(effect);
+                await Task.Delay(1000);
+            }
+
+            Console.WriteLine("Sound effects demo complete.");
+        }
+
         async Task SoundEffectsTest(IToneGenerator piezo)
         {
-            var player = new SoundEffects(piezo);
+            var player = new SystemSounds(piezo);
 
-            foreach (Effect effect in Enum.GetValues(typeof(Effect)))
+            foreach (SystemSoundEffect effect in Enum.GetValues(typeof(SystemSoundEffect)))
             {
                 Console.WriteLine($"Playing {effect} sound effect...");
                 await player.PlayEffect(effect);
