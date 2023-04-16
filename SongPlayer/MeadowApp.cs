@@ -23,15 +23,30 @@ namespace SongPlayer
         {
             Console.WriteLine("Run...");
 
+
+
+            Console.WriteLine("Play scale song");
+            var scale = new ScaleSong(projLab.Speaker);
+            await scale.Play(120);
+
+            await Task.Delay(3000);
+
+            Console.WriteLine("Play skeeball song");
+            var skeelballSong = new SkeeBallSong(projLab.Speaker);
+            await skeelballSong.Play(120);
+
+            await Task.Delay(3000);
+
+            Console.WriteLine("Play happy birthday");
             SongPlayer happyBirthday = new SongPlayer(projLab.Speaker);
-            happyBirthday.AddNote(new Note(NotePitch.C, 4, NoteDuration.Quarter)); // C4 quarter note
-            happyBirthday.AddNote(new Note(NotePitch.C, 4, NoteDuration.Quarter)); // C4 quarter note
-            happyBirthday.AddNote(new Note(NotePitch.D, 4, NoteDuration.Half)); // D4 half note
-            happyBirthday.AddNote(new Note(NotePitch.C, 4, NoteDuration.Half)); // C4 half note
-            happyBirthday.AddNote(new Note(NotePitch.F, 4, NoteDuration.Half)); // F4 half note
-            happyBirthday.AddNote(new Note(NotePitch.E, 4, NoteDuration.Whole)); // E4 whole note
+            happyBirthday.AddNote(new Note(NotePitch.C, 4, NoteDuration.Quarter));
+            happyBirthday.AddNote(new Note(NotePitch.C, 4, NoteDuration.Quarter));
+            happyBirthday.AddNote(new Note(NotePitch.D, 4, NoteDuration.Half));
+            happyBirthday.AddNote(new Note(NotePitch.C, 4, NoteDuration.Half));
+            happyBirthday.AddNote(new Note(NotePitch.F, 4, NoteDuration.Half));
+            happyBirthday.AddNote(new Note(NotePitch.E, 4, NoteDuration.Whole));
          
-            await happyBirthday.Play(120); // play at 120 beats per minute
+            await happyBirthday.Play(160); 
 
         }
 

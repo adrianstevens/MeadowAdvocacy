@@ -1,10 +1,32 @@
 ﻿using Meadow.Units;
+using System;
 using static SongPlayer.Note;
 
 namespace SongPlayer
 {
     public class NotesToFrequency
     {
+        public static Frequency A4Frequency { get; set; } = new Frequency(440.0, Frequency.UnitType.Hertz);
+        private static double SemitoneRatio { get; } = 1.059463094359;
+
+        /// <summary>
+        /// Converts the specified musical note to its frequency in hertz.
+        /// </summary>
+        /// <param name="note">The musical note to convert.</param>
+        /// <returns>The frequency of the note in hertz.</returns>
+        public static Frequency ConvertToFrequency(Note note)
+        {
+            int semitonesFromA4 = CalculateSemitonesFromA4(note.Pitch, note.Octave);
+            return A4Frequency * Math.Pow(SemitoneRatio, semitonesFromA4);
+        }
+
+        private static int CalculateSemitonesFromA4(NotePitch pitch, int octave)
+        {
+            int semitonesFromC0 = (int)pitch + (octave - 1) * 12;
+            return semitonesFromC0 - 9;
+        }
+
+        /*
         /// <summary>
         /// Converts a musical note and octave to a frequency in Hz
         /// </summary>
@@ -35,6 +57,7 @@ namespace SongPlayer
             index += (octave - 4) * 12;
 
             return new Frequency(frequencies[index], Frequency.UnitType.Hertz);
-        }      
+        }    
+        */
     }
 }

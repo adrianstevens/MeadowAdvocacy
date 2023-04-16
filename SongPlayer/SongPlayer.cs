@@ -27,7 +27,7 @@ namespace SongPlayer
             {
                 
                 int duration = (int)(60.0 / tempo * (int)note.Duration);
-                Console.WriteLine($"Duration in sec: {duration}");
+                Console.WriteLine($"Duration in ms: {duration}");
 
 
                 if(note.Pitch == Note.NotePitch.Rest)
@@ -36,7 +36,7 @@ namespace SongPlayer
                 }
                 else
                 {
-                    var frequency = NotesToFrequency.ConvertNoteToFrequency(note.Pitch, note.Octave);
+                    var frequency = NotesToFrequency.ConvertToFrequency(note);
                     await speaker.PlayTone(frequency, TimeSpan.FromMilliseconds(duration));
                 }
             }
