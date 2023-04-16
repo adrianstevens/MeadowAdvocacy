@@ -12,31 +12,33 @@ namespace SongPlayer
 
         void AddNotes()
         {
+            AddNote(new Note(NotePitch.C, 2, NoteDuration.Half));
+
             //bar 1
-            AddNote(new Note(NotePitch.A, 3, NoteDuration.Eighth));
-            AddNote(new Note(NotePitch.A, 3, NoteDuration.Sixteenth));
-            AddNote(new Note(NotePitch.A, 3, NoteDuration.Sixteenth));
-            AddNote(new Note(NotePitch.A, 3, NoteDuration.Eighth));
-            AddNote(new Note(NotePitch.A, 3, NoteDuration.Eighth));
+            AddNote(new Note(NotePitch.C, 3, NoteDuration.Eighth));
+            AddNote(new Note(NotePitch.C, 3, NoteDuration.Sixteenth));
+            AddNote(new Note(NotePitch.C, 3, NoteDuration.Sixteenth));
+            AddNote(new Note(NotePitch.C, 3, NoteDuration.Eighth));
+            AddNote(new Note(NotePitch.C, 3, NoteDuration.Eighth));
 
             //bar 2
-            AddNote(new Note(NotePitch.C, 4, NoteDuration.Eighth));
-            AddNote(new Note(NotePitch.C, 4, NoteDuration.Sixteenth));
-            AddNote(new Note(NotePitch.C, 4, NoteDuration.Sixteenth));
-            AddNote(new Note(NotePitch.C, 4, NoteDuration.Eighth));
-            AddNote(new Note(NotePitch.C, 4, NoteDuration.Eighth));
+            AddNote(new Note(NotePitch.E, 3, NoteDuration.Eighth));
+            AddNote(new Note(NotePitch.E, 3, NoteDuration.Sixteenth));
+            AddNote(new Note(NotePitch.E, 3, NoteDuration.Sixteenth));
+            AddNote(new Note(NotePitch.E, 3, NoteDuration.Eighth));
+            AddNote(new Note(NotePitch.E, 3, NoteDuration.Eighth));
 
             //bar 3
-            AddNote(new Note(NotePitch.E, 4, NoteDuration.Eighth));
-            AddNote(new Note(NotePitch.E, 4, NoteDuration.Sixteenth));
-            AddNote(new Note(NotePitch.E, 4, NoteDuration.Sixteenth));
-            AddNote(new Note(NotePitch.E, 4, NoteDuration.Eighth));
-            AddNote(new Note(NotePitch.E, 4, NoteDuration.Eighth));
+            AddNote(new Note(NotePitch.G, 3, NoteDuration.Eighth));
+            AddNote(new Note(NotePitch.G, 3, NoteDuration.Sixteenth));
+            AddNote(new Note(NotePitch.G, 3, NoteDuration.Sixteenth));
+            AddNote(new Note(NotePitch.G, 3, NoteDuration.Eighth));
+            AddNote(new Note(NotePitch.G, 3, NoteDuration.Eighth));
 
             //bar4
-            AddNote(new Note(NotePitch.A, 4, NoteDuration.Eighth));
-            AddNote(new Note(NotePitch.A, 4, NoteDuration.Eighth));
-            AddNote(new Note(NotePitch.A, 4, NoteDuration.Quarter));
+            AddNote(new Note(NotePitch.C, 4, NoteDuration.Quarter));
+            AddNote(new Note(NotePitch.C, 4, NoteDuration.Sixteenth));
+            AddNote(new Note(NotePitch.C, 4, NoteDuration.Sixteenth));
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Meadow.Foundation.Audio;
+using Meadow.Peripherals.Speakers;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -9,11 +10,11 @@ namespace SongPlayer
     {
         private readonly List<Note> notes = new List<Note>();
 
-        PiezoSpeaker speaker;
+        IToneGenerator speaker;
 
-        public SongPlayer(PiezoSpeaker speaker)
+        public SongPlayer(IToneGenerator toneGenerator)
         {
-            this.speaker = speaker;
+            this.speaker = toneGenerator;
         }
 
         public void AddNote(Note note)

@@ -4,11 +4,13 @@ using Meadow.Foundation;
 using Meadow.Foundation.Graphics;
 using Meadow.Foundation.Sensors.Camera;
 using Meadow.Hardware;
+using Meadow.Peripherals.Speakers;
 using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static SongPlayer.Note;
+using static SongPlayer.SoundEffects;
 
 namespace SongPlayer
 {
@@ -23,13 +25,15 @@ namespace SongPlayer
         {
             Console.WriteLine("Run...");
 
+            await SoundEffectsTest(projLab.Speaker);
+
 
 
             Console.WriteLine("Play scale song");
             var scale = new ScaleSong(projLab.Speaker);
-            await scale.Play(120);
+         //   await scale.Play(120);
 
-            await Task.Delay(3000);
+         ////   await Task.Delay(3000);
 
             Console.WriteLine("Play skeeball song");
             var skeelballSong = new SkeeBallSong(projLab.Speaker);
@@ -60,6 +64,20 @@ namespace SongPlayer
 
             Console.WriteLine("Init complete");
             return base.Initialize();
+        }
+
+        async Task SoundEffectsTest(IToneGenerator piezo)
+        {
+            var player = new SoundEffects(piezo);
+
+            foreach (Effect effect in Enum.GetValues(typeof(Effect)))
+            {
+                Console.WriteLine($"Playing {effect} sound effect...");
+                await player.PlayEffect(effect);
+                await Task.Delay(1000);
+            }
+
+            Console.WriteLine("Sound effects demo complete.");
         }
     }
 }
