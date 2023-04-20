@@ -15,64 +15,123 @@ namespace Froggit
         FrogItGame game;
         MicroGraphics graphics;
 
-        bool playGame = true;
+        GameState gameState = GameState.Ready;
+
+        enum GameState
+        {
+            Ready,
+            Playing,
+            GameOver
+        }
 
         public override Task Initialize()
         {
             Console.WriteLine("Initialize...");
 
             juego = Juego.Create();
-            juego.Left_DownButton.Clicked += Left_DownButton_Clicked;
-            juego.Left_UpButton.Clicked += Left_UpButton_Clicked;
-            juego.Left_LeftButton.Clicked += Left_LeftButton_Clicked;
-            juego.Left_RightButton.Clicked += Left_RightButton_Clicked;
+            juego.StartButton.Clicked += StartButton_Clicked;
 
             graphics = new MicroGraphics(juego.Display);
-            graphics.CurrentFont = new Font8x12();
+            graphics.CurrentFont = new Font12x16();
             graphics.Rotation = RotationType._270Degrees;
 
             game = new FrogItGame();
             game.Init(graphics);
 
-
             return base.Initialize();
         }
 
-        private void Left_RightButton_Clicked(object sender, EventArgs e)
-        {
-            game.Right();
-        }
-
-        private void Left_LeftButton_Clicked(object sender, EventArgs e)
-        {
-            game.Left();
-        }
-
-        private void Left_UpButton_Clicked(object sender, EventArgs e)
-        {
-            game.Up();
-        }
-
-        private void Left_DownButton_Clicked(object sender, EventArgs e)
-        {
-            game.Down();
-        }
-
-        public async override Task Run()
+        public override Task Run()
         {
             Console.WriteLine("Run...");
 
-            await Task.Run(() =>
-            {   //full speed today
-                while (playGame == true)
+            DrawplashScreen();
+
+            return Task.CompletedTask;
+        }
+
+        bool isInitialized = false;
+        private void StartButton_Clicked(object sender, EventArgs e)
+        {
+            Console.WriteLine("Start pressed");
+
+            if (isInitialized == false)
+            {
+                isInitialized = true;
+                return;
+            }
+
+            if (GameState.Ready == gameState)
+            {
+                gameState = GameState.Playing;
+                _ = PlayGame();
+            }
+        }
+
+        void UpdateGame()
+        {
+            if (juego.Left_LeftButton.State == true)
+            {
+                game.Left();
+            }
+            else if (juego.Left_RightButton.State == true)
+            {
+                game.Right();
+            }
+            else if (juego.Left_UpButton.State == true)
+            {
+                game.Up();
+            }
+            else if (juego.Left_DownButton.State == true)
+            {
+                game.Down();
+            }
+            else if (juego.SelectButton.State == true)
+            {
+                game.Quit();
+            }
+
+
+            game.Update(graphics);
+        }
+
+        void DrawplashScreen()
+        {
+            graphics.Clear();
+            graphics.DrawText(160, 70, "FrogIt", FrogItGame.FrogColor, ScaleFactor.X3, HorizontalAlignment.Center);
+            graphics.DrawText(160, 140, "Press Start", FrogItGame.WaterColor, ScaleFactor.X1, HorizontalAlignment.Center);
+            graphics.Show();
+        }
+
+        void DrawEndScreen()
+        {
+            graphics.Clear();
+
+            if (game.Winner)
+            {
+                graphics.DrawText(160, 80, "You Win!", FrogItGame.FrogColor, ScaleFactor.X3, HorizontalAlignment.Center);
+                graphics.DrawText(160, 140, $"Your time: {game.GameTime}s", FrogItGame.WaterColor, ScaleFactor.X2, HorizontalAlignment.Center);
+            }
+            else
+            {
+                graphics.DrawText(160, 80, "Game Over", FrogItGame.FrogColor, ScaleFactor.X3, HorizontalAlignment.Center);
+            }
+
+            graphics.Show();
+        }
+
+        Task PlayGame()
+        {
+            return Task.Run(() =>
+            {
+                game.Reset();
+                while (game.IsPlaying)
                 {
-                    game.Update(graphics);
+                    UpdateGame();
 
                     Thread.Sleep(0);
                 }
             });
         }
-
-
     }
 }

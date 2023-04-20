@@ -73,6 +73,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KeyboardWing", "..\Meadow.F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SongPlayer", "SongPlayer\SongPlayer.csproj", "{B01E8561-7B79-4590-B052-BAA94173F002}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Froggit", "Froggit\Froggit.csproj", "{2596E6F9-907D-46C9-9D85-B9B29D198344}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Audio.MicroAudio", "..\Meadow.Foundation\Source\Meadow.Foundation.Libraries_and_Frameworks\Audio.MicroAudio\Driver\Audio.MicroAudio.csproj", "{F5D9DCB0-B4D9-4A41-AB7A-E2B48F83AC70}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscordBot", "DiscordBot\DiscordBot.csproj", "{4211BF2C-0E1A-4153-A49D-A6180379F6A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -279,6 +285,24 @@ Global
 		{B01E8561-7B79-4590-B052-BAA94173F002}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B01E8561-7B79-4590-B052-BAA94173F002}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B01E8561-7B79-4590-B052-BAA94173F002}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{2596E6F9-907D-46C9-9D85-B9B29D198344}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2596E6F9-907D-46C9-9D85-B9B29D198344}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2596E6F9-907D-46C9-9D85-B9B29D198344}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{2596E6F9-907D-46C9-9D85-B9B29D198344}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2596E6F9-907D-46C9-9D85-B9B29D198344}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2596E6F9-907D-46C9-9D85-B9B29D198344}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{F5D9DCB0-B4D9-4A41-AB7A-E2B48F83AC70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5D9DCB0-B4D9-4A41-AB7A-E2B48F83AC70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5D9DCB0-B4D9-4A41-AB7A-E2B48F83AC70}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F5D9DCB0-B4D9-4A41-AB7A-E2B48F83AC70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5D9DCB0-B4D9-4A41-AB7A-E2B48F83AC70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5D9DCB0-B4D9-4A41-AB7A-E2B48F83AC70}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{4211BF2C-0E1A-4153-A49D-A6180379F6A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4211BF2C-0E1A-4153-A49D-A6180379F6A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4211BF2C-0E1A-4153-A49D-A6180379F6A9}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{4211BF2C-0E1A-4153-A49D-A6180379F6A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4211BF2C-0E1A-4153-A49D-A6180379F6A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4211BF2C-0E1A-4153-A49D-A6180379F6A9}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -309,6 +333,7 @@ Global
 		{40E59C66-08B5-41DF-8662-84FC2B5E1271} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
 		{63683D50-6F11-4639-A2AF-0220AB5E7DD6} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
 		{64E7B672-A7F9-4798-8D04-FA4361FCBDD9} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
+		{F5D9DCB0-B4D9-4A41-AB7A-E2B48F83AC70} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {59B85D60-3E0C-446F-8620-3B88DCA35E21}

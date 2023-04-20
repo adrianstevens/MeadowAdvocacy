@@ -12,8 +12,9 @@ namespace Froggit
             InitBuffers();
 
             gl.Clear();
-            gl.DrawText(0, 0, "Meadow FrogIt");
-            gl.DrawText(0, 16, "v0.5.0");
+            gl.DrawRectangle(0, 0, gl.Width, gl.Height);
+            gl.DrawText(3, 3, "Meadow FrogIt");
+            gl.DrawText(3, 16, "v0.6.0");
 
             gl.DrawBuffer(32, 32, frogUp);
 
@@ -37,8 +38,6 @@ namespace Froggit
             //draw docks
             for (int i = 0; i < 5; i++)
             {
-                //  graphics.DrawRectangle(10 + 24 * i, 0, 12, 8, true, false);
-
                 if (i < FrogsHome)
                 {
                     DrawFrog(12 + 24 * i, 0, FrogState.Forward, graphics);
@@ -46,7 +45,7 @@ namespace Froggit
             }
 
             //draw water
-            //graphics.DrawRectangle(0, cellSize, 128, cellSize * 3, true, true);
+            //graphics.DrawRectangle(0, 16, 320, 48, CarColor, true);
         }
 
         void DrawLanesAndCheckCollisions(MicroGraphics graphics)
@@ -56,7 +55,7 @@ namespace Froggit
 
             double offsetD;
 
-            for (byte row = 0; row < 6; row++)
+            for (byte row = 0; row < 8; row++)
             {
                 startPos = (int)(GameTime * LaneSpeeds[row]) % LaneLength;
                 offsetD = 16.0 * GameTime * LaneSpeeds[row];
@@ -68,19 +67,22 @@ namespace Froggit
                     startPos = LaneLength - ((0 - startPos) % 32);
                 }
 
-                y = cellSize * (row + 1);
+                y = cellSize * (row + 2);
 
+                //move the frog with the log
                 if (row < 3 && y == FrogY)
                 {
                     FrogX -= TimeDelta * LaneSpeeds[row] * CellSize;
                 }
 
+                //iterate over ever column in the lane
                 for (byte i = 0; i < Columns + 2; i++)
                 {
                     index = LaneData[row, (startPos + i) % LaneLength];
 
                     x = (i - 1) * cellSize - cellOffset;
 
+                    //if the frog is on the log and goes off screen, kill it
                     if (index == 0)
                     {
                         if (row < 3)
@@ -93,8 +95,12 @@ namespace Froggit
                         continue;
                     }
 
+                    //if column is off screen, skip it
                     if (x < 0 || x >= graphics.Width - CellSize)
+                    {
                         continue;
+                    }
+
 
                     switch (row)
                     {
@@ -103,12 +109,15 @@ namespace Froggit
                         case 2:
                             DrawLog(x, y, index, graphics);
                             break;
-                        case 3:
-                        case 5:
+                        case 3: //sidewalk
+                            break;
+                        case 4:
+                        case 6:
                             DrawTruck(x, y, index, graphics);
                             if (IsFrogCollision(x, y)) { KillFrog(); }
                             break;
-                        case 4:
+                        case 5:
+                        case 7:
                             DrawCar(x, y, index, graphics);
                             if (IsFrogCollision(x, y)) { KillFrog(); }
                             break;

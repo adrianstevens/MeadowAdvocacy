@@ -17,26 +17,33 @@ namespace Froggit
         FrogState frogState;
 
         //each lane has a velocity
-        public double[] LaneSpeeds { get; private set; } = new double[6] { 1.0f, -2.0f, 1.5f, -1.0f, 1.5f, -2.0f };
-        public byte[,] LaneData { get; private set; } = new byte[6, 32]
+        public double[] LaneSpeeds { get; private set; } = new double[8] { 1.8f, -2.0f, 1.5f, 0, -1.0f, 2.0f, -1.5f, 1.5f };
+        public byte[,] LaneData { get; private set; } = new byte[8, 32]
         {
             //no data for docks
             {1,2,3,0,1,2,3,0,0,0,1,2,3,0,1,3,0,0,0,0,1,2,3,0,0,0,0,1,2,3,0,0 },//logs
             {0,0,1,3,0,0,0,1,3,0,0,0,1,3,0,0,1,2,3,0,0,0,0,0,1,3,0,0,1,3,0,0 },//logs
             {1,2,3,0,1,2,3,0,0,0,1,2,3,0,1,2,3,0,0,0,1,2,2,3,0,0,0,1,2,3,0,0 },//logs
-
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },//sidewalk
             {0,0,1,3,0,1,3,0,0,0,0,0,0,0,0,0,1,3,0,0,0,0,0,0,1,3,0,0,1,3,0,0 },//trucks
             {0,0,1,2,0,0,0,0,0,0,0,1,2,0,0,0,1,2,0,0,0,1,2,0,1,2,0,0,0,0,0,0 },//cars
             {1,2,3,0,0,0,0,0,0,0,0,1,2,3,0,0,0,0,0,1,2,3,0,0,0,0,0,1,2,3,0,0 },//trucks
+            {0,0,1,2,0,0,0,0,0,0,0,1,2,0,0,0,1,2,0,0,0,1,2,0,1,2,0,0,0,0,0,0 },//cars
             //no data for start lane
         };
 
-        public double GameTime { get; private set; }
+        public bool IsPlaying { get; private set; }
+
+        public bool Winner { get; private set; }
+
+        public int FROG_GOAL = 4;
+
+        public double GameTime => (DateTime.Now - gameStart).TotalSeconds;
         public double TimeDelta => GameTime - lastTime;
 
         public int LaneLength => 32;
         public int Columns { get; private set; } = 20;
-        public int Rows => 8;
+        public int Rows => 12;
 
         public double FrogX { get; set; }
         public double FrogY { get; private set; }
@@ -47,16 +54,6 @@ namespace Froggit
         public int CellSize { get; private set; }
 
         DateTime gameStart;
-        UserInput lastInput;
-
-        enum UserInput
-        {
-            None,
-            Up,
-            Down,
-            Left,
-            Right,
-        }
 
         public FrogItGame(int cellSize = 16, int width = 320)
         {
@@ -73,7 +70,8 @@ namespace Froggit
 
             FrogsHome = 0;
 
-            lastInput = UserInput.None;
+            IsPlaying = true;
+            Winner = false;
         }
 
         void ResetFrog()
@@ -102,46 +100,18 @@ namespace Froggit
             count++;
 
             lastTime = GameTime;
-            GameTime = (DateTime.Now - gameStart).TotalSeconds;
-
-            switch (lastInput)
-            {
-                case UserInput.Up:
-                    MoveFrogUp();
-                    break;
-                case UserInput.Down:
-                    MoveFrogDown();
-                    break;
-                case UserInput.Left:
-                    MoveFrogLeft();
-                    break;
-                case UserInput.Right:
-                    MoveFrogRight();
-                    break;
-            }
-            //clear for next frame
-            lastInput = UserInput.None;
         }
 
-        public void Up()
-        {
-            lastInput = UserInput.Up;
-        }
+        public void Up() => MoveFrogUp();
 
-        public void Down()
-        {
-            lastInput = UserInput.Down;
-        }
+        public void Down() => MoveFrogDown();
 
-        public void Left()
-        {
-            lastInput = UserInput.Left;
-        }
+        public void Left() => MoveFrogLeft();
 
-        public void Right()
-        {
-            lastInput = UserInput.Right;
-        }
+        public void Right() => MoveFrogRight();
+
+        public void Quit() => IsPlaying = false;
+
 
         void MoveFrogUp()
         {
@@ -151,8 +121,15 @@ namespace Froggit
             if (FrogY == 0)
             {
                 FrogsHome++;
-                if (FrogsHome >= 5) { Reset(); }
-                else { ResetFrog(); }
+                if (FrogsHome >= FROG_GOAL)
+                {
+                    IsPlaying = false;
+                    Winner = true;
+                }
+                else
+                {
+                    ResetFrog();
+                }
             }
         }
 
