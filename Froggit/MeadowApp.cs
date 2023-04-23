@@ -1,5 +1,6 @@
 ﻿using Meadow;
 using Meadow.Devices;
+using Meadow.Foundation.Audio;
 using Meadow.Foundation.Graphics;
 using System;
 using System.Threading;
@@ -14,6 +15,7 @@ namespace Froggit
         IJuegoHardware juego;
         FrogItGame game;
         MicroGraphics graphics;
+        MicroAudio audio;
 
         GameState gameState = GameState.Ready;
 
@@ -31,14 +33,18 @@ namespace Froggit
             juego = Juego.Create();
             juego.StartButton.Clicked += StartButton_Clicked;
 
-            graphics = new MicroGraphics(juego.Display);
-            graphics.CurrentFont = new Font12x16();
-            graphics.Rotation = RotationType._270Degrees;
+            graphics = new MicroGraphics(juego.Display)
+            {
+                CurrentFont = new Font12x16(),
+                Rotation = RotationType._270Degrees
+            };
+
+            audio = new MicroAudio(juego.RightSpeaker);
 
             game = new FrogItGame();
-            game.Init(graphics);
+            game.Init(graphics, audio);
 
-            return base.Initialize();
+            return Task.CompletedTask;
         }
 
         public override Task Run()
@@ -53,8 +59,6 @@ namespace Froggit
         bool isInitialized = false;
         private void StartButton_Clicked(object sender, EventArgs e)
         {
-            Console.WriteLine("Start pressed");
-
             if (isInitialized == false)
             {
                 isInitialized = true;
@@ -65,6 +69,11 @@ namespace Froggit
             {
                 gameState = GameState.Playing;
                 _ = PlayGame();
+            }
+            else if (GameState.GameOver == gameState)
+            {
+                gameState = GameState.Ready;
+                DrawplashScreen();
             }
         }
 
@@ -92,13 +101,13 @@ namespace Froggit
             }
 
 
-            game.Update(graphics);
+            game.Update();
         }
 
         void DrawplashScreen()
         {
             graphics.Clear();
-            graphics.DrawText(160, 70, "FrogIt", FrogItGame.FrogColor, ScaleFactor.X3, HorizontalAlignment.Center);
+            graphics.DrawText(160, 70, "Froggit", FrogItGame.FrogColor, ScaleFactor.X3, HorizontalAlignment.Center);
             graphics.DrawText(160, 140, "Press Start", FrogItGame.WaterColor, ScaleFactor.X1, HorizontalAlignment.Center);
             graphics.Show();
         }
@@ -110,7 +119,8 @@ namespace Froggit
             if (game.Winner)
             {
                 graphics.DrawText(160, 80, "You Win!", FrogItGame.FrogColor, ScaleFactor.X3, HorizontalAlignment.Center);
-                graphics.DrawText(160, 140, $"Your time: {game.GameTime}s", FrogItGame.WaterColor, ScaleFactor.X2, HorizontalAlignment.Center);
+                graphics.DrawText(160, 140, $"Your time: {game.GameTime:F1}s", FrogItGame.WaterColor, ScaleFactor.X1, HorizontalAlignment.Center);
+                graphics.DrawText(180, 140, $"Your died: {game.Deaths} time(s)", FrogItGame.WaterColor, ScaleFactor.X1, HorizontalAlignment.Center);
             }
             else
             {
@@ -122,16 +132,21 @@ namespace Froggit
 
         Task PlayGame()
         {
-            return Task.Run(() =>
+            var t = new Task(() =>
             {
                 game.Reset();
                 while (game.IsPlaying)
                 {
                     UpdateGame();
-
                     Thread.Sleep(0);
                 }
-            });
+                gameState = GameState.GameOver;
+                DrawEndScreen();
+            }, TaskCreationOptions.LongRunning);
+
+            t.Start();
+
+            return t;
         }
     }
 }

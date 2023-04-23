@@ -1,4 +1,5 @@
 ﻿using Meadow;
+using Meadow.Foundation.Audio;
 using System;
 using System.Diagnostics;
 
@@ -38,7 +39,10 @@ namespace Froggit
 
         public int FROG_GOAL = 4;
 
-        public double GameTime => (DateTime.Now - gameStart).TotalSeconds;
+        public double GameTime { get; private set; }
+
+        public int Deaths { get; private set; }
+
         public double TimeDelta => GameTime - lastTime;
 
         public int LaneLength => 32;
@@ -67,7 +71,7 @@ namespace Froggit
             gameStart = DateTime.Now;
             ResetFrog();
             Lives = 3;
-
+            Deaths = 0;
             FrogsHome = 0;
 
             IsPlaying = true;
@@ -84,7 +88,7 @@ namespace Froggit
         double lastTime;
         int count = 0;
         Stopwatch sw = new Stopwatch();
-        public void Update()
+        void UpdateFrame()
         {
             if (count == 0)
             {
@@ -100,6 +104,7 @@ namespace Froggit
             count++;
 
             lastTime = GameTime;
+            GameTime = (DateTime.Now - gameStart).TotalSeconds;
         }
 
         public void Up() => MoveFrogUp();
@@ -120,6 +125,7 @@ namespace Froggit
 
             if (FrogY == 0)
             {
+                _ = audio?.PlayGameSound(GameSoundEffect.Victory);
                 FrogsHome++;
                 if (FrogsHome >= FROG_GOAL)
                 {
@@ -128,8 +134,14 @@ namespace Froggit
                 }
                 else
                 {
+                    _ = audio?.PlayGameSound(GameSoundEffect.Splash);
+                    Deaths++;
                     ResetFrog();
                 }
+            }
+            else
+            {
+                _ = audio?.PlayGameSound(GameSoundEffect.Footstep);
             }
         }
 
@@ -153,7 +165,9 @@ namespace Froggit
 
         void KillFrog()
         {
+            _ = audio?.PlayGameSound(GameSoundEffect.EnemyDeath);
             frogState = FrogState.Dead;
+            Deaths++;
             ResetFrog();
         }
     }

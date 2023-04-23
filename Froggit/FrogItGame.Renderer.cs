@@ -1,4 +1,5 @@
-﻿using Meadow.Foundation.Graphics;
+﻿using Meadow.Foundation.Audio;
+using Meadow.Foundation.Graphics;
 using System;
 
 namespace Froggit
@@ -7,8 +8,14 @@ namespace Froggit
     {
         readonly byte cellSize = 16;
 
-        public void Init(MicroGraphics gl)
+        MicroAudio audio;
+        MicroGraphics graphics;
+
+        public void Init(MicroGraphics gl, MicroAudio au)
         {
+            //   audio = au;
+            graphics = gl;
+
             InitBuffers();
 
             gl.Clear();
@@ -21,16 +28,16 @@ namespace Froggit
             gl.Show();
         }
 
-        public void Update(MicroGraphics gl)
+        public void Update()
         {
-            Update();
+            UpdateFrame();
 
-            gl.Clear();
-            DrawBackground(gl);
-            DrawLanesAndCheckCollisions(gl);
-            DrawFrog(gl, frogState);
+            graphics.Clear();
+            DrawBackground(graphics);
+            DrawLanesAndCheckCollisions(graphics);
+            DrawFrog(graphics, frogState);
             // DrawLives();
-            gl.Show();
+            graphics.ShowUnsafe();
         }
 
         void DrawBackground(MicroGraphics graphics)
