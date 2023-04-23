@@ -11,17 +11,46 @@ using System.Threading.Tasks;
 namespace AirQualityTracker
 {
     // Change F7FeatherV2 to F7FeatherV1 for V1.x boards
-    public class MeadowApp : App<F7FeatherV2>
+    public class MeadowApp : App<F7FeatherV1>
     {
         IProjectLabHardware projLab;
 
-        CGNSS5 gps;
+        CGNSS10 gps;
 
         GnssPositionInfo lastPosition;
         ActiveSatellites activeSatellites;
         SatellitesInView satellitesInView;
 
         MicroGraphics graphics;
+
+        public override Task Initialize()
+        {
+            Console.WriteLine("Initialize...");
+
+            projLab = ProjectLab.Create();
+
+            IDigitalOutputPort chipSelectPort, resetPort;
+
+            if (projLab is ProjectLabHardwareV2 { } projlabV2)
+            {
+                chipSelectPort = projlabV2.Mcp_2.CreateDigitalOutputPort(projlabV2.MikroBus1Pins.CS, outputType: OutputType.PushPull);
+                resetPort = projlabV2.Mcp_2.CreateDigitalOutputPort(projlabV2.MikroBus1Pins.RST, outputType: OutputType.PushPull);
+            }
+            else
+            {
+                chipSelectPort = Device.CreateDigitalOutputPort(projLab.MikroBus1Pins.CS);
+                resetPort = null;
+            }
+
+            //gps = new CGNSS5(Device, Device.PlatformOS.GetSerialPortName("COM1"), Device.Pins.D02, Device.Pins.A03);
+
+            //gps = new CGNSS5(projLab.I2cBus, projLab.MikroBus1Pins.RST);
+
+            gps = new CGNSS10(projLab.SpiBus, chipSelectPort, resetPort);
+
+            Console.WriteLine("Init complete");
+            return base.Initialize();
+        }
 
         public override Task Run()
         {
@@ -49,6 +78,8 @@ namespace AirQualityTracker
                 Resolver.Log.Info("*********************************************");
                 Resolver.Log.Info($"{lastPosition = location}");
                 Resolver.Log.Info("*********************************************");
+
+                UpdateDisplay();
             };
             // GLL
             gps.GllReceived += (object sender, GnssPositionInfo location) =>
@@ -56,6 +87,8 @@ namespace AirQualityTracker
                 Resolver.Log.Info("*********************************************");
                 Resolver.Log.Info($"{lastPosition = location}");
                 Resolver.Log.Info("*********************************************");
+
+                UpdateDisplay();
             };
             // GSA
             gps.GsaReceived += (object sender, ActiveSatellites activeSatellites) =>
@@ -71,6 +104,7 @@ namespace AirQualityTracker
                 Resolver.Log.Info($"{positionCourseAndTime}");
                 Resolver.Log.Info("*********************************************");
 
+                UpdateDisplay();
             };
             // VTG (course made good)
             gps.VtgReceived += (object sender, CourseOverGround courseAndVelocity) =>
@@ -78,6 +112,8 @@ namespace AirQualityTracker
                 Resolver.Log.Info("*********************************************");
                 Resolver.Log.Info($"{courseAndVelocity}");
                 Resolver.Log.Info("*********************************************");
+
+                UpdateDisplay();
             };
             // GSV (satellites in view)
             gps.GsvReceived += (object sender, SatellitesInView satellites) =>
@@ -109,33 +145,6 @@ namespace AirQualityTracker
             }
 
             return graphics.ShowBuffered();
-        }
-
-        public override Task Initialize()
-        {
-            Console.WriteLine("Initialize...");
-
-            projLab = ProjectLab.Create();
-
-            IDigitalOutputPort chipSelectPort, resetPort;
-
-            if (projLab is ProjectLabHardwareV2 { } projlabV2)
-            {
-                chipSelectPort = projlabV2.Mcp_2.CreateDigitalOutputPort(projlabV2.MikroBus1Pins.CS, outputType: OutputType.PushPull);
-                resetPort = projlabV2.Mcp_2.CreateDigitalOutputPort(projlabV2.MikroBus1Pins.RST, outputType: OutputType.PushPull);
-            }
-            else
-            {
-                chipSelectPort = Device.CreateDigitalOutputPort(projLab.MikroBus1Pins.CS);
-                resetPort = null;
-            }
-
-            gps = new CGNSS5(Device, Device.PlatformOS.GetSerialPortName("COM1"), Device.Pins.D02, Device.Pins.A03);
-
-            //gps = new CGNSS10(projLab.SpiBus, chipSelectPort, resetPort);
-
-            Console.WriteLine("Init complete");
-            return base.Initialize();
         }
     }
 }

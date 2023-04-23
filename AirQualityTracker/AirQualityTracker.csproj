@@ -7,6 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Meadow.Core\source\implementations\f7\Meadow.F7\Meadow.F7.csproj" />
+    <ProjectReference Include="..\..\Meadow.Foundation.mikroBUS\Source\CGNSS10\Driver\CGNSS10.csproj" />
     <ProjectReference Include="..\..\Meadow.Foundation.mikroBUS\Source\CGNSS5\Driver\CGNSS5.csproj" />
     <ProjectReference Include="..\..\Meadow.ProjectLab\Source\Meadow.ProjectLab\Meadow.ProjectLab.csproj" />
   </ItemGroup>
