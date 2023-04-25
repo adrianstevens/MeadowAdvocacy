@@ -1,5 +1,4 @@
 ﻿using Meadow.Foundation;
-using Meadow.Foundation.Graphics;
 using Meadow.Foundation.Graphics.Buffers;
 
 namespace Froggit
@@ -68,18 +67,18 @@ namespace Froggit
 
         Buffer1bppColor LoadSprite(byte[] data, Color color, int width = 8, int height = 8)
         {
-            //    var buf = new Buffer1bppColor(width * 2, height * 2);
-            //    buf.Fill(color);
-            //    buf.ColorOn = color;
-            //    return buf;
-
-
-            var buf = new Buffer1bppColor(width, height, data)
-               .RotateAndConvert<Buffer1bppColor>(RotationType._90Degrees)
-               .ScaleUp<Buffer1bppColor>(2);
-
+            var buf = new Buffer1bppColor(width * 2, height * 2);
+            buf.Fill(color);
             buf.ColorOn = color;
             return buf;
+
+
+            // var buf = new Buffer1bppColor(width, height, data)
+            //    .RotateAndConvert<Buffer1bppColor>(RotationType._90Degrees)
+            //    .ScaleUp<Buffer1bppColor>(2);
+
+            // buf.ColorOn = color;
+            // return buf;
             //       .ConvertPixelBuffer<BufferRgb565>(); */
         }
     }
