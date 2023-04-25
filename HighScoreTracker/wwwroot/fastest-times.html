@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Fastest Times Tracker</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="content-container">
+        <h1>Fastest Times Tracker</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Player Name</th>
+                    <th>Time (seconds)</th>
+                    <th>Deaths</th>
+                </tr>
+            </thead>
+            <tbody id="fastestTimes">
+            </tbody>
+        </table>
+    </div>
+    <script>
+        async function fetchFastestTimes() {
+            const response = await fetch('/api/fastesttimes');
+            const fastestTimes = await response.json();
+            const fastestTimesTable = document.getElementById('fastestTimes');
+            fastestTimes.forEach(fastestTime => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                        <td>${fastestTime.playerName}</td>
+                        <td>${fastestTime.time}</td>
+                        <td>${fastestTime.deaths}</td>
+                    `;
+                fastestTimesTable.appendChild(row);
+            });
+        }
+
+        fetchFastestTimes();
+    </script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>High Score Tracker</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="content-container">
+        <h1>High Score Tracker</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Player Name</th>
+                    <th>Score</th>
+                    <th>Time Played (minutes)</th>
+                    <th>Deaths</th>
+                </tr>
+            </thead>
+            <tbody id="highScores">
+            </tbody>
+        </table>
+    </div>
+    <script>
+        async function fetchHighScores() {
+            const response = await fetch('/api/highscores');
+            const highScores = await response.json();
+            const highScoresTable = document.getElementById('highScores');
+            highScores.forEach(highScore => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                        <td>${highScore.playerName}</td>
+                        <td>${highScore.score}</td>
+                        <td>${highScore.timePlayed}</td>
+                        <td>${highScore.deaths}</td>
+                    `;
+                highScoresTable.appendChild(row);
+            });
+        }
+
+        fetchHighScores();
+    </script>
+</body>
+</html>

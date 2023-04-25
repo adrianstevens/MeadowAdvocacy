@@ -1,0 +1,59 @@
+﻿/* styles.css */
+.content-container {
+    padding: 20px; 
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #05161D; /* AzureBlueDark */
+    color: #EEEEEE; /* GalleryWhite */
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #23abe3; /* AzureBlue */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th,
+td {
+    border: 1px solid #999999; /* DustyGray */
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #C9DB31; /* PearGreen */
+    font-weight: bold;
+    color: #1F1F1F; /* GalleryWhiteDark */
+    font-size: 1.2em;
+}
+
+tr:nth-child(even) {
+    background-color: #1F1008; /* ChileanFireDark */
+}
+
+a {
+    color: #EF7D3B; /* ChileanFire */
+    text-decoration: none;
+}
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+/* Add any additional styles for your gaming site here */
