@@ -20,8 +20,8 @@ namespace Froggit
 
             gl.Clear();
             gl.DrawRectangle(0, 0, gl.Width, gl.Height);
-            gl.DrawText(3, 3, "Meadow FrogIt");
-            gl.DrawText(3, 16, "v0.6.0");
+            gl.DrawText(3, 3, "Meadow Froggit");
+            gl.DrawText(3, 16, "v0.7.0");
 
             gl.DrawBuffer(32, 32, frogUp);
 

@@ -12,11 +12,11 @@ namespace Froggit
         public static Color WaterColor = Color.FromHex("#00E6FF");
         public static Color SidewalkColor = Color.FromHex("#404A3C");
 
-        Buffer1bppColor frogUp, frogRight, frogLeft;
-        Buffer1bpp logDarkLeft, logDarkRight, logDarkCenter;
-        Buffer1bpp crocLeft, crocCenter, crocRight;
-        Buffer1bpp truckLeft, truckCenter, truckRight;
-        Buffer1bpp carLeft, carRight;
+        IPixelBuffer frogUp, frogRight, frogLeft;
+        IPixelBuffer logDarkLeft, logDarkRight, logDarkCenter;
+        IPixelBuffer crocLeft, crocCenter, crocRight;
+        IPixelBuffer truckLeft, truckCenter, truckRight;
+        IPixelBuffer carLeft, carRight;
 
         void InitBuffers()
         {
@@ -65,12 +65,12 @@ namespace Froggit
             carRight = LoadSprite(carR, color: CarColor);
         }
 
-        Buffer1bppColor LoadSprite(byte[] data, Color color, int width = 8, int height = 8)
+        IPixelBuffer LoadSprite(byte[] data, Color color, int width = 8, int height = 8)
         {
             var buf = new Buffer1bppColor(width * 2, height * 2);
             buf.Fill(color);
             buf.ColorOn = color;
-            return buf;
+            return buf.ConvertPixelBuffer<BufferRgb565>();
 
 
             // var buf = new Buffer1bppColor(width, height, data)

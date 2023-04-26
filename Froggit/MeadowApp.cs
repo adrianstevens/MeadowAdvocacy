@@ -36,12 +36,12 @@ namespace Froggit
             graphics = new MicroGraphics(juego.Display)
             {
                 CurrentFont = new Font12x16(),
-                Rotation = RotationType._270Degrees
             };
 
             audio = new MicroAudio(juego.RightSpeaker);
 
             game = new FrogItGame();
+
             game.Init(graphics, audio);
 
             return Task.CompletedTask;
@@ -99,7 +99,6 @@ namespace Froggit
             {
                 game.Quit();
             }
-
 
             game.Update();
         }
