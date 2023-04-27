@@ -80,6 +80,11 @@ namespace Froggit
                 if (row < 3 && y == FrogY)
                 {
                     FrogX -= TimeDelta * LaneSpeeds[row] * CellSize;
+                    //if the frog moves off screen, kill it
+                    if (FrogX < 0 || FrogX > graphics.Width - CellSize)
+                    {
+                        KillFrog();
+                    }
                 }
 
                 //iterate over ever column in the lane
@@ -89,16 +94,17 @@ namespace Froggit
 
                     x = (i - 1) * cellSize - cellOffset;
 
-                    //if the frog is on the log and goes off screen, kill it
                     if (index == 0)
                     {
                         if (row < 3)
                         {
-                            if (IsFrogCollision(x, y) == true)
+                            //if the frog is the water, kill it
+                            if (IsFrogCollisionWater(x, y) == true)
                             {
                                 KillFrog();
                             }
                         }
+                        //nothing to draw in this column
                         continue;
                     }
 
@@ -107,7 +113,6 @@ namespace Froggit
                     {
                         continue;
                     }
-
 
                     switch (row)
                     {
@@ -133,14 +138,25 @@ namespace Froggit
             }
         }
 
-        bool IsFrogCollision(int x, int y)
+        bool IsFrogCollisionWater(int x, int y)
         {
             if (y == FrogY &&
-                x > FrogX &&
-                x < FrogX + cellSize)
+                ((x >= FrogX && x < FrogX + cellSize / 2) || (FrogX >= x && FrogX < x + cellSize / 2)))
             {
                 return true;
             }
+
+            return false;
+        }
+
+        bool IsFrogCollision(int x, int y)
+        {
+            if (y == FrogY &&
+                ((x >= FrogX && x < FrogX + cellSize) || (FrogX >= x && FrogX < x + cellSize)))
+            {
+                return true;
+            }
+
             return false;
         }
 
