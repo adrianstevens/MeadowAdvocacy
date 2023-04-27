@@ -1,7 +1,9 @@
-﻿using Meadow;
+﻿using Froggit.Services;
+using Meadow;
 using Meadow.Devices;
 using Meadow.Foundation.Audio;
 using Meadow.Foundation.Graphics;
+using Meadow.Hardware;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,6 +19,11 @@ namespace Froggit
         MicroGraphics graphics;
         MicroAudio audio;
 
+        IWiFiNetworkAdapter wifi;
+
+        private const string WIFI_NAME = "";
+        private const string WIFI_PASSWORD = "";
+
         GameState gameState = GameState.Ready;
 
         enum GameState
@@ -26,7 +33,7 @@ namespace Froggit
             GameOver
         }
 
-        public override Task Initialize()
+        public override async Task Initialize()
         {
             Console.WriteLine("Initialize...");
 
@@ -44,16 +51,29 @@ namespace Froggit
 
             game.Init(graphics, audio);
 
-            return Task.CompletedTask;
+            wifi = Device.NetworkAdapters.Primary<IWiFiNetworkAdapter>();
+
+            try
+            {
+                Resolver.Log.Info($"Connecting to WiFi Network {WIFI_NAME}");
+                await wifi.Connect(WIFI_NAME, WIFI_PASSWORD, TimeSpan.FromSeconds(45));
+            }
+            catch (Exception ex)
+            {
+                Resolver.Log.Error($"Failed to Connect: {ex.Message}");
+            }
+
+            Console.WriteLine("Initialize complete");
         }
 
-        public override Task Run()
+        public override async Task Run()
         {
             Console.WriteLine("Run...");
 
-            DrawplashScreen();
+            await HighScoreService.PostTime("Juego0", 1000, 20);
+            await HighScoreService.PostTime("Juego0", 500, 15);
 
-            return Task.CompletedTask;
+            DrawplashScreen();
         }
 
         bool isInitialized = false;
@@ -120,6 +140,8 @@ namespace Froggit
                 graphics.DrawText(160, 80, "You Win!", FrogItGame.FrogColor, ScaleFactor.X3, HorizontalAlignment.Center);
                 graphics.DrawText(160, 140, $"Your time: {game.GameTime:F1}s", FrogItGame.WaterColor, ScaleFactor.X1, HorizontalAlignment.Center);
                 graphics.DrawText(160, 160, $"Your died: {game.Deaths} time(s)", FrogItGame.WaterColor, ScaleFactor.X1, HorizontalAlignment.Center);
+
+                _ = HighScoreService.PostTime("Juego1", (int)game.GameTime, game.Deaths);
             }
             else
             {

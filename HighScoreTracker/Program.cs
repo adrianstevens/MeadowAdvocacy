@@ -3,13 +3,17 @@ using HighScoreTracker.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<HighScoreRepository>();
 builder.Services.AddSingleton<FastestTimeRepository>();
+
+// Configure Kestrel to listen on all available network interfaces
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenAnyIP(5265); // Use your desired port number
+});
 
 var app = builder.Build();
 
