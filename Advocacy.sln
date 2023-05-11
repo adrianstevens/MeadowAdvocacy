@@ -87,6 +87,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HighScoreTracker", "HighSco
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HighScoreModels", "HighScoreModels\HighScoreModels.shproj", "{C7C7BB32-83BE-4045-B21E-09B73CA9B8C9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Froggit-direct", "Froggit-direct\Froggit-direct.csproj", "{6BCD457F-1201-41B0-9156-B96956313A0F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Magentometer", "Magetometer\Magentometer.csproj", "{00DD4833-534A-4EC1-B01E-7F779A0BCF4C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sensors.Motion.Mmc5603", "..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\Sensors.Motion.Mmc5603\Driver\Sensors.Motion.Mmc5603.csproj", "{202B7180-C13B-4874-BD17-FAF2FDE951A6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sensors.Hid.WiiExtensionControllers", "..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\Sensors.Hid.WiiExtensionControllers\Driver\Sensors.Hid.WiiExtensionControllers.csproj", "{3646E876-170F-4989-A555-6214E53F8B5C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WiiNunchuck", "WiiNunchuck\WiiNunchuck.csproj", "{E93B7C9A-0527-49F9-ABF5-A6D81C65FB85}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -321,6 +331,36 @@ Global
 		{8C64CAAF-8989-49C3-BDDE-78C98B7BBB43}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C64CAAF-8989-49C3-BDDE-78C98B7BBB43}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C64CAAF-8989-49C3-BDDE-78C98B7BBB43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BCD457F-1201-41B0-9156-B96956313A0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BCD457F-1201-41B0-9156-B96956313A0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BCD457F-1201-41B0-9156-B96956313A0F}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{6BCD457F-1201-41B0-9156-B96956313A0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BCD457F-1201-41B0-9156-B96956313A0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BCD457F-1201-41B0-9156-B96956313A0F}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{00DD4833-534A-4EC1-B01E-7F779A0BCF4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00DD4833-534A-4EC1-B01E-7F779A0BCF4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00DD4833-534A-4EC1-B01E-7F779A0BCF4C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{00DD4833-534A-4EC1-B01E-7F779A0BCF4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00DD4833-534A-4EC1-B01E-7F779A0BCF4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00DD4833-534A-4EC1-B01E-7F779A0BCF4C}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{202B7180-C13B-4874-BD17-FAF2FDE951A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{202B7180-C13B-4874-BD17-FAF2FDE951A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{202B7180-C13B-4874-BD17-FAF2FDE951A6}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{202B7180-C13B-4874-BD17-FAF2FDE951A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{202B7180-C13B-4874-BD17-FAF2FDE951A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{202B7180-C13B-4874-BD17-FAF2FDE951A6}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{3646E876-170F-4989-A555-6214E53F8B5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3646E876-170F-4989-A555-6214E53F8B5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3646E876-170F-4989-A555-6214E53F8B5C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{3646E876-170F-4989-A555-6214E53F8B5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3646E876-170F-4989-A555-6214E53F8B5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3646E876-170F-4989-A555-6214E53F8B5C}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{E93B7C9A-0527-49F9-ABF5-A6D81C65FB85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E93B7C9A-0527-49F9-ABF5-A6D81C65FB85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E93B7C9A-0527-49F9-ABF5-A6D81C65FB85}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{E93B7C9A-0527-49F9-ABF5-A6D81C65FB85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E93B7C9A-0527-49F9-ABF5-A6D81C65FB85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E93B7C9A-0527-49F9-ABF5-A6D81C65FB85}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -355,12 +395,15 @@ Global
 		{0191A563-B656-4D50-B432-D18EE8E70FB4} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
 		{8C64CAAF-8989-49C3-BDDE-78C98B7BBB43} = {020E1099-3454-400B-A4E1-4429390C3C8A}
 		{C7C7BB32-83BE-4045-B21E-09B73CA9B8C9} = {020E1099-3454-400B-A4E1-4429390C3C8A}
+		{202B7180-C13B-4874-BD17-FAF2FDE951A6} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
+		{3646E876-170F-4989-A555-6214E53F8B5C} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {59B85D60-3E0C-446F-8620-3B88DCA35E21}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		HighScoreModels\HighScoreModels.projitems*{2596e6f9-907d-46c9-9d85-b9b29d198344}*SharedItemsImports = 5
+		HighScoreModels\HighScoreModels.projitems*{6bcd457f-1201-41b0-9156-b96956313a0f}*SharedItemsImports = 5
 		HighScoreModels\HighScoreModels.projitems*{8c64caaf-8989-49c3-bdde-78c98b7bbb43}*SharedItemsImports = 5
 		HighScoreModels\HighScoreModels.projitems*{c7c7bb32-83be-4045-b21e-09b73ca9b8c9}*SharedItemsImports = 13
 	EndGlobalSection
