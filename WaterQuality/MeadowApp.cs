@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace AirQualityTracker
 {
     // Change F7FeatherV2 to F7FeatherV1 for V1.x boards
-    public class MeadowApp : App<F7FeatherV2>
+    public class MeadowApp : App<F7CoreComputeV2>
     {
         IProjectLabHardware projLab;
 
@@ -31,15 +31,18 @@ namespace AirQualityTracker
             var client = projLab.GetModbusRtuClient(9600);
 
             var sensor = new Y4000(client, 1);
-            sensor.Initialize();
 
-            while (true)
+            await sensor.Initialize();
+
+            for (int i = 0; i < 3; i++)
             {
                 try
                 {
                     var address = await sensor.GetISDN();
-                    // var serial = await sensor.GetSerialNumber();
-                    Console.WriteLine($"{address}");
+                    Console.WriteLine($"Address: {address}");
+
+                    var serial = await sensor.GetSerialNumber();
+                    Console.WriteLine($"Serial: {serial}");
                 }
                 catch (Exception ex)
                 {
@@ -49,7 +52,18 @@ namespace AirQualityTracker
                 await Task.Delay(5000);
             }
 
+            sensor.Updated += Sensor_Updated;
+
+            sensor.StartUpdating();
+
             Console.WriteLine("Init complete");
+        }
+
+        private void Sensor_Updated(object sender, IChangeResult<(Meadow.Units.ConcentrationInWater? DisolvedOxygen, Meadow.Units.ConcentrationInWater? Chlorophyl, Meadow.Units.ConcentrationInWater? BlueGreenAlgae, Meadow.Units.Conductivity? ElectricalConductivity, Meadow.Units.PotentialHydrogen? PH, Meadow.Units.Turbidity? Turbidity, Meadow.Units.Temperature? Temperature, Meadow.Units.Voltage? OxidationReductionPotential)> e)
+        {
+            Console.WriteLine($"Temp: {e.New.Temperature.Value.Celsius}C");
+            Console.WriteLine($"pH: {e.New.PH.Value}pH");
+            Console.WriteLine($"Disolved O2: {e.New.DisolvedOxygen.Value}");
         }
     }
 }

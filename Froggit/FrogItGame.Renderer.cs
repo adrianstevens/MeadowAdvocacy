@@ -8,12 +8,14 @@ namespace Froggit
     {
         readonly byte cellSize = 16;
 
-        MicroAudio audio;
+        MicroAudio moveAudio;
+        MicroAudio effectsAudio;
         MicroGraphics graphics;
 
-        public void Init(MicroGraphics gl, MicroAudio au)
+        public void Init(MicroGraphics gl, MicroAudio moveAudio, MicroAudio effectsAudio)
         {
-            //   audio = au;
+            this.moveAudio = moveAudio;
+            this.effectsAudio = effectsAudio;
             graphics = gl;
 
             InitBuffers();
@@ -21,7 +23,7 @@ namespace Froggit
             gl.Clear();
             gl.DrawRectangle(0, 0, gl.Width, gl.Height);
             gl.DrawText(3, 3, "Meadow Froggit");
-            gl.DrawText(3, 16, "v0.7.0");
+            gl.DrawText(3, 16, "v0.7.5");
 
             gl.DrawBuffer(32, 32, frogUp);
 

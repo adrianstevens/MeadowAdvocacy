@@ -17,7 +17,8 @@ namespace Froggit
         IJuegoHardware juego;
         FrogItGame game;
         MicroGraphics graphics;
-        MicroAudio audio;
+        MicroAudio moveAudio;
+        MicroAudio effectsAudio;
 
         IWiFiNetworkAdapter wifi;
 
@@ -45,11 +46,12 @@ namespace Froggit
                 CurrentFont = new Font12x16(),
             };
 
-            audio = new MicroAudio(juego.RightSpeaker);
+            moveAudio = new MicroAudio(juego.LeftSpeaker);
+            effectsAudio = new MicroAudio(juego.RightSpeaker);
 
             game = new FrogItGame();
 
-            game.Init(graphics, audio);
+            game.Init(graphics, moveAudio, effectsAudio);
 
             wifi = Device.NetworkAdapters.Primary<IWiFiNetworkAdapter>();
 

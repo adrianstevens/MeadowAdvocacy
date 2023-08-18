@@ -125,7 +125,7 @@ namespace Froggit
 
             if (FrogY == 0)
             {
-                _ = audio?.PlayGameSound(GameSoundEffect.Victory);
+                _ = effectsAudio?.PlayGameSound(GameSoundEffect.Victory);
                 FrogsHome++;
                 if (FrogsHome >= FROG_GOAL)
                 {
@@ -134,14 +134,15 @@ namespace Froggit
                 }
                 else
                 {
-                    _ = audio?.PlayGameSound(GameSoundEffect.Splash);
+                    Console.WriteLine("splash");
+                    _ = effectsAudio?.PlayGameSound(GameSoundEffect.Splash);
                     Deaths++;
                     ResetFrog();
                 }
             }
             else
             {
-                _ = audio?.PlayGameSound(GameSoundEffect.Footstep);
+                _ = moveAudio?.PlayGameSound(GameSoundEffect.Footstep);
             }
         }
 
@@ -149,23 +150,26 @@ namespace Froggit
         {
             frogState = FrogState.Forward;
             if (FrogY < Rows * CellSize - CellSize) { FrogY += CellSize; }
+            _ = moveAudio?.PlayGameSound(GameSoundEffect.Footstep);
         }
 
         void MoveFrogLeft()
         {
             frogState = FrogState.Left;
             if (FrogX > CellSize) { FrogX -= CellSize; }
+            _ = moveAudio?.PlayGameSound(GameSoundEffect.Footstep);
         }
 
         void MoveFrogRight()
         {
             frogState = FrogState.Right;
             if (FrogX <= Columns * CellSize - CellSize) { FrogX += CellSize; }
+            _ = moveAudio?.PlayGameSound(GameSoundEffect.Footstep);
         }
 
         void KillFrog()
         {
-            _ = audio?.PlayGameSound(GameSoundEffect.EnemyDeath);
+            _ = effectsAudio?.PlayGameSound(GameSoundEffect.EnemyDeath);
             frogState = FrogState.Dead;
             Deaths++;
             ResetFrog();
