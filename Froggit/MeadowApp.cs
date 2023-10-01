@@ -80,15 +80,8 @@ namespace Froggit
             DrawplashScreen();
         }
 
-        bool isInitialized = false;
         private void StartButton_Clicked(object sender, EventArgs e)
         {
-            if (isInitialized == false)
-            {
-                isInitialized = true;
-                return;
-            }
-
             if (GameState.Ready == gameState)
             {
                 gameState = GameState.Playing;

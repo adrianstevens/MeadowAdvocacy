@@ -20,7 +20,7 @@ namespace ProjLab_Demo
 
         public override Task Initialize()
         {
-            Resolver.Log.Loglevel = Meadow.Logging.LogLevel.Trace;
+            Resolver.Log.LogLevel = Meadow.Logging.LogLevel.Trace;
 
             Resolver.Log.Info("Initialize hardware...");
 

@@ -33,12 +33,12 @@ namespace AirQualityTracker
 
             if (projLab is ProjectLabHardwareV2 { } projlabV2)
             {
-                chipSelectPort = projlabV2.Mcp_2.CreateDigitalOutputPort(projlabV2.MikroBus1Pins.CS, outputType: OutputType.PushPull);
-                resetPort = projlabV2.Mcp_2.CreateDigitalOutputPort(projlabV2.MikroBus1Pins.RST, outputType: OutputType.PushPull);
+                chipSelectPort = projlabV2.Mcp_2.CreateDigitalOutputPort(projlabV2.MikroBus1.Pins.CS, outputType: OutputType.PushPull);
+                resetPort = projlabV2.Mcp_2.CreateDigitalOutputPort(projlabV2.MikroBus1.Pins.RST, outputType: OutputType.PushPull);
             }
             else
             {
-                chipSelectPort = Device.CreateDigitalOutputPort(projLab.MikroBus1Pins.CS);
+                chipSelectPort = Device.CreateDigitalOutputPort(projLab.MikroBus1.Pins.CS);
                 resetPort = null;
             }
 
