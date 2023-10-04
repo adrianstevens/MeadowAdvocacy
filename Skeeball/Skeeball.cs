@@ -29,7 +29,7 @@ namespace Skeeball
         {
             Players = new Dictionary<PlayerPosition, Player>
             {
-                { PlayerPosition.One, new Player() { Position = PlayerPosition.One }  },
+                { PlayerPosition.One, new Player() { Position = PlayerPosition.One } },
                 { PlayerPosition.Two, new Player() { Position = PlayerPosition.Two } },
                 { PlayerPosition.Three, new Player() { Position = PlayerPosition.Three } },
                 { PlayerPosition.Four, new Player() { Position = PlayerPosition.Four } }
@@ -44,6 +44,8 @@ namespace Skeeball
 
         public void Reset()
         {
+            Console.WriteLine("Skeeball Reset");
+
             CurrentState = GameState.ReadyToStart;
             CurrentPlayerPosition = PlayerPosition.One;
             _startTime = DateTime.Now;
@@ -65,8 +67,11 @@ namespace Skeeball
         {
             if (CurrentState == GameState.Playing || CurrentState == GameState.Initializing)
             {
+                Console.WriteLine($"Skeeball StartGame false {CurrentState}");
                 return false;
             }
+
+            Console.WriteLine($"Skeeball StartGame true {CurrentState}");
 
             Reset();
             CurrentState = GameState.Playing;
@@ -93,6 +98,8 @@ namespace Skeeball
 
         public bool ThrowBall(PointValue pointValue)
         {
+            Console.WriteLine($"ThrowBall {pointValue} {CurrentState} {CurrentGameMode} {CurrentPlayerPosition} {CurrentPlayer.BallsRemaining} {CurrentPlayer.Score}");
+
             if (CurrentState != GameState.Playing)
             {
                 return false;
@@ -104,6 +111,12 @@ namespace Skeeball
                     ThrowBallClassic(pointValue); break;
                 case GameMode.BonusBall:
                     ThrowBonusBall(pointValue); break;
+                case GameMode.TimeAttack:
+                    ThrowTimeAttack(pointValue); break;
+                case GameMode.PerfectScore:
+                    ThrowPerfectScore(pointValue); break;
+                case GameMode.CompleteSet:
+                    ThrowCompleteSet(pointValue); break;
             }
 
             return true;
@@ -111,20 +124,41 @@ namespace Skeeball
 
         private void ThrowBallClassic(PointValue pointValue)
         {
-            Players[CurrentPlayerPosition].Score += (int)pointValue;
-            Players[CurrentPlayerPosition].BallsRemaining--;
+            Players[CurrentPlayerPosition].ThrowBall(pointValue);
 
             SwitchTurn();
         }
 
         private void ThrowBonusBall(PointValue pointValue)
         {
-            Players[CurrentPlayerPosition].Score += (int)pointValue;
+            Players[CurrentPlayerPosition].ThrowBall(pointValue);
 
-            if (pointValue != PointValue.Fifty)
+            if (pointValue == PointValue.Fifty)
             {
-                Players[CurrentPlayerPosition].BallsRemaining--;
+                Players[CurrentPlayerPosition].AddBonusBall();
             }
+
+            SwitchTurn();
+        }
+
+        private void ThrowTimeAttack(PointValue pointValue)
+        {
+            Players[CurrentPlayerPosition].ThrowBall(pointValue);
+
+            SwitchTurn();
+        }
+
+        private void ThrowPerfectScore(PointValue pointValue)
+        {
+            bool countScore = Players[CurrentPlayerPosition].Score + (int)pointValue <= 250;
+
+            Players[CurrentPlayerPosition].ThrowBall(pointValue, countScore);
+            SwitchTurn();
+        }
+
+        private void ThrowCompleteSet(PointValue pointValue)
+        {
+            Players[CurrentPlayerPosition].ThrowBall(pointValue);
 
             SwitchTurn();
         }

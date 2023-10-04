@@ -6,13 +6,15 @@ namespace Skeeball
 {
     public class DisplayController
     {
-        MicroGraphics graphics;
+        readonly MicroGraphics graphicsTop;
+        readonly MicroGraphics graphicsBottom;
 
-        int xOffset = 1;
+        readonly int xOffset = 0;
 
-        public DisplayController(MicroGraphics graphics)
+        public DisplayController(MicroGraphics graphicsTop, MicroGraphics graphicsBottom)
         {
-            this.graphics = graphics;
+            this.graphicsTop = graphicsTop;
+            this.graphicsBottom = graphicsBottom;
         }
 
         public void ScrollTextOn(string text, Color color)
@@ -20,27 +22,31 @@ namespace Skeeball
             //coded for the 32x8 display
             for (int i = -16; i < 16; i++)
             {
-                graphics.Clear();
+                graphicsTop.Clear();
 
-                graphics.DrawText(xOffset + i * 8, 0, text, color, ScaleFactor.X8, HorizontalAlignment.Center); //x8 for the scale factor on X
-
-                graphics.Show();
+                graphicsTop.DrawText(xOffset + i, 0, text, color, ScaleFactor.X1, HorizontalAlignment.Center);
+                graphicsTop.Show();
+                Thread.Sleep(100);
             }
         }
 
+        //Draws text centered on the Apa102 display
         public void DrawText(string text, Color color)
         {
-            graphics.Clear();
-            graphics.DrawText(xOffset + 16 * 8, 0, text, color, ScaleFactor.X8, HorizontalAlignment.Center); //x8 for the scale factor on X
-            graphics.Show();
+            graphicsTop.Clear();
+            graphicsTop.DrawText(xOffset + 16, 0, text, color, ScaleFactor.X1, HorizontalAlignment.Center); //x8 for the scale factor on X
+            graphicsTop.Show();
         }
 
+        //Flashes text on the Apa102 display
         public void FlashText(string text, Color color1, Color color2)
         {
             for (int i = 0; i < 6; i++)
             {
                 DrawText(text, color1);
+                Thread.Sleep(50);
                 DrawText(text, color2);
+                Thread.Sleep(50);
             }
         }
 
@@ -53,39 +59,39 @@ namespace Skeeball
 
             void DrawTitleColor(Color color)
             {
-                graphics.Clear();
-                graphics.DrawText(xOffset, 0, "SKEEBALL", color, ScaleFactor.X8);
+                graphicsTop.Clear();
+                graphicsTop.DrawText(xOffset, 0, "SKEEBALL", color);
             }
 
-            graphics.Clear();
+            graphicsTop.Clear();
 
             for (int i = 0; i < 8; i++)
             {
-                graphics.DrawText(xOffset + i * 32, 0, $"{letters[i]}", colorBase, ScaleFactor.X8);
-                graphics.Show();
+                graphicsTop.DrawText(xOffset + i, 0, $"{letters[i]}", colorBase);
+                graphicsTop.Show();
                 Thread.Sleep(50);
             }
 
             for (int i = 0; i < 8; i++)
             {
                 DrawTitleColor(colorBase);
-                graphics.DrawText(xOffset + i * 32, 0, $"{letters[i]}", colorOverlay, ScaleFactor.X8);
-                graphics.Show();
+                graphicsTop.DrawText(xOffset + i, 0, $"{letters[i]}", colorOverlay);
+                graphicsTop.Show();
             }
 
             DrawTitleColor(colorBase);
-            graphics.Show();
+            graphicsTop.Show();
             Thread.Sleep(50);
 
             DrawTitleColor(colorOverlay);
-            graphics.Show();
+            graphicsTop.Show();
         }
 
         public void DrawPointsAwarded(int points, int totalScore)
         {
-            graphics.Clear();
-            graphics.DrawText(2, 0, "SKEEBALL", Color.Red, ScaleFactor.X8);
-            graphics.Show();
+            graphicsTop.Clear();
+            graphicsTop.DrawText(2, 0, "SKEEBALL", Color.Red);
+            graphicsTop.Show();
         }
     }
 }

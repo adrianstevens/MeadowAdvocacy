@@ -97,6 +97,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sensors.Hid.WiiExtensionCon
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WiiNunchuck", "WiiNunchuck\WiiNunchuck.csproj", "{E93B7C9A-0527-49F9-ABF5-A6D81C65FB85}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Leds.Apa102", "..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\Leds.Apa102\Driver\Leds.Apa102.csproj", "{FB26F62B-1AD0-4DCC-9DFC-12C8E4259912}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -361,6 +363,12 @@ Global
 		{E93B7C9A-0527-49F9-ABF5-A6D81C65FB85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E93B7C9A-0527-49F9-ABF5-A6D81C65FB85}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E93B7C9A-0527-49F9-ABF5-A6D81C65FB85}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{FB26F62B-1AD0-4DCC-9DFC-12C8E4259912}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB26F62B-1AD0-4DCC-9DFC-12C8E4259912}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB26F62B-1AD0-4DCC-9DFC-12C8E4259912}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{FB26F62B-1AD0-4DCC-9DFC-12C8E4259912}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB26F62B-1AD0-4DCC-9DFC-12C8E4259912}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB26F62B-1AD0-4DCC-9DFC-12C8E4259912}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -397,6 +405,7 @@ Global
 		{C7C7BB32-83BE-4045-B21E-09B73CA9B8C9} = {020E1099-3454-400B-A4E1-4429390C3C8A}
 		{202B7180-C13B-4874-BD17-FAF2FDE951A6} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
 		{3646E876-170F-4989-A555-6214E53F8B5C} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
+		{FB26F62B-1AD0-4DCC-9DFC-12C8E4259912} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {59B85D60-3E0C-446F-8620-3B88DCA35E21}

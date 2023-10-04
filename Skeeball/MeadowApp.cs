@@ -2,11 +2,15 @@
 using Meadow.Devices;
 using Meadow.Foundation;
 using Meadow.Foundation.Graphics;
+using Meadow.Foundation.Graphics.Buffers;
+using Meadow.Foundation.Leds;
 using Meadow.Hardware;
+using SimpleJpegDecoder;
 using System;
+using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using WildernessLabs.Hardware.Juego;
 
 namespace Skeeball
 {
@@ -17,9 +21,15 @@ namespace Skeeball
 
         DisplayController displayController;
 
-        MicroGraphics graphics;
+        MicroGraphics graphicsTop;
+        MicroGraphics graphicsBottom;
 
-        IJuegoHardware juego;
+        IProjectLabHardware projLab;
+        Apa102 topDisplay;
+
+        IPixelBuffer bunny1, bunny2;
+
+        readonly Random random = new Random();
 
         IWiFiNetworkAdapter wifi;
 
@@ -30,17 +40,39 @@ namespace Skeeball
         {
             Console.WriteLine("Initialize...");
 
-            game = new SkeeballGame();
+            Console.WriteLine("1");
 
-            juego = Juego.Create();
+            projLab = ProjectLab.Create();
 
-            graphics = new MicroGraphics(juego.Display)
+            projLab.DownButton.Clicked += StartButton_Clicked;
+            projLab.UpButton.Clicked += SelectButton_Clicked;
+
+            projLab.LeftButton.Clicked += RandomThrow;
+
+            projLab.RightButton.PressStarted += RightButton_PressStarted;
+
+            graphicsBottom = new MicroGraphics(projLab.Display)
             {
-                CurrentFont = new Font4x8(),
-                Rotation = RotationType._270Degrees
+                CurrentFont = new Font8x12(),
+                Rotation = RotationType._180Degrees
             };
 
-            displayController = new DisplayController(graphics);
+            topDisplay = new Apa102(projLab.MikroBus1.SpiBus, 32, 8);
+
+            topDisplay.Clear();
+            topDisplay.DrawPixel(0, 0, Color.Blue);
+            topDisplay.DrawPixel(1, 1, Color.Green);
+            topDisplay.Show();
+
+            graphicsTop = new MicroGraphics(topDisplay)
+            {
+                CurrentFont = new Font4x8(),
+            };
+
+            graphicsTop.DrawLine(0, 0, 5, 5, Color.Green);
+            graphicsTop.Show();
+
+            displayController = new DisplayController(graphicsTop, graphicsBottom);
 
             wifi = Device.NetworkAdapters.Primary<IWiFiNetworkAdapter>();
 
@@ -60,17 +92,30 @@ namespace Skeeball
             }
             */
 
-            juego.StartButton.Clicked += StartButton_Clicked;
-            juego.StartButton.LongClicked += StartButton_LongClicked;
-            juego.SelectButton.Clicked += SelectButton_Clicked;
+            game = new SkeeballGame();
 
-            juego.Right_UpButton.Clicked += Right_UpButton_Clicked;
-            juego.Right_LeftButton.Clicked += Right_LeftButton_Clicked;
-            juego.Right_DownButton.Clicked += Right_DownButton_Clicked;
-            juego.Right_RightButton.Clicked += Right_RightButton_Clicked;
+            bunny1 = LoadImage("bunny1.jpg");
+            bunny2 = LoadImage("bunny2.jpg");
 
             Console.WriteLine("Init complete");
-            return base.Initialize();
+            return Task.CompletedTask;
+        }
+
+        void DrawSplash()
+        {
+            graphicsBottom.Clear();
+
+            graphicsBottom.DrawBuffer(graphicsBottom.Width / 2 - bunny1.Width / 2, graphicsBottom.Height / 2 - bunny1.Height / 2, bunny1);
+
+            //draw the text BunnyBall below the image of the bunny
+            graphicsBottom.DrawText(120, 200, "BunnyBall", Color.White, ScaleFactor.X2, HorizontalAlignment.Center);
+
+            graphicsBottom.Show();
+        }
+
+        private void RightButton_PressStarted(object sender, EventArgs e)
+        {
+            Console.WriteLine("Started");
         }
 
         private void StartButton_LongClicked(object sender, EventArgs e)
@@ -78,24 +123,13 @@ namespace Skeeball
             game.Reset();
         }
 
-        private void Right_RightButton_Clicked(object sender, EventArgs e)
+        private void RandomThrow(object sender, EventArgs e)
         {
-            ThrowBall(SkeeballGame.PointValue.Twenty);
-        }
+            Console.WriteLine("RandomThrow");
 
-        private void Right_DownButton_Clicked(object sender, EventArgs e)
-        {
-            ThrowBall(SkeeballGame.PointValue.Ten);
-        }
+            var randomValue = random.Next(1, 6) * 10;
 
-        private void Right_LeftButton_Clicked(object sender, EventArgs e)
-        {
-            ThrowBall(SkeeballGame.PointValue.Forty);
-        }
-
-        private void Right_UpButton_Clicked(object sender, EventArgs e)
-        {
-            ThrowBall(SkeeballGame.PointValue.Fifty);
+            ThrowBall((SkeeballGame.PointValue)randomValue);
         }
 
         void ThrowBall(SkeeballGame.PointValue pointValue)
@@ -106,79 +140,105 @@ namespace Skeeball
             }
 
             ShowScore(pointValue);
+            ShowBallsRemaining();
 
             if (game.CurrentState == SkeeballGame.GameState.GameOver)
             {
+                displayController.FlashText($"GAMEOVER", Color.Red, Color.Yellow);
                 displayController.DrawText("GAMEOVER", Color.Red);
-                Thread.Sleep(500);
+                Thread.Sleep(2000);
                 displayController.ScrollTextOn("YOUR SCORE:", Color.Red);
+                Thread.Sleep(150);
                 displayController.FlashText($"{game.CurrentPlayer.Score}", Color.LawnGreen, Color.Cyan);
+
+                DrawSplash();
             }
         }
 
         private void SelectButton_Clicked(object sender, EventArgs e)
         {
+            Console.WriteLine("SelectButton_Clicked");
         }
 
         private void StartButton_Clicked(object sender, EventArgs e)
         {
+            Console.WriteLine("StartButton_Clicked");
+
             if (game.StartGame())
             {
+                displayController.DrawText("READY", Color.LawnGreen);
                 ShowBallsRemaining();
             }
         }
 
         public override Task Run()
         {
+            Resolver.Log.Info("Run ...");
+
+            _ = projLab.RgbLed.StartBlink(Color.LawnGreen, TimeSpan.FromMilliseconds(500), TimeSpan.FromMilliseconds(2000), 0.5f);
+
             displayController.DrawTitle();
             game.Reset();
 
-            return base.Run();
+            DrawSplash();
+
+            return Task.CompletedTask;
         }
 
         void ShowBallsRemaining()
         {
-            displayController.DrawText($"BALLS: {game.CurrentPlayer.BallsRemaining}", Color.White);
+            graphicsBottom.Clear();
+            graphicsBottom.DrawText(120, 160, $"{game.CurrentPlayer.BallsRemaining}", Color.LawnGreen, (ScaleFactor)16, HorizontalAlignment.Center, VerticalAlignment.Center);
+
+            int yStart = (4 - game.CurrentPlayer.BallsRemaining / 2) * bunny2.Height;
+
+            for (int i = 0; i < game.CurrentPlayer.BallsRemaining; i++)
+            {
+                graphicsBottom.DrawBuffer(205, yStart + i * bunny2.Height, bunny2);
+            }
+
+            graphicsBottom.Show();
         }
 
         void ShowScore(SkeeballGame.PointValue value)
         {
             displayController.FlashText($"{(int)value}", Color.Blue, Color.Violet);
-            displayController.DrawText($"{game.CurrentPlayer.Score} ({game.CurrentPlayer.BallsRemaining})", Color.White);
-        }
-
-        void DisplayTest()
-        {
-            while (true)
-            {
-                displayController.DrawTitle();
-                Thread.Sleep(1000);
-
-                displayController.FlashText("10", Color.Red, Color.Purple);
-                displayController.FlashText("20", Color.Orange, Color.Red);
-                displayController.FlashText("30", Color.Yellow, Color.Orange);
-                displayController.FlashText("40", Color.YellowGreen, Color.Yellow);
-                displayController.FlashText("50", Color.Green, Color.YellowGreen);
-                Thread.Sleep(1000);
-
-                displayController.ScrollTextOn("FREEBALL", Color.Yellow);
-                displayController.FlashText("FREEBALL", Color.YellowGreen, Color.Yellow);
-                Thread.Sleep(1000);
-
-                displayController.DrawText("SCORE", Color.Cyan);
-                Thread.Sleep(250);
-                displayController.ScrollTextOn("400", Color.Cyan);
-                Thread.Sleep(1000);
-                displayController.DrawText("BALLS: 9", Color.White);
-                Thread.Sleep(1000);
-            }
+            displayController.DrawText($"{game.CurrentPlayer.Score}", Color.White);
         }
 
         private async void Wifi_NetworkConnected(INetworkAdapter sender, NetworkConnectionEventArgs args)
         {
-
         }
 
+        IPixelBuffer LoadImage(string name)
+        {
+            var jpgData = LoadResource(name);
 
+            Console.WriteLine($"Loaded {jpgData.Length} bytes, decoding jpeg ...");
+
+            var decoder = new JpegDecoder();
+            var jpg = decoder.DecodeJpeg(jpgData);
+
+            Console.WriteLine($"Jpeg decoded is {jpg.Length} bytes");
+            Console.WriteLine($"Width {decoder.Width}");
+            Console.WriteLine($"Height {decoder.Height}");
+
+            return new BufferRgb888(decoder.Width, decoder.Height, jpg).ConvertPixelBuffer<BufferRgb565>();
+        }
+
+        byte[] LoadResource(string filename)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = $"Skeeball.{filename}";
+
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                using (var ms = new MemoryStream())
+                {
+                    stream.CopyTo(ms);
+                    return ms.ToArray();
+                }
+            }
+        }
     }
 }
