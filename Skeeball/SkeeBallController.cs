@@ -1,7 +1,4 @@
-﻿using Meadow.Devices;
-using Meadow.Foundation;
-using Meadow.Foundation.Leds;
-using Skeeball.Controllers;
+﻿using Skeeball.Controllers;
 using System;
 using System.Threading.Tasks;
 
@@ -9,41 +6,36 @@ namespace Skeeball;
 
 internal class SkeeBallController
 {
-    SkeeballGame game;
-
-    //hardware
-    IProjectLabHardware projLab;
-    Apa102 topDisplay;
-
-    //controllers
+    SkeeballHardware hardware;
     PrimaryDisplayController primaryDisplay;
     SecondaryDisplayController secondaryDisplay;
     AudioController audio;
 
+    SkeeballGame game;
+
     readonly Random random = new();
 
-    public Task Initialize()
+    public async Task Initialize()
     {
-        Console.WriteLine("Initialize...");
+        hardware = new SkeeballHardware();
 
-        projLab = ProjectLab.Create();
+        await hardware.Initialize();
 
-        projLab.DownButton.Clicked += StartButton_Clicked;
-        projLab.UpButton.Clicked += SelectButton_Clicked;
-        projLab.LeftButton.Clicked += LeftButton_Clicked;
-        projLab.RightButton.Clicked += RightButton_Clicked;
-
-        audio = new AudioController(projLab.Speaker);
+        var projLab = hardware.ProjLab;
 
         secondaryDisplay = new SecondaryDisplayController(projLab.Display);
+        secondaryDisplay.Clear();
+        primaryDisplay = new PrimaryDisplayController(hardware.TopDisplay);
+        audio = new AudioController(projLab.Speaker);
 
-        topDisplay = new Apa102(projLab.MikroBus1.SpiBus, 32, 8);
-        primaryDisplay = new PrimaryDisplayController(topDisplay);
+        hardware.StartButton.Clicked += StartButton_Clicked;
+        hardware.StartButton.LongClicked += StartButton_LongClicked;
+        hardware.SelectButton.Clicked += SelectButton_Clicked;
+        projLab.LeftButton.Clicked += LeftButton_Clicked;
 
         game = new SkeeballGame();
 
         Console.WriteLine("Init complete");
-        return Task.CompletedTask;
     }
 
     private void SelectButton_Clicked(object sender, EventArgs e)
@@ -59,14 +51,9 @@ internal class SkeeBallController
 
         if (game.StartGame())
         {
-            primaryDisplay.DrawText("READY", Color.LawnGreen);
+            primaryDisplay.ShowReady();
             secondaryDisplay.ShowBallsRemaining(game.CurrentPlayer.BallsRemaining);
         }
-    }
-
-    private void RightButton_Clicked(object sender, EventArgs e)
-    {
-        Console.WriteLine("RightButton_Clicked");
     }
 
     private void StartButton_LongClicked(object sender, EventArgs e)
@@ -103,11 +90,9 @@ internal class SkeeBallController
 
     public Task Run()
     {
-        _ = projLab.RgbLed.StartBlink(Color.LawnGreen, TimeSpan.FromMilliseconds(500), TimeSpan.FromMilliseconds(2000), 0.5f);
-
-        primaryDisplay.DrawTitle();
         game.Reset();
 
+        primaryDisplay.ShowTitle();
         secondaryDisplay.ShowSplash();
 
         return Task.CompletedTask;

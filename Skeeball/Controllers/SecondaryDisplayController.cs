@@ -2,7 +2,6 @@
 using Meadow.Foundation.Graphics;
 using Meadow.Foundation.Graphics.Buffers;
 using SimpleJpegDecoder;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,7 +13,7 @@ internal class SecondaryDisplayController
 {
     readonly MicroGraphics graphics;
 
-    readonly IPixelBuffer bunny1, bunny2;
+    readonly IPixelBuffer bunny1, bunny2, carrot1, boston1;
 
     Color ScoreColor => Color.FromHex("#E2B08F");
 
@@ -28,6 +27,13 @@ internal class SecondaryDisplayController
 
         bunny1 = LoadImage("bunny1.jpg");
         bunny2 = LoadImage("bunny2.jpg");
+        carrot1 = LoadImage("carrot1.jpg");
+        boston1 = LoadImage("boston1.jpg");
+    }
+
+    public void Clear()
+    {
+        graphics.Clear(true);
     }
 
     public void ShowSplash()
@@ -45,13 +51,40 @@ internal class SecondaryDisplayController
     public void ShowBallsRemaining(int ballsRemaining)
     {
         graphics.Clear();
-        graphics.DrawText(120 + 8, 180, $"{ballsRemaining}", ScoreColor, (ScaleFactor)16, HorizontalAlignment.Center, VerticalAlignment.Center);
+        graphics.DrawText(120 + 8, 130, $"{ballsRemaining}", ScoreColor, (ScaleFactor)16, HorizontalAlignment.Center, VerticalAlignment.Center);
 
         int yStart = (4 - ballsRemaining / 2) * bunny2.Height;
 
-        for (int i = 0; i < ballsRemaining; i++)
+        //offset 7 
+        //gap 14
+
+        if (ballsRemaining > 10)
         {
-            graphics.DrawBuffer(205, yStart + i * bunny2.Height, bunny2);
+            for (int i = 0; i < ballsRemaining - 10; i++)
+            {
+                graphics.DrawBuffer(7 + i * 48, 184, bunny2);
+            }
+        }
+
+        if (ballsRemaining > 5)
+        {
+            for (int i = 0; i < ballsRemaining - 5; i++)
+            {
+                graphics.DrawBuffer(7 + i * 48, 232, bunny2);
+            }
+        }
+
+        if (ballsRemaining > 0)
+        {
+            for (int i = 0; i < ballsRemaining; i++)
+            {
+                graphics.DrawBuffer(7 + i * 48, 280, bunny2);
+            }
+        }
+
+        if (ballsRemaining == 0)
+        {
+            graphics.DrawBuffer(20, 320 - boston1.Height, boston1);
         }
 
         graphics.Show();
@@ -62,29 +95,31 @@ internal class SecondaryDisplayController
         //draw the count of each PointValue in the list along with the player score and current high score, show a custom message if the player has a new high score
         graphics.Clear();
 
+        graphics.DrawBuffer(graphics.Width / 2 - carrot1.Width / 2, graphics.Height / 2 - carrot1.Height / 2, carrot1);
+
         int y = 24;
         graphics.DrawText(120, y, "Game Stats", Color.White, ScaleFactor.X2, HorizontalAlignment.Center);
         y += 48;
         graphics.DrawText(5, y, "10s:", Color.White, ScaleFactor.X2, HorizontalAlignment.Left);
-        graphics.DrawText(235, y, $"{ballScores.Count(x => x == SkeeballGame.PointValue.Ten)}", Color.White, ScaleFactor.X2, HorizontalAlignment.Right);
+        graphics.DrawText(235, y, $"{ballScores.Count(x => x == SkeeballGame.PointValue.Ten)}", Color.LawnGreen, ScaleFactor.X2, HorizontalAlignment.Right);
         y += 24;
         graphics.DrawText(5, y, "20s:", Color.White, ScaleFactor.X2, HorizontalAlignment.Left);
-        graphics.DrawText(235, y, $"{ballScores.Count(x => x == SkeeballGame.PointValue.Twenty)}", Color.White, ScaleFactor.X2, HorizontalAlignment.Right);
+        graphics.DrawText(235, y, $"{ballScores.Count(x => x == SkeeballGame.PointValue.Twenty)}", Color.LawnGreen, ScaleFactor.X2, HorizontalAlignment.Right);
         y += 24;
         graphics.DrawText(5, y, "30s:", Color.White, ScaleFactor.X2, HorizontalAlignment.Left);
-        graphics.DrawText(235, y, $"{ballScores.Count(x => x == SkeeballGame.PointValue.Thirty)}", Color.White, ScaleFactor.X2, HorizontalAlignment.Right);
+        graphics.DrawText(235, y, $"{ballScores.Count(x => x == SkeeballGame.PointValue.Thirty)}", Color.LawnGreen, ScaleFactor.X2, HorizontalAlignment.Right);
         y += 24;
         graphics.DrawText(5, y, "40s:", Color.White, ScaleFactor.X2, HorizontalAlignment.Left);
-        graphics.DrawText(235, y, $"{ballScores.Count(x => x == SkeeballGame.PointValue.Forty)}", Color.White, ScaleFactor.X2, HorizontalAlignment.Right);
+        graphics.DrawText(235, y, $"{ballScores.Count(x => x == SkeeballGame.PointValue.Forty)}", Color.LawnGreen, ScaleFactor.X2, HorizontalAlignment.Right);
         y += 24;
         graphics.DrawText(5, y, "50s:", Color.White, ScaleFactor.X2, HorizontalAlignment.Left);
-        graphics.DrawText(235, y, $"{ballScores.Count(x => x == SkeeballGame.PointValue.Fifty)}", Color.White, ScaleFactor.X2, HorizontalAlignment.Right);
-        y += 48;
-        graphics.DrawText(5, y, $"Score:", Color.White, ScaleFactor.X2, HorizontalAlignment.Left);
-        graphics.DrawText(235, y, $"{score}", Color.White, ScaleFactor.X2, HorizontalAlignment.Right);
+        graphics.DrawText(235, y, $"{ballScores.Count(x => x == SkeeballGame.PointValue.Fifty)}", Color.LawnGreen, ScaleFactor.X2, HorizontalAlignment.Right);
+        y += 96;
+        graphics.DrawText(5, y, $"Your Score:", Color.White, ScaleFactor.X2, HorizontalAlignment.Left);
+        graphics.DrawText(235, y, $"{score}", Color.LawnGreen, ScaleFactor.X2, HorizontalAlignment.Right);
         y += 24;
         graphics.DrawText(5, y, $"High Score:", Color.White, ScaleFactor.X2, HorizontalAlignment.Left);
-        graphics.DrawText(235, y, $"{highscore}", Color.White, ScaleFactor.X2, HorizontalAlignment.Right);
+        graphics.DrawText(235, y, $"{highscore}", Color.LawnGreen, ScaleFactor.X2, HorizontalAlignment.Right);
 
         graphics.Show();
     }
@@ -93,14 +128,8 @@ internal class SecondaryDisplayController
     {
         var jpgData = LoadResource(name);
 
-        Console.WriteLine($"Loaded {jpgData.Length} bytes, decoding jpeg ...");
-
         var decoder = new JpegDecoder();
         var jpg = decoder.DecodeJpeg(jpgData);
-
-        Console.WriteLine($"Jpeg decoded is {jpg.Length} bytes");
-        Console.WriteLine($"Width {decoder.Width}");
-        Console.WriteLine($"Height {decoder.Height}");
 
         return new BufferRgb888(decoder.Width, decoder.Height, jpg).ConvertPixelBuffer<BufferRgb565>();
     }
@@ -110,13 +139,9 @@ internal class SecondaryDisplayController
         var assembly = Assembly.GetExecutingAssembly();
         var resourceName = $"Skeeball.{filename}";
 
-        using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-        {
-            using (var ms = new MemoryStream())
-            {
-                stream.CopyTo(ms);
-                return ms.ToArray();
-            }
-        }
+        using Stream stream = assembly.GetManifestResourceStream(resourceName);
+        using var ms = new MemoryStream();
+        stream.CopyTo(ms);
+        return ms.ToArray();
     }
 }

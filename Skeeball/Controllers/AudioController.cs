@@ -9,15 +9,24 @@ internal class AudioController
 
     readonly BunnyBallTheme themeSong;
 
-    public AudioController(PiezoSpeaker speaker)
+    public bool PlaySound { get; set; } = false;
+
+    internal AudioController(PiezoSpeaker speaker)
     {
         audio = new MicroAudio(speaker);
 
         themeSong = new BunnyBallTheme();
     }
 
-    public void PlayThemeSong()
+    internal void PlayThemeSong()
     {
+        if (!PlaySound) return;
         audio.PlaySong(themeSong);
+    }
+
+    internal void PlayScoreSound(SkeeballGame.PointValue value)
+    {
+        if (!PlaySound) return;
+        audio.PlayGameSound(GameSoundEffect.Blip);
     }
 }
