@@ -62,27 +62,27 @@ internal class SecondaryDisplayController
         //draw the count of each PointValue in the list along with the player score and current high score, show a custom message if the player has a new high score
         graphics.Clear();
 
-        int y = 20;
+        int y = 24;
         graphics.DrawText(120, y, "Game Stats", Color.White, ScaleFactor.X2, HorizontalAlignment.Center);
-        y += 40;
+        y += 48;
         graphics.DrawText(5, y, "10s:", Color.White, ScaleFactor.X2, HorizontalAlignment.Left);
         graphics.DrawText(235, y, $"{ballScores.Count(x => x == SkeeballGame.PointValue.Ten)}", Color.White, ScaleFactor.X2, HorizontalAlignment.Right);
-        y += 20;
+        y += 24;
         graphics.DrawText(5, y, "20s:", Color.White, ScaleFactor.X2, HorizontalAlignment.Left);
         graphics.DrawText(235, y, $"{ballScores.Count(x => x == SkeeballGame.PointValue.Twenty)}", Color.White, ScaleFactor.X2, HorizontalAlignment.Right);
-        y += 20;
+        y += 24;
         graphics.DrawText(5, y, "30s:", Color.White, ScaleFactor.X2, HorizontalAlignment.Left);
         graphics.DrawText(235, y, $"{ballScores.Count(x => x == SkeeballGame.PointValue.Thirty)}", Color.White, ScaleFactor.X2, HorizontalAlignment.Right);
-        y += 20;
+        y += 24;
         graphics.DrawText(5, y, "40s:", Color.White, ScaleFactor.X2, HorizontalAlignment.Left);
         graphics.DrawText(235, y, $"{ballScores.Count(x => x == SkeeballGame.PointValue.Forty)}", Color.White, ScaleFactor.X2, HorizontalAlignment.Right);
-        y += 20;
+        y += 24;
         graphics.DrawText(5, y, "50s:", Color.White, ScaleFactor.X2, HorizontalAlignment.Left);
         graphics.DrawText(235, y, $"{ballScores.Count(x => x == SkeeballGame.PointValue.Fifty)}", Color.White, ScaleFactor.X2, HorizontalAlignment.Right);
-        y += 40;
+        y += 48;
         graphics.DrawText(5, y, $"Score:", Color.White, ScaleFactor.X2, HorizontalAlignment.Left);
         graphics.DrawText(235, y, $"{score}", Color.White, ScaleFactor.X2, HorizontalAlignment.Right);
-        y += 20;
+        y += 24;
         graphics.DrawText(5, y, $"High Score:", Color.White, ScaleFactor.X2, HorizontalAlignment.Left);
         graphics.DrawText(235, y, $"{highscore}", Color.White, ScaleFactor.X2, HorizontalAlignment.Right);
 
