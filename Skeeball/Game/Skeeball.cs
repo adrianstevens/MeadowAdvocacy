@@ -15,13 +15,33 @@ public partial class SkeeballGame
 
     public PlayerPosition NumberOfPlayers { get; private set; }
 
+    public TimeSpan GameTime
+    {
+        get
+        {
+            if (CurrentState == GameState.Playing)
+            {
+                return DateTime.Now - startTime;
+            }
+            else if (CurrentState == GameState.GameOver)
+            {
+                return endTime - startTime;
+            }
+            else
+            {
+                return TimeSpan.Zero;
+            }
+        }
+    }
+
     private Dictionary<PlayerPosition, Player> Players;
 
     private List<int> HighScoresClassic;
     private List<int> HighScoresBonusBall;
 
-    private DateTime _gameStartTime;
-    private DateTime _startTime;
+    private DateTime gameStartTime;
+    private DateTime startTime;
+    private DateTime endTime;
 
     private readonly int MAX_HIGHSCORES = 10;
 
@@ -48,7 +68,7 @@ public partial class SkeeballGame
 
         CurrentState = GameState.ReadyToStart;
         CurrentPlayerPosition = PlayerPosition.One;
-        _startTime = DateTime.Now;
+        startTime = DateTime.Now;
 
         foreach (var player in Players)
         {
@@ -76,6 +96,31 @@ public partial class SkeeballGame
         Reset();
         CurrentState = GameState.Playing;
         return true;
+    }
+
+    public void NextGameMode()
+    {
+        CurrentGameMode++;
+
+        if (CurrentGameMode > GameMode.Sequence)
+        {
+            CurrentGameMode = GameMode.Classic;
+        }
+
+        Reset();
+    }
+
+    public string GetGameModeDescription(GameMode mode)
+    {
+        return mode switch
+        {
+            GameMode.Classic => "Try to get the highest score in 9 balls.",
+            GameMode.Bonus => "Try to get the highest score in 9 balls. Scoring 50 awards a bonus ball.",
+            GameMode.Timed => "30 seconds to score as many points as possible.",
+            GameMode.Exact => "Try to score exactly 250 in the fewest throws.",
+            GameMode.Sequence => "Throw a 10, 20, 30, 40, and 50 in order in the fewest throws.",
+            _ => $"{mode}"
+        };
     }
 
     public int GetHighscore()
@@ -114,14 +159,14 @@ public partial class SkeeballGame
         {
             case GameMode.Classic:
                 ThrowBallClassic(pointValue); break;
-            case GameMode.BonusBall:
+            case GameMode.Bonus:
                 ThrowBonusBall(pointValue); break;
-            case GameMode.TimeAttack:
-                ThrowTimeAttack(pointValue); break;
-            case GameMode.PerfectScore:
-                ThrowPerfectScore(pointValue); break;
-            case GameMode.CompleteSet:
-                ThrowCompleteSet(pointValue); break;
+            case GameMode.Timed:
+                ThrowTimed(pointValue); break;
+            case GameMode.Exact:
+                ThrowExact(pointValue); break;
+            case GameMode.Sequence:
+                ThrowSequence(pointValue); break;
         }
 
         return true;
@@ -146,14 +191,14 @@ public partial class SkeeballGame
         SwitchTurn();
     }
 
-    private void ThrowTimeAttack(PointValue pointValue)
+    private void ThrowTimed(PointValue pointValue)
     {
         Players[CurrentPlayerPosition].ThrowBall(pointValue);
 
         SwitchTurn();
     }
 
-    private void ThrowPerfectScore(PointValue pointValue)
+    private void ThrowExact(PointValue pointValue)
     {
         bool countScore = Players[CurrentPlayerPosition].Score + (int)pointValue <= 250;
 
@@ -161,9 +206,32 @@ public partial class SkeeballGame
         SwitchTurn();
     }
 
-    private void ThrowCompleteSet(PointValue pointValue)
+    private void ThrowSequence(PointValue pointValue)
     {
-        Players[CurrentPlayerPosition].ThrowBall(pointValue);
+        if (pointValue == PointValue.Ten && Players[CurrentPlayerPosition].Score == 0)
+        {
+            Players[CurrentPlayerPosition].ThrowBall(pointValue);
+        }
+        else if (pointValue == PointValue.Twenty && Players[CurrentPlayerPosition].Score == 10)
+        {
+            Players[CurrentPlayerPosition].ThrowBall(pointValue);
+        }
+        else if (pointValue == PointValue.Thirty && Players[CurrentPlayerPosition].Score == 30)
+        {
+            Players[CurrentPlayerPosition].ThrowBall(pointValue);
+        }
+        else if (pointValue == PointValue.Forty && Players[CurrentPlayerPosition].Score == 60)
+        {
+            Players[CurrentPlayerPosition].ThrowBall(pointValue);
+        }
+        else if (pointValue == PointValue.Fifty && Players[CurrentPlayerPosition].Score == 100)
+        {
+            Players[CurrentPlayerPosition].ThrowBall(pointValue);
+        }
+        else
+        {
+            Players[CurrentPlayerPosition].ThrowBall(pointValue, false);
+        }
 
         SwitchTurn();
     }
@@ -205,7 +273,7 @@ public partial class SkeeballGame
     private bool IsGameOver()
     {
         if (CurrentGameMode == GameMode.Classic ||
-            CurrentGameMode == GameMode.BonusBall)
+            CurrentGameMode == GameMode.Bonus)
         {
             for (int i = 0; i < (int)NumberOfPlayers; i++)
             {
@@ -217,21 +285,54 @@ public partial class SkeeballGame
             }
             return true;
         }
+        if (CurrentGameMode == GameMode.Timed)
+        {
+            if (GameTime.TotalSeconds >= 30)
+            {
+                return true;
+            }
+        }
+        if (CurrentGameMode == GameMode.Exact)
+        {
+            for (int i = 0; i < (int)NumberOfPlayers; i++)
+            {
+                //check if any players have balls remaining
+                if (Players[(PlayerPosition)i].Score == 250)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        if (CurrentGameMode == GameMode.Sequence)
+        {
+            for (int i = 0; i < (int)NumberOfPlayers; i++)
+            {
+                //check if any players have balls remaining
+                if (Players[(PlayerPosition)i].Score == 150)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         return true;
     }
 
 
     private void EndGame()
     {
+        endTime = DateTime.Now;
         for (int i = 0; i < (int)NumberOfPlayers; i++)
         {
-            AddScore(Players[(PlayerPosition)i].Score);
+            CheckAndAddToHighScores(Players[(PlayerPosition)i].Score);
         }
 
         CurrentState = GameState.GameOver;
     }
 
-    private void AddScore(int score)
+    private void CheckAndAddToHighScores(int score)
     {
         List<int> highScores;
 
@@ -239,7 +340,7 @@ public partial class SkeeballGame
         {
             highScores = HighScoresClassic;
         }
-        else if (CurrentGameMode == GameMode.BonusBall)
+        else if (CurrentGameMode == GameMode.Bonus)
         {
             highScores = HighScoresBonusBall;
         }

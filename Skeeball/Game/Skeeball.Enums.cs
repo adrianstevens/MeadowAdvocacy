@@ -20,20 +20,19 @@ public partial class SkeeballGame
         /// <summary>
         /// Same rules as classic, but a bonus throw is awarded for a 50 point throw
         /// </summary>
-        BonusBall,
+        Bonus,
         /// <summary>
         /// 30 seconds to score as many points as possible
         /// </summary>
-        TimeAttack,
+        Timed,
         /// <summary>
-        /// As many throws as needed to score exactly 250 points
         /// Goal is to score 250 in as few throws as possible 
         /// </summary>
-        PerfectScore,
+        Exact,
         /// <summary>
-        /// The goal is to get each possible point value in as few throws as possible
+        /// The goal is to throw a 10, 20, 30, 40 and 50 in order in as few throws as possible
         /// </summary>
-        CompleteSet,
+        Sequence,
     }
 
     public enum PlayerPosition
@@ -49,6 +48,6 @@ public partial class SkeeballGame
         Initializing,
         ReadyToStart,
         Playing,
-        GameOver
+        GameOver,
     }
 }

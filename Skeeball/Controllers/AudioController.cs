@@ -1,4 +1,5 @@
 ﻿using Meadow.Foundation.Audio;
+using Meadow.Peripherals.Speakers;
 using Skeeball.Songs;
 
 namespace Skeeball.Controllers;
@@ -11,7 +12,7 @@ internal class AudioController
 
     public bool PlaySound { get; set; } = false;
 
-    internal AudioController(PiezoSpeaker speaker)
+    internal AudioController(IToneGenerator speaker)
     {
         audio = new MicroAudio(speaker);
 

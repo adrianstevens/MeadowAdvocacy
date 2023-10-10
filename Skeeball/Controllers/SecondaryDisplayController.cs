@@ -2,6 +2,7 @@
 using Meadow.Foundation.Graphics;
 using Meadow.Foundation.Graphics.Buffers;
 using SimpleJpegDecoder;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,6 +15,8 @@ internal class SecondaryDisplayController
     readonly MicroGraphics graphics;
 
     readonly IPixelBuffer bunny1, bunny2, carrot1, boston1;
+
+    readonly Random random = new();
 
     Color ScoreColor => Color.FromHex("#E2B08F");
 
@@ -55,22 +58,11 @@ internal class SecondaryDisplayController
 
         int yStart = (4 - ballsRemaining / 2) * bunny2.Height;
 
-        //offset 7 
-        //gap 14
-
-        if (ballsRemaining > 10)
-        {
-            for (int i = 0; i < ballsRemaining - 10; i++)
-            {
-                graphics.DrawBuffer(7 + i * 48, 184, bunny2);
-            }
-        }
-
         if (ballsRemaining > 5)
         {
             for (int i = 0; i < ballsRemaining - 5; i++)
             {
-                graphics.DrawBuffer(7 + i * 48, 232, bunny2);
+                graphics.DrawBuffer(31 + i * 48, 232, bunny2);
             }
         }
 
@@ -84,13 +76,40 @@ internal class SecondaryDisplayController
 
         if (ballsRemaining == 0)
         {
-            graphics.DrawBuffer(20, 320 - boston1.Height, boston1);
+            var x = random.Next(0, graphics.Width - boston1.Width);
+            graphics.DrawBuffer(x, 320 - boston1.Height, boston1);
         }
 
         graphics.Show();
     }
 
-    public void ShowGameStats(List<SkeeballGame.PointValue> ballScores, int score, int highscore)
+    public void ShowGameDescription(string title, string description)
+    {
+        if (string.IsNullOrWhiteSpace(description.ToUpper()))
+            return;
+
+        graphics.Clear();
+
+        graphics.DrawText(120, 40, title, Color.White, ScaleFactor.X2, HorizontalAlignment.Center);
+
+        int y = 100;
+        int ySpacing = 28;
+        while (description.Length > 15)
+        {
+            //find the first space before the 15th character
+            int spaceIndex = description.Substring(0, 14).LastIndexOf(' ');
+
+            //draw the text up to the spaceIndex and remove it from the string
+            graphics.DrawText(120, y, description[..spaceIndex], Color.White, ScaleFactor.X2, HorizontalAlignment.Center);
+            y += ySpacing;
+            description = description.Substring(spaceIndex + 1);
+        }
+        graphics.DrawText(120, y, description, Color.White, ScaleFactor.X2, HorizontalAlignment.Center);
+
+        graphics.Show();
+    }
+
+    public void ShowGameStats(List<SkeeballGame.PointValue> ballScores, int score, int highscore, TimeSpan gameTime)
     {
         //draw the count of each PointValue in the list along with the player score and current high score, show a custom message if the player has a new high score
         graphics.Clear();
@@ -114,7 +133,10 @@ internal class SecondaryDisplayController
         y += 24;
         graphics.DrawText(5, y, "50s:", Color.White, ScaleFactor.X2, HorizontalAlignment.Left);
         graphics.DrawText(235, y, $"{ballScores.Count(x => x == SkeeballGame.PointValue.Fifty)}", Color.LawnGreen, ScaleFactor.X2, HorizontalAlignment.Right);
-        y += 96;
+        y += 24;
+        graphics.DrawText(5, y, "Time:", Color.White, ScaleFactor.X2, HorizontalAlignment.Left);
+        graphics.DrawText(235, y, $"{gameTime:mm\\:ss}", Color.LawnGreen, ScaleFactor.X2, HorizontalAlignment.Right);
+        y += 48;
         graphics.DrawText(5, y, $"Your Score:", Color.White, ScaleFactor.X2, HorizontalAlignment.Left);
         graphics.DrawText(235, y, $"{score}", Color.LawnGreen, ScaleFactor.X2, HorizontalAlignment.Right);
         y += 24;

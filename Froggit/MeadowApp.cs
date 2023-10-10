@@ -82,6 +82,8 @@ namespace Froggit
 
         private void StartButton_Clicked(object sender, EventArgs e)
         {
+            Console.WriteLine("StartButton_Clicked");
+
             if (GameState.Ready == gameState)
             {
                 gameState = GameState.Playing;

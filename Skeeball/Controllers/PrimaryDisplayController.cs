@@ -33,39 +33,9 @@ internal class PrimaryDisplayController
         fontNumber = new Font6x8();
     }
 
-    public void ScrollTextOn(string text, Color color)
+    public void ShowGameMode(SkeeballGame.GameMode mode)
     {
-        //coded for the 32x8 display
-        for (int i = 32; i > 0; i--)
-        {
-            graphics.Clear();
-
-            graphics.DrawText(xOffset + i, 1, text, color, ScaleFactor.X1, HorizontalAlignment.Center, font: fontText);
-            graphics.Show();
-            Thread.Sleep(100);
-        }
-    }
-
-    //Draws text centered on the Apa102 display
-    void DrawText(string text, Color color)
-    {
-        int len = text.Length;
-
-        graphics.Clear();
-        graphics.DrawText(xOffset + 16, 1, text, color, ScaleFactor.X1, HorizontalAlignment.Center, font: len <= 5 ? fontNumber : fontText);
-        graphics.Show();
-    }
-
-    //Flashes text on the Apa102 display
-    void FlashText(string text, Color color1, Color color2)
-    {
-        for (int i = 0; i < 8; i++)
-        {
-            DrawText(text, color1);
-            Thread.Sleep(50);
-            DrawText(text, color2);
-            Thread.Sleep(50);
-        }
+        DrawText($"{mode}".ToUpper(), DisplayWhite);
     }
 
     public void ShowReady()
@@ -116,5 +86,40 @@ internal class PrimaryDisplayController
     {
         FlashText($"{points}", DisplayBlue, DisplayViolet);
         DrawText($"{totalScore}", DisplayWhite);
+    }
+
+    void ScrollTextOn(string text, Color color)
+    {
+        //coded for the 32x8 display
+        for (int i = 32; i > 0; i--)
+        {
+            graphics.Clear();
+
+            graphics.DrawText(xOffset + i, 1, text, color, ScaleFactor.X1, HorizontalAlignment.Center, font: fontText);
+            graphics.Show();
+            Thread.Sleep(100);
+        }
+    }
+
+    //Draws text centered on the Apa102 display
+    void DrawText(string text, Color color)
+    {
+        int len = text.Length;
+
+        graphics.Clear();
+        graphics.DrawText(xOffset + 16, 1, text, color, ScaleFactor.X1, HorizontalAlignment.Center, font: len <= 5 ? fontNumber : fontText);
+        graphics.Show();
+    }
+
+    //Flashes text on the Apa102 display
+    void FlashText(string text, Color color1, Color color2)
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            DrawText(text, color1);
+            Thread.Sleep(50);
+            DrawText(text, color2);
+            Thread.Sleep(50);
+        }
     }
 }

@@ -10,6 +10,7 @@ internal class SkeeBallController
     PrimaryDisplayController primaryDisplay;
     SecondaryDisplayController secondaryDisplay;
     AudioController audio;
+    LEDController leds;
 
     SkeeballGame game;
 
@@ -21,17 +22,17 @@ internal class SkeeBallController
 
         await hardware.Initialize();
 
-        var projLab = hardware.ProjLab;
-
-        secondaryDisplay = new SecondaryDisplayController(projLab.Display);
+        secondaryDisplay = new SecondaryDisplayController(hardware.BottomDisplay);
         secondaryDisplay.Clear();
         primaryDisplay = new PrimaryDisplayController(hardware.TopDisplay);
-        audio = new AudioController(projLab.Speaker);
+        audio = new AudioController(hardware.Speaker);
+        leds = new LEDController();
 
         hardware.StartButton.Clicked += StartButton_Clicked;
         hardware.StartButton.LongClicked += StartButton_LongClicked;
         hardware.SelectButton.Clicked += SelectButton_Clicked;
-        projLab.LeftButton.Clicked += LeftButton_Clicked;
+        hardware.Score10Switch.Clicked += Score10_Clicked;
+        hardware.Score50Switch.Clicked += Score50_Clicked;
 
         game = new SkeeballGame();
 
@@ -41,6 +42,10 @@ internal class SkeeBallController
     private void SelectButton_Clicked(object sender, EventArgs e)
     {
         Console.WriteLine("SelectButton_Clicked");
+
+        game.NextGameMode();
+        primaryDisplay.ShowGameMode(game.CurrentGameMode);
+        secondaryDisplay.ShowGameDescription($"{game.CurrentGameMode}", game.GetGameModeDescription(game.CurrentGameMode));
     }
 
     private void StartButton_Clicked(object sender, EventArgs e)
@@ -62,13 +67,20 @@ internal class SkeeBallController
         game.Reset();
     }
 
-    private void LeftButton_Clicked(object sender, EventArgs e)
+    private void Score10_Clicked(object sender, EventArgs e)
     {
-        Console.WriteLine("LeftButton_Clicked");
+        Console.WriteLine("Score10_Clicked");
 
         var randomValue = random.Next(1, 6) * 10;
 
         _ = ThrowBall((SkeeballGame.PointValue)randomValue);
+    }
+
+    private void Score50_Clicked(object sender, EventArgs e)
+    {
+        Console.WriteLine("Score50_Clicked");
+
+        _ = ThrowBall(SkeeballGame.PointValue.Fifty);
     }
 
     async Task ThrowBall(SkeeballGame.PointValue pointValue)
@@ -84,7 +96,7 @@ internal class SkeeBallController
         if (game.CurrentState == SkeeballGame.GameState.GameOver)
         {
             await primaryDisplay.ShowEndGame(game.CurrentPlayer.Score);
-            secondaryDisplay.ShowGameStats(game.CurrentPlayer.BallScores, game.CurrentPlayer.Score, game.GetHighscore());
+            secondaryDisplay.ShowGameStats(game.CurrentPlayer.BallScores, game.CurrentPlayer.Score, game.GetHighscore(), game.GameTime);
         }
     }
 
