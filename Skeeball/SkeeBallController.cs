@@ -71,16 +71,24 @@ internal class SkeeBallController
     {
         Console.WriteLine("Score10_Clicked");
 
-        var randomValue = random.Next(1, 6) * 10;
+        if (game.CurrentState == SkeeballGame.GameState.Playing)
+        {
+            var randomValue = random.Next(1, 6) * 10;
 
-        _ = ThrowBall((SkeeballGame.PointValue)randomValue);
+            _ = ThrowBall((SkeeballGame.PointValue)randomValue);
+            audio.PlayScoreSound((SkeeballGame.PointValue)randomValue);
+        }
     }
 
     private void Score50_Clicked(object sender, EventArgs e)
     {
         Console.WriteLine("Score50_Clicked");
 
-        _ = ThrowBall(SkeeballGame.PointValue.Fifty);
+        if (game.CurrentState == SkeeballGame.GameState.Playing)
+        {
+            _ = ThrowBall(SkeeballGame.PointValue.Fifty);
+            audio.PlayScoreSound(SkeeballGame.PointValue.Fifty);
+        }
     }
 
     async Task ThrowBall(SkeeballGame.PointValue pointValue)

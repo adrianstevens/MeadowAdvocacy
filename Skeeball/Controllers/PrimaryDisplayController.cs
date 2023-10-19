@@ -20,6 +20,7 @@ internal class PrimaryDisplayController
     readonly Color DisplayYellow = Color.Yellow.WithBrightness(brightness);
     readonly Color DisplayOrange = Color.Orange.WithBrightness(brightness);
     readonly Color DisplayRed = Color.Red.WithBrightness(brightness);
+    readonly Color DisplayPurple = Color.Purple.WithBrightness(brightness);
     readonly Color DisplayViolet = Color.Violet.WithBrightness(brightness);
     readonly Color DisplayBlue = Color.Blue.WithBrightness(brightness);
 
@@ -84,7 +85,34 @@ internal class PrimaryDisplayController
 
     public void AwardPoints(int points, int totalScore)
     {
-        FlashText($"{points}", DisplayBlue, DisplayViolet);
+        Color color1, color2;
+
+        switch (points)
+        {
+            case 10:
+                color1 = DisplayCyan;
+                color2 = DisplayBlue;
+                break;
+            case 20:
+                color1 = DisplayRed;
+                color2 = DisplayOrange;
+                break;
+            case 30:
+                color1 = DisplayViolet;
+                color2 = DisplayYellow;
+                break;
+            case 40:
+                color1 = DisplayLawnGreen;
+                color2 = DisplayPurple;
+                break;
+            case 50:
+            default:
+                color1 = DisplayPink;
+                color2 = DisplayWhite;
+                break;
+        }
+
+        FlashText($"{points}", color1, color2);
         DrawText($"{totalScore}", DisplayWhite);
     }
 

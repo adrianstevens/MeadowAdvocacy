@@ -10,7 +10,7 @@ internal class AudioController
 
     readonly BunnyBallTheme themeSong;
 
-    public bool PlaySound { get; set; } = false;
+    public bool PlaySound { get; set; } = true;
 
     internal AudioController(IToneGenerator speaker)
     {
@@ -28,6 +28,24 @@ internal class AudioController
     internal void PlayScoreSound(SkeeballGame.PointValue value)
     {
         if (!PlaySound) return;
-        audio.PlayGameSound(GameSoundEffect.Blip);
+
+        switch (value)
+        {
+            case SkeeballGame.PointValue.Ten:
+                _ = audio.PlayGameSound(GameSoundEffect.Blip);
+                break;
+            case SkeeballGame.PointValue.Twenty:
+                _ = audio.PlayGameSound(GameSoundEffect.Coin);
+                break;
+            case SkeeballGame.PointValue.Thirty:
+                _ = audio.PlayGameSound(GameSoundEffect.Teleport);
+                break;
+            case SkeeballGame.PointValue.Forty:
+                _ = audio.PlayGameSound(GameSoundEffect.SecretFound);
+                break;
+            case SkeeballGame.PointValue.Fifty:
+                _ = audio.PlayGameSound(GameSoundEffect.PowerUp);
+                break;
+        }
     }
 }

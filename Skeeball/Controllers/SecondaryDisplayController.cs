@@ -25,7 +25,7 @@ internal class SecondaryDisplayController
         graphics = new MicroGraphics(display)
         {
             CurrentFont = new Font8x12(),
-            Rotation = RotationType._180Degrees
+            Rotation = RotationType.Default
         };
 
         bunny1 = LoadImage("bunny1.jpg");
