@@ -26,6 +26,9 @@ namespace Froggit
         int xOffset = 0;
         int yOffset = 0;
 
+        int xLast = -1;
+        int yLast = -1;
+
         readonly int MovementStep = 4;
         readonly int ReturnStep = 12;
 
@@ -55,7 +58,7 @@ namespace Froggit
 
         void InitializeEyeballBuffer()
         {
-            eyeballBuffer = new BufferRgb565(240, 240);
+            eyeballBuffer = new BufferRgb444(240, 240);
 
             var eyeballGraphics = new MicroGraphics(eyeballBuffer as PixelBufferBase, false);
 
@@ -147,14 +150,18 @@ namespace Froggit
             DrawEyeball();
             graphics.DrawCircle(graphics.Width / 2, graphics.Height / 2, 120, outline, true, true);
             graphics.Show();
-            Thread.Sleep(50);
-            DrawEyeball();
-            Thread.Sleep(100);
-            graphics.DrawCircle(graphics.Width / 2, graphics.Height / 2, 120, outline, true, true);
-            graphics.Show();
-            Thread.Sleep(50);
+            Thread.Sleep(75);
+
+            xLast = -1;
             DrawEyeball();
 
+            Thread.Sleep(200);
+            graphics.DrawCircle(graphics.Width / 2, graphics.Height / 2, 120, outline, true, true);
+            graphics.Show();
+            Thread.Sleep(75);
+
+            xLast = -1;
+            DrawEyeball();
         }
 
         void LookLeft()
@@ -257,13 +264,23 @@ namespace Froggit
             //add timer profiling for this method and write to console 
             stopwatch.Restart();
 
-            graphics.DrawBuffer(graphics.Width / 2 - eyeballBuffer.Width / 2,
+            if (xLast == -1)
+            {
+                graphics.DrawBuffer(graphics.Width / 2 - eyeballBuffer.Width / 2,
                 graphics.Height / 2 - eyeballBuffer.Height / 2, eyeballBuffer);
+            }
+            else
+            {
+                graphics.DrawRectangle(xLast - 40, yLast - 40, 80, 80, light, true);
+            }
 
-            graphics.DrawCircle(graphics.Width / 2 + xOffset, graphics.Height / 2 + yOffset, 40, darkGreen, true, true);
-            graphics.DrawCircle(graphics.Width / 2 + xOffset, graphics.Height / 2 + yOffset, 32, lightGreen, true, true);
+            xLast = graphics.Width / 2 + xOffset;
+            yLast = graphics.Height / 2 + yOffset;
 
-            graphics.DrawCircle(graphics.Width / 2 + xOffset * 5 / 4, graphics.Height / 2 + yOffset * 5 / 4, 16, Color.Black, true, true);
+            graphics.DrawCircle(xLast, yLast, 40, darkGreen, true, true);
+            graphics.DrawCircle(xLast, yLast, 32, lightGreen, true, true);
+
+            graphics.DrawCircle(xLast + (xOffset >> 2), yLast + (yOffset >> 2), 16, Color.Black, true, true);
 
             graphics.Show();
 
