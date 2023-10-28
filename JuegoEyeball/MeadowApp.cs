@@ -1,11 +1,9 @@
 ﻿using Meadow;
 using Meadow.Devices;
 using Meadow.Foundation;
-using Meadow.Foundation.Audio;
 using Meadow.Foundation.Graphics;
 using Meadow.Foundation.Graphics.Buffers;
 using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using WildernessLabs.Hardware.Juego;
@@ -18,9 +16,6 @@ namespace Froggit
         IJuegoHardware juego;
         MicroGraphics graphics;
 
-        readonly MicroAudio moveAudio;
-        readonly MicroAudio effectsAudio;
-
         IPixelBuffer eyeballBuffer;
 
         int xOffset = 0;
@@ -32,7 +27,21 @@ namespace Froggit
         readonly int MovementStep = 4;
         readonly int ReturnStep = 12;
 
+        readonly int MinEyeMovement = 10;
         readonly int MaxEyeMovement = 50;
+
+        readonly Random random = new Random();
+
+        public enum EyeMovement
+        {
+            LookLeft,
+            LookRight,
+            LookUp,
+            LookDown,
+            Blink,
+            Dilate,
+            RetinaFade
+        }
 
         public override async Task Initialize()
         {
@@ -52,8 +61,6 @@ namespace Froggit
             };
 
             InitializeEyeballBuffer();
-
-            Console.WriteLine("Initialize complete");
         }
 
         void InitializeEyeballBuffer()
@@ -104,38 +111,55 @@ namespace Froggit
             DrawEyeball();
         }
 
+        void Delay()
+        {
+            Thread.Sleep(random.Next(1000, 5000));
+        }
+
+
         public override async Task Run()
         {
             Console.WriteLine("Run...");
 
             while (true)
             {
-                LookLeft();
-                Thread.Sleep(1000);
+                FadeRetina();
+                Delay();
+                RandomEyeMovement();
+                Delay();
                 CenterEye();
-                Thread.Sleep(1000);
-                Blink();
-
-                LookRight();
-                Thread.Sleep(1000);
-                CenterEye();
-                Thread.Sleep(1000);
-                Blink();
-
-                LookUp();
-                Thread.Sleep(1000);
-                CenterEye();
-                Thread.Sleep(1000);
-                Blink();
-
-                LookDown();
-                Thread.Sleep(1000);
-                CenterEye();
-                Thread.Sleep(1000);
-                Blink();
+                Delay();
             }
+        }
 
+        void RandomEyeMovement()
+        {
+            EyeMovement movementType = (EyeMovement)random.Next(6);
 
+            switch (movementType)
+            {
+                case EyeMovement.LookLeft:
+                    LookLeft();
+                    break;
+                case EyeMovement.LookRight:
+                    LookRight();
+                    break;
+                case EyeMovement.LookUp:
+                    LookUp();
+                    break;
+                case EyeMovement.LookDown:
+                    LookDown();
+                    break;
+                case EyeMovement.Blink:
+                    Blink();
+                    break;
+                case EyeMovement.Dilate:
+                    Dilate();
+                    break;
+                case EyeMovement.RetinaFade:
+                    FadeRetina();
+                    break;
+            }
         }
 
         void ResetEye()
@@ -150,62 +174,109 @@ namespace Froggit
             DrawEyeball();
             graphics.DrawCircle(graphics.Width / 2, graphics.Height / 2, 120, outline, true, true);
             graphics.Show();
-            Thread.Sleep(75);
+            Thread.Sleep(100);
 
             xLast = -1;
             DrawEyeball();
 
-            Thread.Sleep(200);
+            Thread.Sleep(100);
             graphics.DrawCircle(graphics.Width / 2, graphics.Height / 2, 120, outline, true, true);
             graphics.Show();
-            Thread.Sleep(75);
+            Thread.Sleep(100);
 
             xLast = -1;
             DrawEyeball();
+        }
+
+        readonly int fadeSteps = 20;
+
+        void FadeRetina()
+        {
+            for (int i = 0; i < fadeSteps; i++)
+            {
+                DrawRetinaWithFade(i / (double)fadeSteps);
+                graphics.Show();
+                Thread.Sleep(100);
+            }
+
+            Delay();
+
+            for (int i = fadeSteps; i > 0; i--)
+            {
+                DrawRetinaWithFade(i / (double)fadeSteps);
+                graphics.Show();
+                Thread.Sleep(100);
+            }
+        }
+
+        //probably move this to Color as an extension method
+        public static Color BlendColors(Color color1, Color color2, double ratio)
+        {
+            byte r = (byte)(color1.R * (1 - ratio) + color2.R * ratio);
+            byte g = (byte)(color1.G * (1 - ratio) + color2.G * ratio);
+            byte b = (byte)(color1.B * (1 - ratio) + color2.B * ratio);
+            return Color.FromRgb(r, g, b);
+        }
+
+        void Dilate()
+        {
+            DrawEyeball();
+
+            int dilationAmount = 12;
+
+            for (int i = 0; i < dilationAmount; i++)
+            {
+                graphics.DrawCircle(xLast, yLast, 16 + i, Color.Black, true, true);
+                graphics.Show();
+            }
+
+            Thread.Sleep(1000);
+
+            for (int i = dilationAmount; i > 0; i--)
+            {
+                graphics.DrawCircle(xLast, yLast, 32, lightGreen, true, true);
+                graphics.DrawCircle(xLast, yLast, 16 + i, Color.Black, true, true);
+                graphics.Show();
+            }
+
+            DrawEyeball();
+        }
+
+        int GetRandomMovementAmount()
+        {
+            return random.Next(MinEyeMovement, MaxEyeMovement);
+        }
+
+        void MoveEye(int xDirection, int yDirection)
+        {
+            ResetEye();
+            var movement = GetRandomMovementAmount();
+            for (int i = 0; i < movement; i += MovementStep)
+            {
+                xOffset = xDirection * i;
+                yOffset = yDirection * i;
+                DrawEyeball();
+            }
         }
 
         void LookLeft()
         {
-            ResetEye();
-
-            for (int i = 0; i < MaxEyeMovement; i += MovementStep)
-            {
-                xOffset = -i;
-                DrawEyeball();
-            }
+            MoveEye(-1, 0);
         }
 
         void LookRight()
         {
-            ResetEye();
-
-            for (int i = 0; i < MaxEyeMovement; i += MovementStep)
-            {
-                xOffset = i;
-                DrawEyeball();
-            }
+            MoveEye(1, 0);
         }
 
         void LookUp()
         {
-            ResetEye();
-
-            for (int i = 0; i < MaxEyeMovement; i += MovementStep)
-            {
-                yOffset = -i;
-                DrawEyeball();
-            }
+            MoveEye(0, -1);
         }
 
         void LookDown()
         {
-            ResetEye();
-
-            for (int i = 0; i < MaxEyeMovement; i += MovementStep)
-            {
-                yOffset = i;
-                DrawEyeball();
-            }
+            MoveEye(0, 1);
         }
 
         void CenterEye()
@@ -257,13 +328,8 @@ namespace Froggit
         Color darkGreen = Color.FromHex("367D17");
         Color lightGreen = Color.FromHex("55B835");
 
-        readonly Stopwatch stopwatch = new Stopwatch();
-
         void DrawEyeball()
         {
-            //add timer profiling for this method and write to console 
-            stopwatch.Restart();
-
             if (xLast == -1)
             {
                 graphics.DrawBuffer(graphics.Width / 2 - eyeballBuffer.Width / 2,
@@ -283,9 +349,14 @@ namespace Froggit
             graphics.DrawCircle(xLast + (xOffset >> 2), yLast + (yOffset >> 2), 16, Color.Black, true, true);
 
             graphics.Show();
+        }
 
-            stopwatch.Stop();
-            Console.WriteLine($"{stopwatch.ElapsedMilliseconds}ms");
+        void DrawRetinaWithFade(double ratio)
+        {
+            graphics.DrawCircle(xLast, yLast, 40, BlendColors(darkGreen, light, ratio), true, true);
+            graphics.DrawCircle(xLast, yLast, 32, BlendColors(lightGreen, light, ratio), true, true);
+
+            graphics.DrawCircle(xLast, yLast, 16, BlendColors(Color.Black, light, ratio), true, true);
         }
     }
 }

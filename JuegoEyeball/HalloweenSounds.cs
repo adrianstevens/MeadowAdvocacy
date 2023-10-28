@@ -77,7 +77,5 @@ namespace YourNamespace
             await toneGenerator.PlayTone(new Frequency(180), TimeSpan.FromMilliseconds(defaultDuration));
             await toneGenerator.PlayTone(new Frequency(210), TimeSpan.FromMilliseconds(defaultDuration));
         }
-
-        // You can continue adding more sound effects or music as needed.
     }
 }
