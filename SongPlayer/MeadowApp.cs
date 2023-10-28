@@ -1,13 +1,8 @@
 ﻿using Meadow;
 using Meadow.Devices;
-using Meadow.Foundation;
 using Meadow.Foundation.Graphics;
-using Meadow.Foundation.Sensors.Camera;
-using Meadow.Hardware;
 using Meadow.Peripherals.Speakers;
 using System;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using static SongPlayer.GameSounds;
 using static SongPlayer.Note;
@@ -34,9 +29,9 @@ namespace SongPlayer
 
             Console.WriteLine("Play scale song");
             var scale = new ScaleSong(projLab.Speaker);
-         //   await scale.Play(120);
+            //   await scale.Play(120);
 
-         ////   await Task.Delay(3000);
+            ////   await Task.Delay(3000);
 
             Console.WriteLine("Play skeeball song");
             var skeelballSong = new SkeeBallSong(projLab.Speaker);
@@ -52,8 +47,8 @@ namespace SongPlayer
             happyBirthday.AddNote(new Note(NotePitch.C, 3, NoteDuration.Half));
             happyBirthday.AddNote(new Note(NotePitch.F, 3, NoteDuration.Half));
             happyBirthday.AddNote(new Note(NotePitch.E, 3, NoteDuration.Whole));
-         
-            await happyBirthday.Play(160); 
+
+            await happyBirthday.Play(160);
 
         }
 
