@@ -78,7 +78,7 @@ namespace Froggit
                .ScaleUp<Buffer1bppColor>(2);
 
             buf.ColorOn = color;
-            return buf.ConvertPixelBuffer<BufferRgb565>();
+            return buf.ConvertPixelBuffer<BufferRgb444>();
         }
     }
 }
