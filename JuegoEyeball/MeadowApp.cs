@@ -121,14 +121,14 @@ namespace Froggit
         {
             Console.WriteLine("Run...");
 
+            DrawEyeball();
+
             while (true)
             {
-                FadeRetina();
                 Delay();
                 RandomEyeMovement();
                 Delay();
                 CenterEye();
-                Delay();
             }
         }
 
