@@ -4,14 +4,13 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <OutputType>Library</OutputType>
     <AssemblyName>App</AssemblyName>
+	<LangVersion>10.0</LangVersion>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="SimpleJsonSerializer" Version="0.0.2" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Juego\Source\Juego\Juego.csproj" />
-    <ProjectReference Include="..\..\Meadow.Core\source\implementations\f7\Meadow.F7\Meadow.F7.csproj" />
     <ProjectReference Include="..\..\Meadow.Foundation\Source\Meadow.Foundation.Libraries_and_Frameworks\Audio.MicroAudio\Driver\Audio.MicroAudio.csproj" />
+    <ProjectReference Include="..\..\Meadow.ProjectLab\Source\Meadow.ProjectLab\Meadow.ProjectLab.csproj" />
+    <ProjectReference Include="..\Eyeball.Core\Eyeball.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="meadow.config.yaml">
@@ -24,5 +23,4 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <Import Project="..\HighScoreModels\HighScoreModels.projitems" Label="Shared" />
 </Project>

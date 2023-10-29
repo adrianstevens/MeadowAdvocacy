@@ -7,15 +7,13 @@ using WildernessLabs.Hardware.Juego;
 
 namespace JuegoEyeball
 {
-    // Change F7FeatherV2 to F7FeatherV1 for V1.x boards
     public class MeadowApp : App<F7CoreComputeV2>
     {
         IJuegoHardware juego;
 
         EyeballController eyeballController;
 
-
-        public override async Task Initialize()
+        public override Task Initialize()
         {
             Console.WriteLine("Initialize...");
 
@@ -28,6 +26,23 @@ namespace JuegoEyeball
             juego.Left_RightButton.Clicked += Left_RightButton_Clicked;
 
             eyeballController = new EyeballController(juego.Display);
+
+            return Task.CompletedTask;
+        }
+
+        public override Task Run()
+        {
+            Console.WriteLine("Run...");
+
+            eyeballController.DrawEyeball();
+
+            while (true)
+            {
+                eyeballController.Delay();
+                eyeballController.RandomEyeMovement();
+                eyeballController.Delay();
+                eyeballController.CenterEye();
+            }
         }
 
         private void Left_RightButton_Clicked(object sender, EventArgs e)
@@ -46,25 +61,9 @@ namespace JuegoEyeball
         {
         }
 
-        public override async Task Run()
-        {
-            Console.WriteLine("Run...");
-
-            eyeballController.DrawEyeball();
-
-            while (true)
-            {
-                eyeballController.Delay();
-                eyeballController.RandomEyeMovement();
-                eyeballController.Delay();
-                eyeballController.CenterEye();
-            }
-        }
-
         private void StartButton_Clicked(object sender, EventArgs e)
         {
             Console.WriteLine("StartButton_Clicked");
-
         }
     }
 }

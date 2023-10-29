@@ -99,9 +99,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WiiNunchuck", "WiiNunchuck\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Leds.Apa102", "..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\Leds.Apa102\Driver\Leds.Apa102.csproj", "{FB26F62B-1AD0-4DCC-9DFC-12C8E4259912}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JuegoEyeball", "JuegoEyeball\JuegoEyeball.csproj", "{9997D031-9388-487D-95AD-ACABA6C805E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eyeball.Juego", "JuegoEyeball\Eyeball.Juego.csproj", "{9997D031-9388-487D-95AD-ACABA6C805E7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICs.IOExpanders.Sc16is7x2", "..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\ICs.IOExpanders.Sc16is7x2\Driver\ICs.IOExpanders.Sc16is7x2.csproj", "{40A488C1-74C6-4CFB-AE75-346F7B53A215}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Halloween", "Halloween", "{C572D5BA-7361-44C7-8A82-20D11F9A323A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eyeball.ProjLab", "ProjLabEyeball\Eyeball.ProjLab.csproj", "{B6360FE1-248F-4C93-8CEC-70BF206B9708}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eyeball.Core", "Eyeball.Core\Eyeball.Core.csproj", "{579456DE-A3B2-4312-82E4-CF93E64CA6AB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -385,6 +391,18 @@ Global
 		{40A488C1-74C6-4CFB-AE75-346F7B53A215}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40A488C1-74C6-4CFB-AE75-346F7B53A215}.Release|Any CPU.Build.0 = Release|Any CPU
 		{40A488C1-74C6-4CFB-AE75-346F7B53A215}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{B6360FE1-248F-4C93-8CEC-70BF206B9708}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6360FE1-248F-4C93-8CEC-70BF206B9708}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6360FE1-248F-4C93-8CEC-70BF206B9708}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{B6360FE1-248F-4C93-8CEC-70BF206B9708}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6360FE1-248F-4C93-8CEC-70BF206B9708}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6360FE1-248F-4C93-8CEC-70BF206B9708}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{579456DE-A3B2-4312-82E4-CF93E64CA6AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{579456DE-A3B2-4312-82E4-CF93E64CA6AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{579456DE-A3B2-4312-82E4-CF93E64CA6AB}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{579456DE-A3B2-4312-82E4-CF93E64CA6AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{579456DE-A3B2-4312-82E4-CF93E64CA6AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{579456DE-A3B2-4312-82E4-CF93E64CA6AB}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -422,7 +440,10 @@ Global
 		{202B7180-C13B-4874-BD17-FAF2FDE951A6} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
 		{3646E876-170F-4989-A555-6214E53F8B5C} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
 		{FB26F62B-1AD0-4DCC-9DFC-12C8E4259912} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
+		{9997D031-9388-487D-95AD-ACABA6C805E7} = {C572D5BA-7361-44C7-8A82-20D11F9A323A}
 		{40A488C1-74C6-4CFB-AE75-346F7B53A215} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
+		{B6360FE1-248F-4C93-8CEC-70BF206B9708} = {C572D5BA-7361-44C7-8A82-20D11F9A323A}
+		{579456DE-A3B2-4312-82E4-CF93E64CA6AB} = {C572D5BA-7361-44C7-8A82-20D11F9A323A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {59B85D60-3E0C-446F-8620-3B88DCA35E21}
@@ -431,7 +452,6 @@ Global
 		HighScoreModels\HighScoreModels.projitems*{2596e6f9-907d-46c9-9d85-b9b29d198344}*SharedItemsImports = 5
 		HighScoreModels\HighScoreModels.projitems*{6bcd457f-1201-41b0-9156-b96956313a0f}*SharedItemsImports = 5
 		HighScoreModels\HighScoreModels.projitems*{8c64caaf-8989-49c3-bdde-78c98b7bbb43}*SharedItemsImports = 5
-		HighScoreModels\HighScoreModels.projitems*{9997d031-9388-487d-95ad-acaba6c805e7}*SharedItemsImports = 5
 		HighScoreModels\HighScoreModels.projitems*{c7c7bb32-83be-4045-b21e-09b73ca9b8c9}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal
