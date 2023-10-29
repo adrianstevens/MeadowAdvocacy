@@ -1,11 +1,11 @@
-﻿using JuegoEyeball;
+﻿using HalloweenEyeball;
 using Meadow;
 using Meadow.Devices;
 using System;
 using System.Threading.Tasks;
 using WildernessLabs.Hardware.Juego;
 
-namespace Froggit
+namespace JuegoEyeball
 {
     // Change F7FeatherV2 to F7FeatherV1 for V1.x boards
     public class MeadowApp : App<F7CoreComputeV2>

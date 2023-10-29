@@ -4,22 +4,29 @@ using Meadow.Foundation.Graphics.Buffers;
 using System;
 using System.Threading;
 
-namespace JuegoEyeball
+namespace HalloweenEyeball
 {
-    public class EyeballController
+    public partial class EyeballController
     {
         readonly MicroGraphics graphics;
 
         IPixelBuffer eyeballBuffer;
 
-        Color outline = Color.FromHex("241E25");
+        Color EyeOutlineColor = Color.FromHex("241E25");
+        Color EyeOuterRedColor = Color.FromHex("F27274");
+        Color EyeOuterPinkColor = Color.FromHex("F9C0C5");
+        Color EyeWhiteColor = Color.FromHex("FFEADD");
 
-        Color red = Color.FromHex("F27274");
-        Color pink = Color.FromHex("F9C0C5");
-        Color light = Color.FromHex("FFEADD");
+        readonly CoronaColor[] CoronaColors = new CoronaColor[]
+        {
+            new CoronaColor { CoronaLight = Color.Red, CoronaDark = Color.DarkRed },
+            new CoronaColor { CoronaLight = Color.FromHex("367D17"), CoronaDark = Color.FromHex("55B835") },
+            new CoronaColor { CoronaLight = Color.Cyan, CoronaDark = Color.DarkCyan },
+            new CoronaColor { CoronaLight = Color.Yellow, CoronaDark = Color.DarkGoldenrod },
+            new CoronaColor { CoronaLight = Color.Orange, CoronaDark = Color.DarkOrange },
+        };
 
-        Color darkGreen = Color.FromHex("367D17");
-        Color lightGreen = Color.FromHex("55B835");
+        CoronaColor currentColor;
 
         int xOffset = 0;
         int yOffset = 0;
@@ -33,25 +40,14 @@ namespace JuegoEyeball
         readonly int MinEyeMovement = 16;
         readonly int MaxEyeMovement = 50;
 
-        readonly int FadeSteps = 16;
+        readonly int FadeSteps = 12;
 
         readonly Random random = new Random();
-
-        public enum EyeMovement
-        {
-            LookLeft,
-            LookRight,
-            LookUp,
-            LookDown,
-            Blink,
-            Dilate,
-            RetinaFade,
-            Count
-        }
 
         public EyeballController(IGraphicsDisplay display)
         {
             graphics = new MicroGraphics(display);
+            currentColor = CoronaColors[0];
 
             InitializeEyeballBuffer();
         }
@@ -64,10 +60,10 @@ namespace JuegoEyeball
 
             eyeballGraphics.Clear();
 
-            eyeballGraphics.DrawCircle(eyeballGraphics.Width / 2, eyeballGraphics.Height / 2, 120, outline, true, true);
-            eyeballGraphics.DrawCircle(eyeballGraphics.Width / 2, eyeballGraphics.Height / 2, 112, red, true, true);
-            eyeballGraphics.DrawCircle(eyeballGraphics.Width / 2, eyeballGraphics.Height / 2, 104, pink, true, true);
-            eyeballGraphics.DrawCircle(eyeballGraphics.Width / 2, eyeballGraphics.Height / 2, 96, light, true, true);
+            eyeballGraphics.DrawCircle(eyeballGraphics.Width / 2, eyeballGraphics.Height / 2, 120, EyeOutlineColor, true, true);
+            eyeballGraphics.DrawCircle(eyeballGraphics.Width / 2, eyeballGraphics.Height / 2, 112, EyeOuterRedColor, true, true);
+            eyeballGraphics.DrawCircle(eyeballGraphics.Width / 2, eyeballGraphics.Height / 2, 104, EyeOuterPinkColor, true, true);
+            eyeballGraphics.DrawCircle(eyeballGraphics.Width / 2, eyeballGraphics.Height / 2, 96, EyeWhiteColor, true, true);
         }
 
         public void Delay()
@@ -115,7 +111,7 @@ namespace JuegoEyeball
         void Blink()
         {
             DrawEyeball();
-            graphics.DrawCircle(graphics.Width / 2, graphics.Height / 2, 120, outline, true, true);
+            graphics.DrawCircle(graphics.Width / 2, graphics.Height / 2, 120, EyeOutlineColor, true, true);
             graphics.Show();
             Thread.Sleep(100);
 
@@ -123,7 +119,7 @@ namespace JuegoEyeball
             DrawEyeball();
 
             Thread.Sleep(100);
-            graphics.DrawCircle(graphics.Width / 2, graphics.Height / 2, 120, outline, true, true);
+            graphics.DrawCircle(graphics.Width / 2, graphics.Height / 2, 120, EyeOutlineColor, true, true);
             graphics.Show();
             Thread.Sleep(100);
 
@@ -137,16 +133,18 @@ namespace JuegoEyeball
 
             for (int i = 0; i < FadeSteps; i++)
             {
-                DrawRetinaWithFade(1 - i * step);
+                DrawRetinaWithFade(i * step);
                 graphics.Show();
                 Thread.Sleep(100);
             }
 
             Delay();
 
+            currentColor = CoronaColors[random.Next(CoronaColors.Length)];
+
             for (int i = 0; i < FadeSteps; i++)
             {
-                DrawRetinaWithFade(i * step);
+                DrawRetinaWithFade(1 - i * step);
                 graphics.Show();
                 Thread.Sleep(100);
             }
@@ -192,7 +190,7 @@ namespace JuegoEyeball
 
             for (int i = dilationAmount; i > 0; i--)
             {
-                graphics.DrawCircle(xLast, yLast, 32, lightGreen, true, true);
+                graphics.DrawCircle(xLast, yLast, 32, currentColor.CoronaLight, true, true);
                 graphics.DrawCircle(xLast, yLast, 16 + i, Color.Black, true, true);
                 graphics.Show();
             }
@@ -280,14 +278,14 @@ namespace JuegoEyeball
             }
             else
             {
-                graphics.DrawRectangle(xLast - 40, yLast - 40, 80, 80, light, true);
+                graphics.DrawRectangle(xLast - 40, yLast - 40, 80, 80, EyeWhiteColor, true);
             }
 
             xLast = graphics.Width / 2 + xOffset;
             yLast = graphics.Height / 2 + yOffset;
 
-            graphics.DrawCircle(xLast, yLast, 40, darkGreen, true, true);
-            graphics.DrawCircle(xLast, yLast, 32, lightGreen, true, true);
+            graphics.DrawCircle(xLast, yLast, 40, currentColor.CoronaDark, true, true);
+            graphics.DrawCircle(xLast, yLast, 32, currentColor.CoronaLight, true, true);
 
             graphics.DrawCircle(xLast + (xOffset >> 2), yLast + (yOffset >> 2), 16, Color.Black, true, true);
 
@@ -296,9 +294,9 @@ namespace JuegoEyeball
 
         void DrawRetinaWithFade(double ratio)
         {
-            graphics.DrawCircle(xLast, yLast, 40, BlendColors(darkGreen, light, ratio), true, true);
-            graphics.DrawCircle(xLast, yLast, 32, BlendColors(lightGreen, light, ratio), true, true);
-            graphics.DrawCircle(xLast, yLast, 16, BlendColors(Color.Black, light, ratio), true, true);
+            graphics.DrawCircle(xLast, yLast, 40, BlendColors(currentColor.CoronaDark, EyeWhiteColor, ratio), true, true);
+            graphics.DrawCircle(xLast, yLast, 32, BlendColors(currentColor.CoronaLight, EyeWhiteColor, ratio), true, true);
+            graphics.DrawCircle(xLast, yLast, 16, BlendColors(Color.Black, EyeWhiteColor, ratio), true, true);
         }
     }
 }
