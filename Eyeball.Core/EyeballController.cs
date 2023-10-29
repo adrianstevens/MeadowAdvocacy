@@ -10,7 +10,7 @@ namespace HalloweenEyeball
     {
         readonly MicroGraphics graphics;
 
-        IPixelBuffer eyeballBuffer;
+        IPixelBuffer? eyeballBuffer;
 
         Color EyeOutlineColor = Color.FromHex("241E25");
         Color EyeOuterRedColor = Color.FromHex("F27274");
@@ -42,7 +42,7 @@ namespace HalloweenEyeball
 
         readonly int FadeSteps = 12;
 
-        readonly Random random = new Random();
+        readonly Random random = new();
 
         public EyeballController(IGraphicsDisplay display)
         {
