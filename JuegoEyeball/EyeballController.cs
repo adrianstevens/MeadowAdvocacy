@@ -150,30 +150,6 @@ namespace HalloweenEyeball
             }
         }
 
-        /// <summary>
-        /// Blend two colors together
-        /// </summary>
-        /// <param name="color1">Color 1</param>
-        /// <param name="color2">Color 2</param>
-        /// <param name="ratio">The ratio or percentage of color 2</param>
-        /// <returns></returns>
-        public static Color BlendColors(Color color1, Color color2, double ratio)
-        {
-            if (ratio == 0)
-            {
-                return color1;
-            }
-            if (ratio == 1)
-            {
-                return color2;
-            }
-
-            byte r = (byte)(color1.R * (1 - ratio) + color2.R * ratio);
-            byte g = (byte)(color1.G * (1 - ratio) + color2.G * ratio);
-            byte b = (byte)(color1.B * (1 - ratio) + color2.B * ratio);
-            return Color.FromRgb(r, g, b);
-        }
-
         void Dilate()
         {
             DrawEyeball();
@@ -294,9 +270,9 @@ namespace HalloweenEyeball
 
         void DrawRetinaWithFade(double ratio)
         {
-            graphics.DrawCircle(xLast, yLast, 40, BlendColors(currentColor.CoronaDark, EyeWhiteColor, ratio), true, true);
-            graphics.DrawCircle(xLast, yLast, 32, BlendColors(currentColor.CoronaLight, EyeWhiteColor, ratio), true, true);
-            graphics.DrawCircle(xLast, yLast, 16, BlendColors(Color.Black, EyeWhiteColor, ratio), true, true);
+            graphics.DrawCircle(xLast, yLast, 40, currentColor.CoronaLight.Blend(EyeWhiteColor, ratio), true, true);
+            graphics.DrawCircle(xLast, yLast, 32, currentColor.CoronaLight.Blend(EyeWhiteColor, ratio), true, true);
+            graphics.DrawCircle(xLast, yLast, 16, Color.Black.Blend(EyeWhiteColor, ratio), true, true);
         }
     }
 }
