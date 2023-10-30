@@ -54,9 +54,20 @@ namespace HalloweenEyeball
 
         void InitializeEyeballBuffer()
         {
-            eyeballBuffer = new BufferRgb444(240, 240);
+            if (graphics.ColorMode == ColorMode.Format12bppRgb444)
+            {
+                eyeballBuffer = new BufferRgb444(240, 240);
+            }
+            else if (graphics.ColorMode == ColorMode.Format16bppRgb565)
+            {
+                eyeballBuffer = new BufferRgb565(240, 240);
+            }
+            else if (graphics.ColorMode == ColorMode.Format24bppRgb888)
+            {
+                eyeballBuffer = new BufferRgb888(240, 240);
+            }
 
-            var eyeballGraphics = new MicroGraphics(eyeballBuffer as PixelBufferBase, false);
+            var eyeballGraphics = new MicroGraphics(eyeballBuffer, false);
 
             eyeballGraphics.Clear();
 
@@ -270,7 +281,7 @@ namespace HalloweenEyeball
 
         void DrawRetinaWithFade(double ratio)
         {
-            graphics.DrawCircle(xLast, yLast, 40, currentColor.CoronaLight.Blend(EyeWhiteColor, ratio), true, true);
+            graphics.DrawCircle(xLast, yLast, 40, currentColor.CoronaDark.Blend(EyeWhiteColor, ratio), true, true);
             graphics.DrawCircle(xLast, yLast, 32, currentColor.CoronaLight.Blend(EyeWhiteColor, ratio), true, true);
             graphics.DrawCircle(xLast, yLast, 16, Color.Black.Blend(EyeWhiteColor, ratio), true, true);
         }
