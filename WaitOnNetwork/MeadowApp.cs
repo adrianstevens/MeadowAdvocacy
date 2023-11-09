@@ -14,11 +14,13 @@ namespace WaitOnNetwork
     {
         RgbPwmLed onboardLed;
 
-        Task networkStartedTask;
+        TaskCompletionSource<bool> networkStartedTask;
 
         public override Task Initialize()
         {
             Resolver.Log.Info("Initialize...");
+
+            networkStartedTask = new TaskCompletionSource<bool>();
 
             onboardLed = new RgbPwmLed(
                 redPwmPin: Device.Pins.OnboardLedRed,
@@ -27,14 +29,11 @@ namespace WaitOnNetwork
                 CommonType.CommonAnode);
 
             var wifi = Device.NetworkAdapters.Primary<IWiFiNetworkAdapter>();
+            wifi.NetworkConnected += Wifi_NetworkConnected;
 
             if (wifi.IsConnected)
             {
-                networkStartedTask = Task.CompletedTask;
-            }
-            else
-            {
-                wifi.NetworkConnected += Wifi_NetworkConnected;
+                networkStartedTask.SetResult(true);
             }
 
             return Task.CompletedTask;
@@ -42,14 +41,15 @@ namespace WaitOnNetwork
 
         private void Wifi_NetworkConnected(INetworkAdapter sender, NetworkConnectionEventArgs args)
         {
-            networkStartedTask = Task.CompletedTask;
+            Resolver.Log.Info("WiFi connected");
+            networkStartedTask.SetResult(true);
         }
 
         public override async Task Run()
         {
             Resolver.Log.Info("Don't run until we're connected...");
 
-            await networkStartedTask;
+            await networkStartedTask.Task;
 
             await CycleColors(TimeSpan.FromMilliseconds(1000));
         }
