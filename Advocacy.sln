@@ -111,6 +111,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eyeball.Core", "Eyeball.Cor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eyeball.F7", "F7Eyeball\Eyeball.F7.csproj", "{96F9B992-DD0F-44F5-BA2A-60F74EA31C1C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaitOnNetwork", "WaitOnNetwork\WaitOnNetwork.csproj", "{EBD1C2BE-1BF6-4775-A259-8AF1B75946DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -411,6 +413,12 @@ Global
 		{96F9B992-DD0F-44F5-BA2A-60F74EA31C1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96F9B992-DD0F-44F5-BA2A-60F74EA31C1C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{96F9B992-DD0F-44F5-BA2A-60F74EA31C1C}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{EBD1C2BE-1BF6-4775-A259-8AF1B75946DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBD1C2BE-1BF6-4775-A259-8AF1B75946DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBD1C2BE-1BF6-4775-A259-8AF1B75946DB}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{EBD1C2BE-1BF6-4775-A259-8AF1B75946DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBD1C2BE-1BF6-4775-A259-8AF1B75946DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBD1C2BE-1BF6-4775-A259-8AF1B75946DB}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

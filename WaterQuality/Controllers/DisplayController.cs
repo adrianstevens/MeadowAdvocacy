@@ -1,5 +1,4 @@
-﻿using Meadow.Devices;
-using Meadow.Foundation;
+﻿using Meadow.Foundation;
 using Meadow.Foundation.Graphics;
 
 namespace WaterQualityTracker
@@ -7,8 +6,6 @@ namespace WaterQualityTracker
     internal class DisplayController
     {
         readonly MicroGraphics graphics;
-
-        readonly IProjectLabHardware projectLab;
 
         public DisplayController(IGraphicsDisplay display)
         {
@@ -20,8 +17,10 @@ namespace WaterQualityTracker
             Meadow.Units.ConcentrationInWater? Chlorophyl,
             Meadow.Units.ConcentrationInWater? BlueGreenAlgae,
             Meadow.Units.Conductivity? ElectricalConductivity,
-            Meadow.Units.PotentialHydrogen? PH, Meadow.Units.Turbidity? Turbidity,
-            Meadow.Units.Temperature? Temperature, Meadow.Units.Voltage? OxidationReductionPotential) data)
+            Meadow.Units.PotentialHydrogen? PH,
+            Meadow.Units.Turbidity? Turbidity,
+            Meadow.Units.Temperature? Temperature,
+            Meadow.Units.Voltage? OxidationReductionPotential) data)
         {
             graphics.Clear();
 
