@@ -18,8 +18,8 @@ namespace DeskClock
 
         IWiFiNetworkAdapter wifi;
 
-        private const string WIFI_NAME = "BunnyMesh";
-        private const string WIFI_PASSWORD = "zxpvi29wt8";
+        private const string WIFI_NAME = "";
+        private const string WIFI_PASSWORD = "";
 
         void DrawTime(int hour, int minute, int second)
         {
@@ -50,15 +50,11 @@ namespace DeskClock
                 DrawTime(hour, DateTime.Now.Minute, DateTime.Now.Second);
                 Thread.Sleep(1000);
             }
-
-            return base.Run();
         }
 
-        private async void Wifi_NetworkConnected(INetworkAdapter sender, NetworkConnectionEventArgs args)
+        private void Wifi_NetworkConnected(INetworkAdapter sender, NetworkConnectionEventArgs args)
         {
-
-
-            UpdateClock();
+            _ = UpdateClock();
         }
 
         public override Task Initialize()
