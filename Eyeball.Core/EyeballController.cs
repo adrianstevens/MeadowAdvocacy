@@ -20,7 +20,7 @@ namespace HalloweenEyeball
         readonly CoronaColor[] CoronaColors = new CoronaColor[]
         {
             new CoronaColor { CoronaLight = Color.Red, CoronaDark = Color.DarkRed },
-            new CoronaColor { CoronaLight = Color.FromHex("367D17"), CoronaDark = Color.FromHex("55B835") },
+            new CoronaColor { CoronaLight = Color.FromHex("55B835"), CoronaDark = Color.FromHex("367D17") },
             new CoronaColor { CoronaLight = Color.Cyan, CoronaDark = Color.DarkCyan },
             new CoronaColor { CoronaLight = Color.Yellow, CoronaDark = Color.DarkGoldenrod },
             new CoronaColor { CoronaLight = Color.Orange, CoronaDark = Color.DarkOrange },
@@ -37,7 +37,7 @@ namespace HalloweenEyeball
         readonly int MovementStep = 4;
         readonly int ReturnStep = 12;
 
-        readonly int MinEyeMovement = 16;
+        readonly int MinEyeMovement = 24;
         readonly int MaxEyeMovement = 50;
 
         readonly int FadeSteps = 12;
@@ -79,7 +79,7 @@ namespace HalloweenEyeball
 
         public void Delay()
         {
-            Thread.Sleep(random.Next(1000, 5000));
+            Thread.Sleep(random.Next(500, 2000));
         }
 
         public void RandomEyeMovement()
@@ -90,15 +90,23 @@ namespace HalloweenEyeball
             {
                 case EyeMovement.LookLeft:
                     LookLeft();
+                    Delay();
+                    CenterEye();
                     break;
                 case EyeMovement.LookRight:
                     LookRight();
+                    Delay();
+                    CenterEye();
                     break;
                 case EyeMovement.LookUp:
                     LookUp();
+                    Delay();
+                    CenterEye();
                     break;
                 case EyeMovement.LookDown:
                     LookDown();
+                    Delay();
+                    CenterEye();
                     break;
                 case EyeMovement.Blink:
                     Blink();
@@ -150,8 +158,13 @@ namespace HalloweenEyeball
             }
 
             Delay();
+                
+            var oldColor = currentColor;
 
-            currentColor = CoronaColors[random.Next(CoronaColors.Length)];
+            while(oldColor.CoronaLight == currentColor.CoronaLight)
+            {
+                currentColor = CoronaColors[random.Next(CoronaColors.Length)];
+            }
 
             for (int i = 0; i < FadeSteps; i++)
             {
