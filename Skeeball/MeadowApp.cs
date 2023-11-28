@@ -8,7 +8,9 @@ namespace Skeeball;
 // Change F7FeatherV2 to F7FeatherV1 for V1.x boards
 public class MeadowApp : App<F7CoreComputeV2>
 {
-    SkeeBallController skeeball;
+    SkeeBallCoordinator skeeball;
+
+    SkeeballHardware hardware;
 
     IWiFiNetworkAdapter wifi;
 
@@ -19,8 +21,11 @@ public class MeadowApp : App<F7CoreComputeV2>
     {
         Resolver.Log.Info("Initialize ...");
 
-        skeeball = new SkeeBallController();
-        await skeeball.Initialize();
+        hardware = new SkeeballHardware();
+        await hardware.Initialize();
+
+        skeeball = new SkeeBallCoordinator(hardware);
+        skeeball.Initialize();
 
         wifi = Device.NetworkAdapters.Primary<IWiFiNetworkAdapter>();
         wifi.NetworkConnected += Wifi_NetworkConnected;

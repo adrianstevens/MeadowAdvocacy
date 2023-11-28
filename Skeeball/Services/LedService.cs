@@ -3,11 +3,11 @@ using System.Threading;
 
 namespace Skeeball.Controllers;
 
-internal class LEDController
+internal class LedService
 {
     readonly ILed[] leds;
 
-    public LEDController()
+    public LedService()
     {
         leds = new ILed[5];
     }

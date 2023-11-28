@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace Skeeball.Controllers;
 
-internal class SecondaryDisplayController
+internal class SecondaryDisplayService
 {
     readonly MicroGraphics graphics;
 
@@ -20,7 +20,7 @@ internal class SecondaryDisplayController
 
     Color ScoreColor => Color.FromHex("#E2B08F");
 
-    public SecondaryDisplayController(IGraphicsDisplay display)
+    public SecondaryDisplayService(IGraphicsDisplay display)
     {
         graphics = new MicroGraphics(display)
         {
@@ -159,7 +159,7 @@ internal class SecondaryDisplayController
     byte[] LoadResource(string filename)
     {
         var assembly = Assembly.GetExecutingAssembly();
-        var resourceName = $"Skeeball.{filename}";
+        var resourceName = $"Skeeball.Resources.{filename}";
 
         using Stream stream = assembly.GetManifestResourceStream(resourceName);
         using var ms = new MemoryStream();

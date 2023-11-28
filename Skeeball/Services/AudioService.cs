@@ -4,7 +4,7 @@ using Skeeball.Songs;
 
 namespace Skeeball.Controllers;
 
-internal class AudioController
+internal class AudioService
 {
     readonly MicroAudio audio;
 
@@ -12,7 +12,7 @@ internal class AudioController
 
     public bool PlaySound { get; set; } = true;
 
-    internal AudioController(IToneGenerator speaker)
+    internal AudioService(IToneGenerator speaker)
     {
         audio = new MicroAudio(speaker);
 

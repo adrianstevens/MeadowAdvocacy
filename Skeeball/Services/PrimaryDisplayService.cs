@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Skeeball.Controllers;
 
-internal class PrimaryDisplayController
+internal class PrimaryDisplayService
 {
     readonly MicroGraphics graphics;
 
@@ -27,7 +27,7 @@ internal class PrimaryDisplayController
     readonly IFont fontText;
     readonly IFont fontNumber;
 
-    public PrimaryDisplayController(IGraphicsDisplay display)
+    public PrimaryDisplayService(IGraphicsDisplay display)
     {
         graphics = new MicroGraphics(display);
         fontText = new Font4x8();

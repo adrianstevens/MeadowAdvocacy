@@ -13,16 +13,16 @@
     <None Remove="carrot1.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="boston1.jpg">
+    <EmbeddedResource Include="Resources\boston1.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="bunny1.jpg">
+    <EmbeddedResource Include="Resources\bunny1.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="bunny2.jpg">
+    <EmbeddedResource Include="Resources\bunny2.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="carrot1.jpg">
+    <EmbeddedResource Include="Resources\carrot1.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>

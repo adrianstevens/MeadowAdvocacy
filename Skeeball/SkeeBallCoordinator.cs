@@ -4,29 +4,31 @@ using System.Threading.Tasks;
 
 namespace Skeeball;
 
-internal class SkeeBallController
+internal class SkeeBallCoordinator
 {
-    SkeeballHardware hardware;
-    PrimaryDisplayController primaryDisplay;
-    SecondaryDisplayController secondaryDisplay;
-    AudioController audio;
-    LEDController leds;
+    readonly ISkeeballHardware hardware;
+
+    PrimaryDisplayService primaryDisplay;
+    SecondaryDisplayService secondaryDisplay;
+    AudioService audio;
+    LedService leds;
 
     SkeeballGame game;
 
     readonly Random random = new();
 
-    public async Task Initialize()
+    public SkeeBallCoordinator(ISkeeballHardware hardware)
     {
-        hardware = new SkeeballHardware();
+        this.hardware = hardware;
+    }
 
-        await hardware.Initialize();
-
-        secondaryDisplay = new SecondaryDisplayController(hardware.BottomDisplay);
+    public void Initialize()
+    {
+        secondaryDisplay = new SecondaryDisplayService(hardware.BottomDisplay);
         secondaryDisplay.Clear();
-        primaryDisplay = new PrimaryDisplayController(hardware.TopDisplay);
-        audio = new AudioController(hardware.Speaker);
-        leds = new LEDController();
+        primaryDisplay = new PrimaryDisplayService(hardware.TopDisplay);
+        audio = new AudioService(hardware.Speaker);
+        leds = new LedService();
 
         hardware.StartButton.Clicked += StartButton_Clicked;
         hardware.StartButton.LongClicked += StartButton_LongClicked;
