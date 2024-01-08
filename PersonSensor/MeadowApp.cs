@@ -29,7 +29,17 @@ namespace Arcs
                 for (int i = 0; i < sensorData.NumberOfFaces; ++i)
                 {
                     var face = sensorData.FaceData[i];
-                    graphics.DrawRectangle(face.BoxLeft / 2, face.BoxBottom / 2, (face.BoxRight - face.BoxLeft) / 2, (face.BoxTop - face.BoxRight) / 2, Color.Red, face.IsFacing == 1);
+
+                    if (face.BoxBottom > face.BoxTop)
+                    {
+                        graphics.DrawRectangle(face.BoxLeft / 2, face.BoxTop / 2, (face.BoxRight - face.BoxLeft) / 2, (face.BoxBottom - face.BoxTop) / 2, Color.Red, face.IsFacing == 1);
+                    }
+                    else
+                    {
+                        graphics.DrawRectangle(face.BoxLeft / 2, face.BoxBottom / 2, (face.BoxRight - face.BoxLeft) / 2, (face.BoxTop - face.BoxBottom) / 2, Color.Red, face.IsFacing == 1);
+                    }
+
+
                     Console.WriteLine($"Face {i}: {face.BoxLeft}, {face.BoxBottom}, {face.BoxRight}, {face.BoxTop}, {face.IsFacing}");
                 }
 
