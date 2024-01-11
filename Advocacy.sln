@@ -119,6 +119,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PersonSensor", "PersonSenso
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sensors.Motion.UsefulSensors.PersonSensor", "..\Meadow.Foundation.CompositeDevices\Source\Sensors.Motion.UsefulSensors.PersonSensor\Driver\Sensors.Motion.UsefulSensors.PersonSensor.csproj", "{A50416B8-D011-4A3A-B70F-9B46DED15695}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarField", "Starfield\StarField.csproj", "{817D6CE5-A6C2-42DA-B8D9-6E3E0A14833A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gradients", "Gradients\Gradients.csproj", "{556AEA6A-10C4-44C8-9978-75E7D8464675}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -443,6 +447,18 @@ Global
 		{A50416B8-D011-4A3A-B70F-9B46DED15695}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A50416B8-D011-4A3A-B70F-9B46DED15695}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A50416B8-D011-4A3A-B70F-9B46DED15695}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{817D6CE5-A6C2-42DA-B8D9-6E3E0A14833A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{817D6CE5-A6C2-42DA-B8D9-6E3E0A14833A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{817D6CE5-A6C2-42DA-B8D9-6E3E0A14833A}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{817D6CE5-A6C2-42DA-B8D9-6E3E0A14833A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{817D6CE5-A6C2-42DA-B8D9-6E3E0A14833A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{817D6CE5-A6C2-42DA-B8D9-6E3E0A14833A}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{556AEA6A-10C4-44C8-9978-75E7D8464675}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{556AEA6A-10C4-44C8-9978-75E7D8464675}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{556AEA6A-10C4-44C8-9978-75E7D8464675}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{556AEA6A-10C4-44C8-9978-75E7D8464675}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{556AEA6A-10C4-44C8-9978-75E7D8464675}.Release|Any CPU.Build.0 = Release|Any CPU
+		{556AEA6A-10C4-44C8-9978-75E7D8464675}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
