@@ -1,11 +1,11 @@
-﻿using Meadow.Foundation.Audio;
+﻿using Meadow.Peripherals.Speakers;
 using static SongPlayer.Note;
 
 namespace SongPlayer
 {
     internal class SkeeBallSong : SongPlayer
     {
-        public SkeeBallSong(PiezoSpeaker speaker) : base(speaker)
+        public SkeeBallSong(IToneGenerator speaker) : base(speaker)
         {
             AddNotes();
         }

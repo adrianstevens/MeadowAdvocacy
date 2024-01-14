@@ -1,4 +1,4 @@
-﻿using Meadow.Foundation;
+﻿using Meadow;
 using Meadow.Foundation.Graphics;
 using Meadow.Foundation.Graphics.Buffers;
 using System;
@@ -158,10 +158,10 @@ namespace HalloweenEyeball
             }
 
             Delay();
-                
+
             var oldColor = currentColor;
 
-            while(oldColor.CoronaLight == currentColor.CoronaLight)
+            while (oldColor.CoronaLight == currentColor.CoronaLight)
             {
                 currentColor = CoronaColors[random.Next(CoronaColors.Length)];
             }

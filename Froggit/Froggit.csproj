@@ -4,6 +4,7 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <OutputType>Library</OutputType>
     <AssemblyName>App</AssemblyName>
+	<LangVersion>10.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="SimpleJsonSerializer" Version="0.0.2" />

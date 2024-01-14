@@ -31,20 +31,20 @@ namespace Starfield
             graphics.Clear();
 
             int size = 70;
-            graphics.DrawHorizontalGradient(10, 5, size, size, Color.Yellow, Color.Purple);
-            graphics.DrawHorizontalGradient(90, 5, size, size, Color.Orange, Color.Blue);
-            graphics.DrawHorizontalGradient(170, 5, size, size, Color.Red, Color.Green);
-            graphics.DrawHorizontalGradient(250, 5, size, size, Color.White, Color.Black);
+            graphics.DrawHorizontalGradient(5, 5, size, size, Color.Yellow, Color.Purple);
+            graphics.DrawHorizontalGradient(85, 5, size, size, Color.Orange, Color.Blue);
+            graphics.DrawHorizontalGradient(165, 5, size, size, Color.Red, Color.Green);
+            graphics.DrawHorizontalGradient(245, 5, size, size, Color.White, Color.Black);
 
-            graphics.DrawVerticalGradient(10, 85, size, size, Color.Yellow, Color.LawnGreen);
-            graphics.DrawVerticalGradient(90, 85, size, size, Color.LawnGreen, Color.Cyan);
-            graphics.DrawVerticalGradient(170, 85, size, size, Color.Cyan, Color.Blue);
-            graphics.DrawVerticalGradient(250, 85, size, size, Color.Blue, Color.Purple);
+            graphics.DrawVerticalGradient(5, 85, size, size, Color.Yellow, Color.LawnGreen);
+            graphics.DrawVerticalGradient(85, 85, size, size, Color.LawnGreen, Color.Cyan);
+            graphics.DrawVerticalGradient(165, 85, size, size, Color.Cyan, Color.Blue);
+            graphics.DrawVerticalGradient(245, 85, size, size, Color.Blue, Color.Purple);
 
-            graphics.DrawVerticalGradient(10, 165, size, size, Color.Purple, Color.Red);
-            graphics.DrawVerticalGradient(90, 165, size, size, Color.Red, Color.Orange);
-            graphics.DrawVerticalGradient(170, 165, size, size, Color.Orange, Color.Yellow);
-            graphics.DrawVerticalGradient(250, 165, size, size, Color.Yellow, Color.Green);
+            graphics.DrawVerticalGradient(5, 165, size, size, Color.Purple, Color.Red);
+            graphics.DrawVerticalGradient(85, 165, size, size, Color.Red, Color.Orange);
+            graphics.DrawVerticalGradient(165, 165, size, size, Color.Orange, Color.Yellow);
+            graphics.DrawVerticalGradient(245, 165, size, size, Color.Yellow, Color.Green);
 
             graphics.Show();
 

@@ -87,7 +87,8 @@ namespace Froggit
 
         double lastTime;
         int count = 0;
-        Stopwatch sw = new Stopwatch();
+        readonly Stopwatch sw = new();
+
         void UpdateFrame()
         {
             if (count == 0)

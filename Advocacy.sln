@@ -123,6 +123,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarField", "Starfield\Star
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gradients", "Gradients\Gradients.csproj", "{556AEA6A-10C4-44C8-9978-75E7D8464675}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameOfLife", "GameOfLife\GameOfLife.csproj", "{426A7D7F-2D57-446D-8BCE-8B36D8B7CC66}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -459,6 +461,12 @@ Global
 		{556AEA6A-10C4-44C8-9978-75E7D8464675}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{556AEA6A-10C4-44C8-9978-75E7D8464675}.Release|Any CPU.Build.0 = Release|Any CPU
 		{556AEA6A-10C4-44C8-9978-75E7D8464675}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{426A7D7F-2D57-446D-8BCE-8B36D8B7CC66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{426A7D7F-2D57-446D-8BCE-8B36D8B7CC66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{426A7D7F-2D57-446D-8BCE-8B36D8B7CC66}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{426A7D7F-2D57-446D-8BCE-8B36D8B7CC66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{426A7D7F-2D57-446D-8BCE-8B36D8B7CC66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{426A7D7F-2D57-446D-8BCE-8B36D8B7CC66}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

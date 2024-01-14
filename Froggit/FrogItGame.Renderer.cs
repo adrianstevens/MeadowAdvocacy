@@ -1,4 +1,5 @@
-﻿using Meadow.Foundation.Audio;
+﻿using Meadow;
+using Meadow.Foundation.Audio;
 using Meadow.Foundation.Graphics;
 using System;
 
@@ -179,15 +180,15 @@ namespace Froggit
         {
             if (state == FrogState.Left)
             {
-                graphics.DrawBuffer(x, y, frogLeft);
+                graphics.DrawBufferWithTransparencyColor(x, y, frogLeft, Color.Black);
             }
             else if (state == FrogState.Forward)
             {
-                graphics.DrawBuffer(x, y, frogUp);
+                graphics.DrawBufferWithTransparencyColor(x, y, frogUp, Color.Black);
             }
             else if (state == FrogState.Right)
             {
-                graphics.DrawBuffer(x, y, frogRight);
+                graphics.DrawBufferWithTransparencyColor(x, y, frogRight, Color.Black);
             }
             else
             {
