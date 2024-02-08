@@ -1,5 +1,6 @@
 ﻿using Meadow;
 using Meadow.Foundation.Graphics;
+using Meadow.Peripherals.Displays;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,7 +28,7 @@ internal class PrimaryDisplayService
     readonly IFont fontText;
     readonly IFont fontNumber;
 
-    public PrimaryDisplayService(IGraphicsDisplay display)
+    public PrimaryDisplayService(IPixelDisplay display)
     {
         graphics = new MicroGraphics(display);
         fontText = new Font4x8();

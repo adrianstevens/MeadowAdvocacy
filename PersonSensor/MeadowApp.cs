@@ -1,7 +1,7 @@
 ﻿using Meadow;
 using Meadow.Devices;
 using Meadow.Foundation.Graphics;
-using Meadow.Foundation.Sensors;
+using Meadow.Foundation.Sensors.Camera;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

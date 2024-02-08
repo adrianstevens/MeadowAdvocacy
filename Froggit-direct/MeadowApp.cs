@@ -5,6 +5,7 @@ using Meadow.Foundation.Audio;
 using Meadow.Foundation.Displays;
 using Meadow.Foundation.Graphics;
 using Meadow.Hardware;
+using Meadow.Peripherals.Displays;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,9 +17,9 @@ namespace Froggit
     {
         FrogItGame game;
         MicroGraphics graphics;
-        MicroAudio audio;
+        readonly MicroAudio audio;
 
-        IWiFiNetworkAdapter wifi;
+        readonly IWiFiNetworkAdapter wifi;
 
         private const string WIFI_NAME = "TELUSDC1E"; //"BunnyMesh";
         private const string WIFI_PASSWORD = "tnrXFa6MVqAU"; //"zxpvi29wt8";

@@ -1,5 +1,6 @@
 ﻿using Meadow;
 using Meadow.Foundation.Graphics.Buffers;
+using Meadow.Peripherals.Displays;
 
 namespace Froggit
 {

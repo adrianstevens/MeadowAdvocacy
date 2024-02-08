@@ -1,5 +1,6 @@
 ﻿using Meadow;
 using Meadow.Foundation.Graphics;
+using Meadow.Peripherals.Displays;
 
 namespace WaterQualityTracker
 {
@@ -7,7 +8,7 @@ namespace WaterQualityTracker
     {
         readonly MicroGraphics graphics;
 
-        public DisplayController(IGraphicsDisplay display)
+        public DisplayController(IPixelDisplay display)
         {
             graphics = new MicroGraphics(display);
         }

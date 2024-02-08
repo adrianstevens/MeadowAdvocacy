@@ -1,8 +1,8 @@
 ﻿using Meadow.Foundation.Displays;
-using Meadow.Foundation.Graphics;
 using Meadow.Foundation.ICs.IOExpanders;
 using Meadow.Foundation.Sensors.Buttons;
 using Meadow.Hardware;
+using Meadow.Peripherals.Displays;
 using Meadow.Peripherals.Sensors.Buttons;
 
 namespace Meadow.Foundation.Featherwings;
@@ -12,7 +12,7 @@ public class MiniTFTJoystickFeatherwingV1
     /// <summary>
     /// Returns the TFT display object
     /// </summary>
-    public IGraphicsDisplay Display { get; protected set; }
+    public IPixelDisplay Display { get; protected set; }
 
     /// <summary>
     /// Returns A button

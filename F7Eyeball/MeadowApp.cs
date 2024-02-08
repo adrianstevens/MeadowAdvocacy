@@ -4,7 +4,9 @@ using Meadow.Devices;
 using Meadow.Foundation.Displays;
 using Meadow.Foundation.Leds;
 using Meadow.Foundation.Sensors.Motion;
+using Meadow.Peripherals.Displays;
 using Meadow.Peripherals.Leds;
+using Meadow.Units;
 using System;
 using System.Threading.Tasks;
 
@@ -16,7 +18,7 @@ namespace F7Eyeball
 
         Hcsens0040 motionSensor;
 
-        bool demoMode = false;
+        readonly bool demoMode = false;
 
         public override Task Initialize()
         {
@@ -25,8 +27,8 @@ namespace F7Eyeball
             motionSensor = new Hcsens0040(Device.Pins.D04);
             motionSensor.OnMotionDetected += MotionSensor_OnMotionDetected;
 
-            var spibus = Device.CreateSpiBus(Device.Pins.SCK, Device.Pins.MOSI, Device.Pins.MISO, new Meadow.Units.Frequency(48000, Meadow.Units.Frequency.UnitType.Kilohertz));
-            var display = new Ili9341(spibus, Device.Pins.D13, Device.Pins.D14, Device.Pins.D15, 240, 320, Meadow.Foundation.Graphics.ColorMode.Format12bppRgb444);
+            var spibus = Device.CreateSpiBus(Device.Pins.SCK, Device.Pins.MOSI, Device.Pins.MISO, new Frequency(48000, Frequency.UnitType.Kilohertz));
+            var display = new Ili9341(spibus, Device.Pins.D13, Device.Pins.D14, Device.Pins.D15, 240, 320, ColorMode.Format12bppRgb444);
 
             eyeballController = new EyeballController(display);
 
@@ -36,7 +38,7 @@ namespace F7Eyeball
                 bluePwmPin: Device.Pins.OnboardLedBlue,
                 CommonType.CommonAnode);
 
-            onboardLed.StartPulse(Meadow.Foundation.Color.Red);
+            onboardLed.StartPulse(Color.Red);
 
             return Task.CompletedTask;
         }

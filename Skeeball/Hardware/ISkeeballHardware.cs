@@ -1,4 +1,4 @@
-﻿using Meadow.Foundation.Graphics;
+﻿using Meadow.Peripherals.Displays;
 using Meadow.Peripherals.Leds;
 using Meadow.Peripherals.Sensors.Buttons;
 using Meadow.Peripherals.Speakers;
@@ -7,8 +7,8 @@ namespace Skeeball;
 
 internal interface ISkeeballHardware
 {
-    public IGraphicsDisplay TopDisplay { get; }
-    public IGraphicsDisplay BottomDisplay { get; }
+    public IPixelDisplay TopDisplay { get; }
+    public IPixelDisplay BottomDisplay { get; }
 
     public IToneGenerator Speaker { get; }
 

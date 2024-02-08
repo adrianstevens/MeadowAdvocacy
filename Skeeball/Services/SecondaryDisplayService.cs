@@ -1,6 +1,7 @@
 ﻿using Meadow;
 using Meadow.Foundation.Graphics;
 using Meadow.Foundation.Graphics.Buffers;
+using Meadow.Peripherals.Displays;
 using SimpleJpegDecoder;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ internal class SecondaryDisplayService
 
     Color ScoreColor => Color.FromHex("#E2B08F");
 
-    public SecondaryDisplayService(IGraphicsDisplay display)
+    public SecondaryDisplayService(IPixelDisplay display)
     {
         graphics = new MicroGraphics(display)
         {

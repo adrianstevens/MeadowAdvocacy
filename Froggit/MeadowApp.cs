@@ -17,8 +17,8 @@ namespace Froggit
         IJuegoHardware juego;
         FrogItGame game;
         MicroGraphics graphics;
-        MicroAudio moveAudio;
-        MicroAudio effectsAudio;
+        readonly MicroAudio moveAudio;
+        readonly MicroAudio effectsAudio;
 
         IWiFiNetworkAdapter wifi;
 
@@ -46,8 +46,8 @@ namespace Froggit
                 CurrentFont = new Font12x16(),
             };
 
-            moveAudio = new MicroAudio(juego.LeftSpeaker);
-            effectsAudio = new MicroAudio(juego.RightSpeaker);
+            //moveAudio = new MicroAudio(juego.LeftSpeaker);
+            //effectsAudio = new MicroAudio(juego.RightSpeaker);
 
             game = new FrogItGame();
 
@@ -72,7 +72,7 @@ namespace Froggit
         {
             Console.WriteLine("Run...");
 
-            juego.BlinkyLed.SetBrightness(1.0f);
+            //juego.BlinkyLed.SetBrightness(1.0f);
 
             //await HighScoreService.PostTime("Juego0", 1000, 20);
             //await HighScoreService.PostTime("Juego0", 500, 15);

@@ -1,6 +1,6 @@
 ﻿using Meadow.Devices;
-using Meadow.Foundation.Graphics;
 using Meadow.Foundation.Leds;
+using Meadow.Peripherals.Displays;
 using Meadow.Peripherals.Leds;
 using Meadow.Peripherals.Sensors.Buttons;
 using Meadow.Peripherals.Speakers;
@@ -11,8 +11,8 @@ namespace Skeeball;
 internal class SkeeballHardware : ISkeeballHardware
 {
     protected IProjectLabHardware ProjLab { get; private set; }
-    public IGraphicsDisplay TopDisplay { get; private set; }
-    public IGraphicsDisplay BottomDisplay { get; private set; }
+    public IPixelDisplay TopDisplay { get; private set; }
+    public IPixelDisplay BottomDisplay { get; private set; }
 
     public IToneGenerator Speaker { get; private set; }
 
