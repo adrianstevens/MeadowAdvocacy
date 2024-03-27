@@ -1,5 +1,4 @@
-﻿using Froggit.Services;
-using Meadow;
+﻿using Meadow;
 using Meadow.Devices;
 using Meadow.Foundation.Audio;
 using Meadow.Foundation.Graphics;
@@ -139,7 +138,7 @@ namespace Froggit
                 graphics.DrawText(160, 140, $"Your time: {game.GameTime:F1}s", FrogItGame.WaterColor, ScaleFactor.X1, HorizontalAlignment.Center);
                 graphics.DrawText(160, 160, $"Your died: {game.Deaths} time(s)", FrogItGame.WaterColor, ScaleFactor.X1, HorizontalAlignment.Center);
 
-                _ = HighScoreService.PostTime("Juego1", (int)game.GameTime, game.Deaths);
+                // _ = HighScoreService.PostTime("Juego1", (int)game.GameTime, game.Deaths);
             }
             else
             {
