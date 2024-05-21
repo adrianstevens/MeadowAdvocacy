@@ -3,7 +3,7 @@ using Meadow.Foundation.Displays;
 using Meadow.Foundation.Graphics;
 using Mystify.Core;
 
-namespace SilkDisplay_Sample;
+namespace Mystify_Silk;
 
 //<!=SNIP=>
 
@@ -56,8 +56,8 @@ public class Program
                 graphics.Clear();
 
                 graphics.DrawText(10, 10, "Mystify", Color.White);
-                //  graphics.Show();
-                //  continue;
+                // graphics.Show();
+                // continue;
 
                 //draw the shapes
                 for (int j = 0; j < mystify.Shapes.Length; j++)

@@ -141,7 +141,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Displays.Silk", "..\Meadow.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mystify.ProjectLab", "Mystify\Mystify.ProjectLab\Mystify.ProjectLab.csproj", "{DD2FE77B-5CF8-4BE6-909E-862B7FADA3EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mystify.Core", "Mystify\Mystify.Core\Mystify.Core.csproj", "{8E16710E-9A5C-4F60-9AC8-D24135B81658}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mystify.Core", "Mystify\Mystify.Core\Mystify.Core.csproj", "{8E16710E-9A5C-4F60-9AC8-D24135B81658}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LineChart", "LineChart\LineChart.csproj", "{3724E5B5-B1E6-489E-B9CA-818D3C8CA119}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -523,6 +525,10 @@ Global
 		{8E16710E-9A5C-4F60-9AC8-D24135B81658}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E16710E-9A5C-4F60-9AC8-D24135B81658}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E16710E-9A5C-4F60-9AC8-D24135B81658}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3724E5B5-B1E6-489E-B9CA-818D3C8CA119}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3724E5B5-B1E6-489E-B9CA-818D3C8CA119}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3724E5B5-B1E6-489E-B9CA-818D3C8CA119}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3724E5B5-B1E6-489E-B9CA-818D3C8CA119}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
