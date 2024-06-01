@@ -22,10 +22,10 @@ namespace Meadow.Foundation.Displays
         public ColorMode SupportedColorModes => ColorMode.Format1bpp;
 
         /// <inheritdoc/>
-        public int Height => 144;
+        public int Height => 168;
 
         /// <inheritdoc/>
-        public int Width => 168;
+        public int Width => 144;
 
         /// <inheritdoc/>
         public IPixelBuffer PixelBuffer => imageBuffer;

@@ -63,7 +63,7 @@ namespace HalloweenEyeball
             {
                 eyeballBuffer = new BufferRgb565(240, 240);
             }
-            else if (graphics.ColorMode == ColorMode.Format24bppRgb888)
+            else //if (graphics.ColorMode == ColorMode.Format24bppRgb888)
             {
                 eyeballBuffer = new BufferRgb888(240, 240);
             }
@@ -149,7 +149,7 @@ namespace HalloweenEyeball
 
         void FadeRetina()
         {
-            double step = 1 / (double)FadeSteps;
+            float step = 1 / (float)FadeSteps;
 
             for (int i = 0; i < FadeSteps; i++)
             {
@@ -293,7 +293,7 @@ namespace HalloweenEyeball
             graphics.Show();
         }
 
-        void DrawRetinaWithFade(double ratio)
+        void DrawRetinaWithFade(float ratio)
         {
             graphics.DrawCircle(xLast, yLast, 40, currentColor.CoronaDark.Blend(EyeWhiteColor, ratio), true, true);
             graphics.DrawCircle(xLast, yLast, 32, currentColor.CoronaLight.Blend(EyeWhiteColor, ratio), true, true);

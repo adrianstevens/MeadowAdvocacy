@@ -154,7 +154,7 @@ internal class SecondaryDisplayService
         var decoder = new JpegDecoder();
         var jpg = decoder.DecodeJpeg(jpgData);
 
-        return new BufferRgb888(decoder.Width, decoder.Height, jpg).ConvertPixelBuffer<BufferRgb565>();
+        return new BufferRgb888(decoder.Width, decoder.Height, jpg).Convert<BufferRgb565>();
     }
 
     byte[] LoadResource(string filename)

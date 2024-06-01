@@ -17,7 +17,7 @@ namespace AirQualityTracker
 
         CGNSS10 gps;
 
-        GnssPositionInfo lastPosition;
+        GnssPositionInfo? lastPosition;
         ActiveSatellites activeSatellites;
         SatellitesInView satellitesInView;
 
@@ -134,14 +134,14 @@ namespace AirQualityTracker
 
             if (lastPosition != null)
             {
-                graphics.DrawText(0, 40, $"# satellites: {lastPosition.NumberOfSatellites}", color: Color.LawnGreen);
-                graphics.DrawText(0, 60, $"Fix quality: {lastPosition.FixQuality}", color: Color.LawnGreen);
+                graphics.DrawText(0, 40, $"# satellites: {lastPosition?.NumberOfSatellites}", color: Color.LawnGreen);
+                graphics.DrawText(0, 60, $"Fix quality: {lastPosition?.FixQuality}", color: Color.LawnGreen);
 
                 graphics.DrawText(0, 100, $"Lattitude:", color: Color.LawnGreen);
-                graphics.DrawText(0, 120, $"{lastPosition.Position.Longitude}", color: Color.LawnGreen);
+                graphics.DrawText(0, 120, $"{lastPosition?.Position.Longitude}", color: Color.LawnGreen);
 
                 graphics.DrawText(0, 160, $"Longitude:", color: Color.LawnGreen);
-                graphics.DrawText(0, 180, $"{lastPosition.Position.Latitude}", color: Color.LawnGreen);
+                graphics.DrawText(0, 180, $"{lastPosition?.Position.Latitude}", color: Color.LawnGreen);
             }
 
             return graphics.ShowBuffered();

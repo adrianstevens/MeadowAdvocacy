@@ -43,7 +43,7 @@ namespace Arcs
                 start %= 360;
                 end %= 360;
 
-                graphics.DrawArc(120, 120, arcRadius, new Angle(start), new Angle(end), arcColor.WithHue(start / 360.0), true);
+                graphics.DrawArc(120, 120, arcRadius, new Angle(start), new Angle(end), arcColor.WithHue(start / 360.0f), true);
 
                 graphics.Show();
             }

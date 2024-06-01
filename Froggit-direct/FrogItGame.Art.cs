@@ -71,7 +71,7 @@ namespace Froggit
             var buf = new Buffer1bppColor(width * 2, height * 2);
             buf.Fill(color);
             buf.ColorOn = color;
-            return buf.ConvertPixelBuffer<BufferRgb565>();
+            return buf.Convert<BufferRgb565>();
 
 
             // var buf = new Buffer1bppColor(width, height, data)

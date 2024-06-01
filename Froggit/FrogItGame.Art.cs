@@ -74,11 +74,11 @@ namespace Froggit
             //   return buf.ConvertPixelBuffer<BufferRgb565>();
 
             var buf = new Buffer1bppColor(width, height, data)
-               .RotateAndConvert<Buffer1bppColor>(RotationType._90Degrees)
+               .Rotate<Buffer1bppColor>(RotationType._90Degrees)
                .ScaleUp<Buffer1bppColor>(2);
 
             buf.ColorOn = color;
-            return buf.ConvertPixelBuffer<BufferRgb444>();
+            return buf.Convert<BufferRgb444>();
         }
     }
 }

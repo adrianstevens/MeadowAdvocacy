@@ -12,7 +12,7 @@ internal class PrimaryDisplayService
 
     readonly int xOffset = 0;
 
-    const double brightness = 0.01;
+    const float brightness = 0.01f;
 
     readonly Color DisplayPink = Color.Pink.WithBrightness(brightness);
     readonly Color DisplayWhite = Color.White.WithBrightness(brightness);
