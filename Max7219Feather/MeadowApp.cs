@@ -13,23 +13,9 @@ namespace ThermalCamera
     {
         LedMatrix8x16Wing ledMatrix8X16Wing;
 
+        Random random = new Random();
+
         MicroGraphics graphics;
-
-        public override Task Run()
-        {
-            Console.WriteLine("Run...");
-
-            bool on = true;
-
-            while (true)
-            {
-                graphics.Clear(on = !on);
-                graphics.Show();
-
-                Thread.Sleep(1000);
-            }
-
-        }
 
         public override Task Initialize()
         {
@@ -42,6 +28,83 @@ namespace ThermalCamera
 
             Console.WriteLine("Init complete");
             return base.Initialize();
+        }
+
+        public override Task Run()
+        {
+            Console.WriteLine("Run...");
+
+            while (true)
+            {
+                RandomFill();
+                RandomClear();
+                CrossHairs();
+            }
+        }
+
+        void Rotate()
+        {
+            bool on = true;
+
+            graphics.Clear();
+
+            for (int i = 0; i < 100; i++)
+            {
+                for(int x = 0; x < 7; x++) 
+                { 
+                }
+
+                graphics.Show();
+
+                Thread.Sleep(50);
+            }
+        }
+
+        void RandomFill()
+        {
+            graphics.Clear();
+
+            for(int i = 0; i < 100; i++) 
+            {
+                int x = random.Next() % 8;
+                int y = random.Next() % 16;
+
+                graphics.DrawPixel(x, y);
+
+                graphics.Show();
+
+                Thread.Sleep(50);
+            }
+        }
+
+        void RandomClear()
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                int x = random.Next() % 8;
+                int y = random.Next() % 16;
+
+                graphics.DrawPixel(x, y, false);
+
+                graphics.Show();
+
+                Thread.Sleep(50);
+            }
+        }
+
+        void CrossHairs()
+        {
+            for (int i = 0; i < 16; i++)
+            {
+                graphics.Clear();
+
+                graphics.DrawLine(0, i, 8, i);
+                graphics.DrawLine(i / 2, 0, i / 2, 16);
+
+                graphics.Show();
+
+                Thread.Sleep(100);
+            }
         }
     }
 }
