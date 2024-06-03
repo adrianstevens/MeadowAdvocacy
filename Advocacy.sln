@@ -161,6 +161,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sensors.Camera.UsefulSensor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICs.IOExpanders.Ht16k33", "..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\ICs.IOExpanders.Ht16k33\Driver\ICs.IOExpanders.Ht16k33.csproj", "{42F2736D-5414-4823-B9F2-7C262BD4AA2A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TensorCamera", "TensorCamera\TensorCamera.csproj", "{A3B2B633-0FC8-4707-95E3-5AB4C3062B58}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sensors.Camera.Vc0706", "..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\Sensors.Camera.Vc0706\Driver\Sensors.Camera.Vc0706.csproj", "{4AE944B6-19D7-4882-BFCB-6416B799FC99}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -579,6 +583,18 @@ Global
 		{42F2736D-5414-4823-B9F2-7C262BD4AA2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42F2736D-5414-4823-B9F2-7C262BD4AA2A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{42F2736D-5414-4823-B9F2-7C262BD4AA2A}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{A3B2B633-0FC8-4707-95E3-5AB4C3062B58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3B2B633-0FC8-4707-95E3-5AB4C3062B58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3B2B633-0FC8-4707-95E3-5AB4C3062B58}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{A3B2B633-0FC8-4707-95E3-5AB4C3062B58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3B2B633-0FC8-4707-95E3-5AB4C3062B58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3B2B633-0FC8-4707-95E3-5AB4C3062B58}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{4AE944B6-19D7-4882-BFCB-6416B799FC99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AE944B6-19D7-4882-BFCB-6416B799FC99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AE944B6-19D7-4882-BFCB-6416B799FC99}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{4AE944B6-19D7-4882-BFCB-6416B799FC99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AE944B6-19D7-4882-BFCB-6416B799FC99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AE944B6-19D7-4882-BFCB-6416B799FC99}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -632,6 +648,7 @@ Global
 		{1280CD2E-C284-435C-9E9E-11E906215438} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
 		{693AA1F7-1265-46DD-86BC-D7965F4645B1} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
 		{42F2736D-5414-4823-B9F2-7C262BD4AA2A} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
+		{4AE944B6-19D7-4882-BFCB-6416B799FC99} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {59B85D60-3E0C-446F-8620-3B88DCA35E21}
