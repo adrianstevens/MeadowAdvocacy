@@ -165,6 +165,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TensorCamera", "TensorCamer
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sensors.Camera.Vc0706", "..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\Sensors.Camera.Vc0706\Driver\Sensors.Camera.Vc0706.csproj", "{4AE944B6-19D7-4882-BFCB-6416B799FC99}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neo8ProjLab", "Neo8ProjLab\Neo8ProjLab.csproj", "{68945DD7-8502-4C54-A356-90891D24D107}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -595,6 +597,12 @@ Global
 		{4AE944B6-19D7-4882-BFCB-6416B799FC99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4AE944B6-19D7-4882-BFCB-6416B799FC99}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4AE944B6-19D7-4882-BFCB-6416B799FC99}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{68945DD7-8502-4C54-A356-90891D24D107}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68945DD7-8502-4C54-A356-90891D24D107}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68945DD7-8502-4C54-A356-90891D24D107}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{68945DD7-8502-4C54-A356-90891D24D107}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68945DD7-8502-4C54-A356-90891D24D107}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68945DD7-8502-4C54-A356-90891D24D107}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
