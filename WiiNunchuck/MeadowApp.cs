@@ -38,7 +38,7 @@ namespace ProjLab_Demo
 
             Resolver.Log.Info($"Running on ProjectLab Hardware {projLab.RevisionString}");
 
-            nunchuck = new WiiNunchuck(projLab.I2cBus);
+            nunchuck = new WiiNunchuck(projLab.Qwiic.I2cBus);
             nunchuck.StartUpdating(TimeSpan.FromMilliseconds(400));
 
             nunchuck.AnalogStick.Updated += AnalogStick_Updated;
