@@ -2,7 +2,6 @@
 using Meadow.Devices;
 using Meadow.Foundation.Graphics;
 using Meadow.Foundation.Sensors.Camera;
-using Meadow.Hardware;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -63,7 +62,7 @@ namespace ThermalCamera
                 Console.WriteLine($"tick {min} {max}");
             }
 
-            return base.Run();
+            //return base.Run();
         }
 
         public override Task Initialize()
@@ -75,18 +74,6 @@ namespace ThermalCamera
             graphics = new MicroGraphics(projLab.Display);
 
             thermalCamera = new Mlx90640(projLab.Qwiic.I2cBus);
-
-            IDigitalOutputPort chipSelectPort, resetPort;
-
-
-            if (projLab is ProjectLabHardwareV2 { } projlabV2)
-            {
-
-            }
-            else
-            {
-
-            }
 
             Console.WriteLine("Init complete");
             return base.Initialize();

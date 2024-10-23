@@ -70,14 +70,7 @@ namespace JuegoEyeball
                         Console.WriteLine("Wait for camera");
                     }
                 }
-
             }
-
-
-
-
-
-
             return Task.CompletedTask;
         }
 
