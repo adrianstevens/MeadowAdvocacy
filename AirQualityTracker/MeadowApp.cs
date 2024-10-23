@@ -1,6 +1,5 @@
 ﻿using Meadow;
 using Meadow.Devices;
-using Meadow.Foundation;
 using Meadow.Foundation.Graphics;
 using Meadow.Foundation.mikroBUS.Sensors.Gnss;
 using Meadow.Hardware;
@@ -46,7 +45,7 @@ namespace AirQualityTracker
 
             //gps = new CGNSS5(projLab.I2cBus, projLab.MikroBus1Pins.RST);
 
-            gps = new CGNSS10(projLab.SpiBus, chipSelectPort, resetPort);
+            gps = new CGNSS10(projLab.MikroBus1.SpiBus, chipSelectPort, resetPort);
 
             Console.WriteLine("Init complete");
             return base.Initialize();

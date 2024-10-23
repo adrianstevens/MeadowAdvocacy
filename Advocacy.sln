@@ -167,6 +167,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sensors.Camera.Vc0706", "..
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neo8ProjLab", "Neo8ProjLab\Neo8ProjLab.csproj", "{68945DD7-8502-4C54-A356-90891D24D107}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FroggitDesktop", "Froggit-desktop-128x128\FroggitDesktop.csproj", "{C04CBCE1-4AED-4619-A256-B1C9E9ADEA57}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arducam.ProjLab", "Arducam\Arducam.ProjLab.csproj", "{AC9225C9-B87E-4AD7-BD49-1B3EE4E81462}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -603,6 +607,16 @@ Global
 		{68945DD7-8502-4C54-A356-90891D24D107}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68945DD7-8502-4C54-A356-90891D24D107}.Release|Any CPU.Build.0 = Release|Any CPU
 		{68945DD7-8502-4C54-A356-90891D24D107}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{C04CBCE1-4AED-4619-A256-B1C9E9ADEA57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C04CBCE1-4AED-4619-A256-B1C9E9ADEA57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C04CBCE1-4AED-4619-A256-B1C9E9ADEA57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C04CBCE1-4AED-4619-A256-B1C9E9ADEA57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC9225C9-B87E-4AD7-BD49-1B3EE4E81462}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC9225C9-B87E-4AD7-BD49-1B3EE4E81462}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC9225C9-B87E-4AD7-BD49-1B3EE4E81462}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{AC9225C9-B87E-4AD7-BD49-1B3EE4E81462}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC9225C9-B87E-4AD7-BD49-1B3EE4E81462}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC9225C9-B87E-4AD7-BD49-1B3EE4E81462}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

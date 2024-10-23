@@ -24,19 +24,20 @@ public class Program
 
     static Keyboard keyboard = default!;
 
-    static TextDisplayMenu menu;
+    static TextDisplayMenu menu = default!;
 
-    static IButton next = null;
-    static IButton previous = null;
-    static IButton select = null;
-    static IButton back = null;
+
+    static IButton next = default!;
+    static IButton previous = default!;
+    static IButton select = default!;
+    static IButton back = default!;
 
     public static void Main()
     {
         Initialize();
         Run();
 
-        System.Threading.Thread.Sleep(Timeout.Infinite);
+        Thread.Sleep(Timeout.Infinite);
     }
 
     public static void Initialize()
@@ -51,7 +52,11 @@ public class Program
 
         keyboard = new Keyboard();
 
-        image = LoadJpeg() as PixelBufferBase;
+        //image = LoadJpeg() as PixelBufferBase;
+
+        var bmp = Image.LoadFromResource("lecs-logo.bmp");
+
+        image = ((PixelBufferBase)bmp.DisplayBuffer).Convert<BufferRgb444>();
 
         Console.WriteLine("Load menu data...");
 
@@ -84,25 +89,31 @@ public class Program
 
     public static void Run()
     {
-        /*
         Task.Run(() =>
         {
-            var grayImage = image.Convert<BufferGray8>();
-
-            var scaledImage = image.Resize<BufferGray8>(320, 320);
-
-            var rotatedImage = image.Rotate<BufferGray8>(new Meadow.Units.Angle(60));
+            // var grayImage = image.Convert<BufferGray8>();
+            // var scaledImage = image.Resize<BufferGray8>(320, 320);
+            // var rotatedImage = image.Rotate<BufferGray8>(new Meadow.Units.Angle(60));
 
             graphics.Clear();
 
-            //draw the image centered
-            graphics.DrawBuffer((display!.Width - rotatedImage.Width) / 2,
-                (display!.Height - rotatedImage.Height) / 2, rotatedImage);
+            // draw the image centered
+            // graphics.DrawBuffer((display!.Width - rotatedImage.Width) / 2, (display!.Height - rotatedImage.Height) / 2, rotatedImage);
+
+            graphics.DrawBuffer(0, 0, image);
+
+            var color = Color.Cyan;
+            //   color = Color.FromHsba(180, 1, 0.18f);
+
+            //color = Color.FromAhsv(1.0f, 180, 0.5f, 1.0f);
+
+            color = Color.FromHsba(180, 1, 1);
+
+
+            graphics.DrawRectangle(10, 10, 110, 110, color, true);
 
             graphics.Show();
         });
-
-        */
 
         display!.Run();
     }

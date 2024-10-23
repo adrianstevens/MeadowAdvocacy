@@ -159,7 +159,7 @@ namespace Froggit
                     Thread.Sleep(0);
                 }
                 gameState = GameState.GameOver;
-                DrawEndScreen();
+                //DrawEndScreen();
             }, TaskCreationOptions.LongRunning);
 
             t.Start();

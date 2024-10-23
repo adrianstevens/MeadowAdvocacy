@@ -1,11 +1,9 @@
 ﻿using Meadow;
 using Meadow.Devices;
-using Meadow.Foundation;
 using Meadow.Foundation.Graphics;
 using Meadow.Foundation.Sensors.Camera;
 using Meadow.Hardware;
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -43,7 +41,7 @@ namespace ThermalCamera
 
 
                 graphics.Clear();
-                
+
                 for (byte h = 0; h < 24; h++)
                 {
                     for (byte w = 0; w < 32; w++)
@@ -76,18 +74,18 @@ namespace ThermalCamera
 
             graphics = new MicroGraphics(projLab.Display);
 
-            thermalCamera = new Mlx90640(projLab.I2cBus);
+            thermalCamera = new Mlx90640(projLab.Qwiic.I2cBus);
 
             IDigitalOutputPort chipSelectPort, resetPort;
 
-            
+
             if (projLab is ProjectLabHardwareV2 { } projlabV2)
             {
-        
+
             }
             else
             {
-            
+
             }
 
             Console.WriteLine("Init complete");
