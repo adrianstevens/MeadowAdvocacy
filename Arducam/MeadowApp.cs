@@ -31,17 +31,45 @@ namespace JuegoEyeball
         {
             Console.WriteLine("Run...");
 
+            // camera.read_fifo_burst();
+
             camera.write_reg(0x07, 0x80);
             Thread.Sleep(100);
             camera.write_reg(0x07, 0x00);
             Thread.Sleep(100);
 
-            Thread.Sleep(1000);
-            camera.write_reg(0x00  /*ARDUCHIP_TEST1 */, 0x55);
-            Thread.Sleep(5000);
-            var value = camera.read_reg(0x00);
+            while (true)
+            {
+                camera.write_reg(0x00  /*ARDUCHIP_TEST1 */, 0x55);
+                var value = camera.read_reg(0x00);
+                if (value == 0x55)
+                {
+                    Console.WriteLine("Camera initialized");
+                    break;
+                }
+                Console.WriteLine("Waiting for camera");
+                Thread.Sleep(1000);
+            }
 
-            Resolver.Log.Info($"temp: {value}");
+            while (true)
+            {
+                camera.wrSensorReg8_8(0xff, 0x01);
+                byte vid = camera.rdSensorReg8_8(Ov2640Regs.OV2640_CHIPID_HIGH);
+                byte pid = camera.rdSensorReg8_8(Ov2640Regs.OV2640_CHIPID_LOW);
+
+                if ((vid != 0x26) && ((pid != 0x41) || (pid != 0x42)))
+                {
+                    Console.WriteLine($"Can't find OV2640 vid:{vid} pid:{pid}");
+                    Thread.Sleep(1000);
+                }
+                else
+                {
+                    Console.WriteLine("OV2640 detected.");
+                    break;
+                }
+            }
+
+            // camera.set_format(JPEG);
 
 
             camera.write_reg(Arducam.ARDUCHIP_MODE, 0x00);
@@ -55,6 +83,9 @@ namespace JuegoEyeball
             byte SHUTTER_MASK = 0x02;
 
             byte temp;
+
+            Console.WriteLine("Run complete");
+            return Task.CompletedTask;
 
             while (true)
             {
@@ -71,7 +102,7 @@ namespace JuegoEyeball
                     }
                 }
             }
-            return Task.CompletedTask;
+
         }
 
         async Task TakePicture()

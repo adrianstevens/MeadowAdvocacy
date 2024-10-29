@@ -2,6 +2,9 @@
 {
     internal class Ov2640Regs
     {
+        public static byte OV2640_CHIPID_HIGH = 0x0A;
+        public static byte OV2640_CHIPID_LOW = 0x0B;
+
         public static readonly SensorReg[] OV2640_QVGA = new SensorReg[]
         {
             new SensorReg(0xff, 0x00),

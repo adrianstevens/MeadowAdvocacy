@@ -16,6 +16,8 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
     //ToDo
     private byte m_fmt;
 
+    uint MAX_FIFO_SIZE = 0x5FFFF; //384KByte - OV2640 support
+
 
     /// <summary>
     /// The default SPI bus speed for the device
@@ -103,6 +105,59 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
         write_reg(ARDUCHIP_FIFO, FIFO_CLEAR_MASK);
     }
 
+    public byte read_fifo_burst()
+    {
+        byte temp = 0;
+        byte temp_last = 0;
+        uint length = read_fifo_length();
+        Console.WriteLine($"length = {length}");
+
+        if (length >= MAX_FIFO_SIZE)
+        {
+            length = MAX_FIFO_SIZE;
+            Console.WriteLine("Fifo size (length) is over size.");
+        }
+        if (length == 0)
+        {
+            Console.WriteLine("length = 0");
+            return 0;
+        }
+
+        set_fifo_burst();
+
+        temp = spiComms.ReadRegister(0x00);
+        length--;
+
+        bool is_header = false;
+
+        while (length-- > 0)
+        {
+            temp_last = temp;
+            temp = spiComms.ReadRegister(0x00);
+
+            if (is_header == true)
+            {
+                Console.WriteLine($"Header = {temp}");
+            }
+            else if ((temp == 0xD8) && (temp_last == 0xFF))
+            {
+                is_header = true;
+                Console.WriteLine($"ACK IMG END");
+                Console.WriteLine($"{temp_last}");
+                Console.WriteLine($"{temp}");
+
+                break;
+            }
+            if ((temp == 0xD9) && (temp_last == 0xFF))
+            {
+                break;
+            }
+            Thread.Sleep(15);
+        }
+
+        return 1;
+    }
+
     private uint read_fifo_length()
     {
         uint len1, len2, len3, length = 0;
@@ -120,7 +175,7 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
 
     private byte read_fifo()
     {
-        return bus_read(SINGLE_FIFO_READ);
+        return bus_read_spi(SINGLE_FIFO_READ);
     }
 
     private void set_bit(byte address, byte bit)
@@ -139,7 +194,7 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
 
     public byte read_reg(byte address)
     {
-        return bus_read(address);
+        return bus_read_spi(address);
     }
 
     private byte get_bit(byte address, byte bit)
@@ -206,7 +261,7 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
         }
     }
 
-    private void set_format(byte fmt)
+    public void set_format(byte fmt)
     {
         if (fmt == BMP)
             m_fmt = BMP;
@@ -421,7 +476,7 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
         bus_write(address, data);
     }
 
-    private byte bus_read(byte address)
+    private byte bus_read_spi(byte address)
     {
         return spiComms.ReadRegister((byte)(address & 0x7F));
     }
@@ -429,17 +484,25 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
     private void bus_write(byte address, byte data)
     {
         spiComms.WriteRegister((byte)(address | 0x80), data);
-        //   spiComms.Write(address);
+        //   spiComms.Write(regID);
         //   spiComms.Write(data);
     }
 
-    private int wrSensorReg8_8(byte register, byte value)
+    public byte rdSensorReg8_8(byte regID)
+    {
+        i2cComms.Write(regID);
+        var ret = new byte[1];
+
+        i2cComms.Read(ret);
+        return ret[0];
+    }
+    public int wrSensorReg8_8(byte register, byte value)
     {
         i2cComms.WriteRegister(register, value);
         return 0;
     }
 
-    // Write 8 bit values to 8 bit register address
+    // Write 8 bit values to 8 bit register regID
     private int wrSensorRegs8_8(SensorReg[] reglist)
     {
         for (int i = 0; i < reglist.Length; i++)
