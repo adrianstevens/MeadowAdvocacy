@@ -1,6 +1,6 @@
 ﻿namespace Meadow.Foundation.Sensors.Camera
 {
-    internal class Ov2640Regs
+    public class Ov2640Regs
     {
         public static byte OV2640_CHIPID_HIGH = 0x0A;
         public static byte OV2640_CHIPID_LOW = 0x0B;

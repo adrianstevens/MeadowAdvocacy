@@ -16,13 +16,17 @@ public partial class Arducam
     private const byte OV2640_1280x1024 = 7;	//1280x1024
     private const byte OV2640_1600x1200 = 8; //1600x1200
 
-    public const byte ARDUCHIP_MODE = 0x02;  //Mode register
     private const byte MCU2LCD_MODE = 0x00;
     private const byte CAM2LCD_MODE = 0x01;
     private const byte LCD2MCU_MODE = 0x02;
 
+    public const byte ARDUCHIP_TEST1 = 0x00;  //TEST register
+    public const byte ARDUCHIP_FRAMES = 0x01;
+    public const byte ARDUCHIP_MODE = 0x02;  //Mode register
     private const byte ARDUCHIP_TIM = 0x03;
     private const byte ARDUCHIP_FIFO = 0x04;  //FIFO and I2C control
+    private const byte ARDUCHIP_REV = 0x40;  //ArduCHIP revision
+    public const byte ARDUCHIP_TRIG = 0x41;
     private const byte FIFO_CLEAR_MASK = 0x01;
     private const byte FIFO_START_MASK = 0x02;
     private const byte FIFO_RDPTR_RST_MASK = 0x10;
@@ -34,4 +38,8 @@ public partial class Arducam
 
     private const byte BURST_FIFO_READ = 0x3C;  //Burst FIFO read operation
     private const byte SINGLE_FIFO_READ = 0x3D;  //Single FIFO read operation
+
+    private const byte VSYNC_MASK = 0x01;
+    private const byte SHUTTER_MASK = 0x02;
+    public const byte CAP_DONE_MASK = 0x08;
 }

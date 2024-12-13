@@ -83,4 +83,11 @@ public partial class Arducam
         Contrast_3 = 7,
         Contrast_4 = 8,
     }
+
+    public enum ImageFormat
+    {
+        BMP = 0,
+        Jpeg = 1,
+        Raw = 2,
+    }
 }

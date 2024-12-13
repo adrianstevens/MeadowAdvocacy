@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace JuegoEyeball
+namespace ArducamMini
 {
     public class MeadowApp : App<F7CoreComputeV2>
     {
@@ -31,8 +31,6 @@ namespace JuegoEyeball
         {
             Console.WriteLine("Run...");
 
-            // camera.read_fifo_burst();
-
             camera.write_reg(0x07, 0x80);
             Thread.Sleep(100);
             camera.write_reg(0x07, 0x00);
@@ -40,7 +38,7 @@ namespace JuegoEyeball
 
             while (true)
             {
-                camera.write_reg(0x00  /*ARDUCHIP_TEST1 */, 0x55);
+                camera.write_reg(Arducam.ARDUCHIP_TEST1, 0x55);
                 var value = camera.read_reg(0x00);
                 if (value == 0x55)
                 {
@@ -69,7 +67,32 @@ namespace JuegoEyeball
                 }
             }
 
-            // camera.set_format(JPEG);
+            camera.set_format((byte)Arducam.ImageFormat.Jpeg);
+            camera.Initialize();
+            camera.clear_fifo_flag();
+            camera.write_reg(Arducam.ARDUCHIP_FRAMES, 0x02); //number of frames to capture
+
+            // while (true)
+            {
+                //capture loop
+                camera.flush_fifo();
+                camera.clear_fifo_flag();
+                camera.wrSensorRegs8_8(Ov2640Regs.OV2640_160x120_JPEG);
+
+                camera.start_capture();
+                Console.WriteLine("Start capture");
+
+                while (camera.get_bit(Arducam.ARDUCHIP_TRIG, Arducam.CAP_DONE_MASK) == 0)
+                {
+                    camera.read_fifo_burst();
+
+                    camera.clear_fifo_flag();
+
+                    Thread.Sleep(5000);
+                }
+            }
+
+            /*
 
 
             camera.write_reg(Arducam.ARDUCHIP_MODE, 0x00);
@@ -83,10 +106,12 @@ namespace JuegoEyeball
             byte SHUTTER_MASK = 0x02;
 
             byte temp;
+            */
 
             Console.WriteLine("Run complete");
             return Task.CompletedTask;
 
+            /*
             while (true)
             {
                 temp = camera.read_reg(ARDUCHIP_TRIG);
@@ -102,6 +127,8 @@ namespace JuegoEyeball
                     }
                 }
             }
+
+            */
 
         }
 
