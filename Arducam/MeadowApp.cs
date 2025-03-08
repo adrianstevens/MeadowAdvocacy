@@ -62,7 +62,7 @@ namespace ArducamMini
                 }
                 else
                 {
-                    Console.WriteLine("OV2640 detected.");
+                    Console.WriteLine("OV2640 detected");
                     break;
                 }
             }
@@ -70,66 +70,29 @@ namespace ArducamMini
             camera.set_format((byte)Arducam.ImageFormat.Jpeg);
             camera.Initialize();
             camera.clear_fifo_flag();
-            camera.write_reg(Arducam.ARDUCHIP_FRAMES, 0x02); //number of frames to capture
+            camera.write_reg(Arducam.ARDUCHIP_FRAMES, 0x01); //number of frames to capture
 
-            // while (true)
+            Thread.Sleep(1000);
+
+            camera.flush_fifo();
+            camera.clear_fifo_flag();
+
+            camera.start_capture();
+            Console.WriteLine("Start capture");
+
+            while (camera.get_bit(Arducam.ARDUCHIP_TRIG, Arducam.CAP_DONE_MASK) != 0)
             {
-                //capture loop
-                camera.flush_fifo();
-                camera.clear_fifo_flag();
-                camera.wrSensorRegs8_8(Ov2640Regs.OV2640_160x120_JPEG);
-
-                camera.start_capture();
-                Console.WriteLine("Start capture");
-
-                while (camera.get_bit(Arducam.ARDUCHIP_TRIG, Arducam.CAP_DONE_MASK) == 0)
-                {
-                    camera.read_fifo_burst();
-
-                    camera.clear_fifo_flag();
-
-                    Thread.Sleep(5000);
-                }
+                Thread.Sleep(1000);
+                Console.WriteLine("Not ready");
             }
 
-            /*
+            Console.WriteLine("Capture complete");
+            Thread.Sleep(50);
+            camera.clear_fifo_flag();
+            camera.read_fifo_burst();
+            camera.clear_fifo_flag();
 
-
-            camera.write_reg(Arducam.ARDUCHIP_MODE, 0x00);
-
-            camera.Initialize();
-
-            camera.write_reg(Arducam.ARDUCHIP_MODE, 0x01);
-
-            byte ARDUCHIP_TRIG = 0x41;
-            byte VSYNC_MASK = 0x01;
-            byte SHUTTER_MASK = 0x02;
-
-            byte temp;
-            */
-
-            Console.WriteLine("Run complete");
             return Task.CompletedTask;
-
-            /*
-            while (true)
-            {
-                temp = camera.read_reg(ARDUCHIP_TRIG);
-
-                if ((temp & VSYNC_MASK) != VSYNC_MASK)
-                {
-                    camera.write_reg(Arducam.ARDUCHIP_MODE, 0x00);
-                    camera.write_reg(Arducam.ARDUCHIP_MODE, 0x01);
-
-                    while ((camera.read_reg(ARDUCHIP_TRIG) & SHUTTER_MASK) != SHUTTER_MASK)
-                    {
-                        Console.WriteLine("Wait for camera");
-                    }
-                }
-            }
-
-            */
-
         }
 
         async Task TakePicture()

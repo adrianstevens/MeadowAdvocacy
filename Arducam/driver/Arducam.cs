@@ -87,7 +87,19 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
 
         Thread.Sleep(100);
 
-        wrSensorRegs8_8(Ov2640Regs.OV2640_QVGA);
+        if (m_fmt == JPEG)
+        {
+            wrSensorRegs8_8(Ov2640Regs.OV2640_JPEG_INIT);
+            wrSensorRegs8_8(Ov2640Regs.OV2640_YUV422);
+            wrSensorRegs8_8(Ov2640Regs.OV2640_JPEG);
+            wrSensorReg8_8(0xff, 0x01);
+            wrSensorReg8_8(0x15, 0x00);
+            wrSensorRegs8_8(Ov2640Regs.OV2640_160x120_JPEG);
+        }
+        else
+        {
+            wrSensorRegs8_8(Ov2640Regs.OV2640_QVGA);
+        }
     }
 
     public void flush_fifo()
@@ -109,14 +121,6 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
 
     public byte read_fifo_burst()
     {
-        int i = 0;
-        int k = 0;
-
-        byte temp = 0;
-        byte temp_last = 0;
-
-        var buf = new byte[256];
-
         uint length = read_fifo_length();
         Console.WriteLine($"The fifo length is = {length}");
 
@@ -124,6 +128,7 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
         {
             length = MAX_FIFO_SIZE;
             Console.WriteLine("Fifo size (length) is over size.");
+            return 0;
         }
         if (length == 0)
         {
@@ -131,36 +136,25 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
             return 0;
         }
 
-        set_fifo_burst();
+        var tx = new byte[length + 1];
+        tx[0] = 0x3C;
+        var rx = new byte[length + 1];
 
-        bool isHeader = false;
+        spiComms.Exchange(tx, rx, DuplexType.Full);
 
-        while (length-- > 0)
+        for (int p = 0; p < rx.Length; p++)
         {
-            temp_last = temp;
-            temp = spiComms.ReadRegister(0x00);
-
-            if ((temp == 0xD9) && (temp_last == 0xFF))
+            if (rx[p] == 0xFF && rx[p + 1] == 0xD8)
             {
-                buf[i++] = temp;
-                isHeader = false;
+                Console.WriteLine($"Found header {p}");
             }
-            if (isHeader)
+            if (rx[p] == 0xFF && rx[p + 1] == 0xD9)
             {
-                if (i < 256)
-                {
-                    buf[i++] = temp;
-                }
-                else
-                {
-                    Console.WriteLine("Buffer is full - write to strean");
-                    set_fifo_burst();
-                    break;
-                }
+                Console.WriteLine($"Found footer {p}");
             }
         }
 
-        Console.WriteLine("Picture complete");
+        Console.WriteLine($"read_fifo_burst complete: {p}");
         return 1;
     }
 
