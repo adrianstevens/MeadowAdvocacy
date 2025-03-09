@@ -22,7 +22,7 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
     /// <summary>
     /// The default SPI bus speed for the device
     /// </summary>
-    public Frequency DefaultSpiBusSpeed => new Frequency(375, Frequency.UnitType.Kilohertz);
+    public Frequency DefaultSpiBusSpeed => new Frequency(8, Frequency.UnitType.Megahertz);
 
     /// <summary>
     /// The SPI bus speed for the device
@@ -94,7 +94,7 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
             wrSensorRegs8_8(Ov2640Regs.OV2640_JPEG);
             wrSensorReg8_8(0xff, 0x01);
             wrSensorReg8_8(0x15, 0x00);
-            wrSensorRegs8_8(Ov2640Regs.OV2640_160x120_JPEG);
+            wrSensorRegs8_8(Ov2640Regs.OV2640_320x240_JPEG); //leave this in place at 320x240
         }
         else
         {
@@ -117,9 +117,7 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
         write_reg(ARDUCHIP_FIFO, FIFO_CLEAR_MASK);
     }
 
-
-
-    public byte read_fifo_burst()
+    public byte[] read_fifo_burst()
     {
         uint length = read_fifo_length();
         Console.WriteLine($"The fifo length is = {length}");
@@ -128,12 +126,12 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
         {
             length = MAX_FIFO_SIZE;
             Console.WriteLine("Fifo size (length) is over size.");
-            return 0;
+            return new byte[0];
         }
         if (length == 0)
         {
             Console.WriteLine("Size is 0");
-            return 0;
+            return new byte[0];
         }
 
         var tx = new byte[length + 1];
@@ -142,20 +140,48 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
 
         spiComms.Exchange(tx, rx, DuplexType.Full);
 
+        int header = -1;
+        int footer = -1;
+
+        //search for jpeg header and footer
         for (int p = 0; p < rx.Length; p++)
         {
             if (rx[p] == 0xFF && rx[p + 1] == 0xD8)
             {
                 Console.WriteLine($"Found header {p}");
+                header = p;
             }
             if (rx[p] == 0xFF && rx[p + 1] == 0xD9)
             {
                 Console.WriteLine($"Found footer {p}");
+                footer = p;
+                if (header != -1)
+                {
+                    break;
+                }
             }
         }
 
-        Console.WriteLine($"read_fifo_burst complete: {p}");
-        return 1;
+        if (header == -1)
+        {
+            Console.WriteLine("No image found");
+            return new byte[0];
+        }
+        if (footer == -1)
+        {
+            footer = (int)length;
+        }
+        else
+        {
+            footer += 2; //pad out to include footer bytes 
+        }
+
+        var image = new byte[footer - header];
+
+        Array.Copy(rx, header, image, 0, footer - header);
+
+        Console.WriteLine($"read_fifo_burst complete: {length}");
+        return image;
     }
 
     private uint read_fifo_length()

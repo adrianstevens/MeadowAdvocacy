@@ -1,6 +1,9 @@
 ﻿using Meadow;
 using Meadow.Devices;
+using Meadow.Foundation.Graphics;
+using Meadow.Foundation.Graphics.Buffers;
 using Meadow.Foundation.Sensors.Camera;
+using SimpleJpegDecoder;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -69,9 +72,12 @@ namespace ArducamMini
 
             camera.set_format((byte)Arducam.ImageFormat.Jpeg);
             camera.Initialize();
+            Thread.Sleep(1000);
             camera.clear_fifo_flag();
-            camera.write_reg(Arducam.ARDUCHIP_FRAMES, 0x01); //number of frames to capture
+            camera.write_reg(Arducam.ARDUCHIP_FRAMES, 0x00); //number of frames to capture
 
+            //may always need to be set, even if it matches the res in Initialize
+            camera.wrSensorRegs8_8(Ov2640Regs.OV2640_320x240_JPEG);
             Thread.Sleep(1000);
 
             camera.flush_fifo();
@@ -83,14 +89,34 @@ namespace ArducamMini
             while (camera.get_bit(Arducam.ARDUCHIP_TRIG, Arducam.CAP_DONE_MASK) != 0)
             {
                 Thread.Sleep(1000);
-                Console.WriteLine("Not ready");
+                Console.WriteLine("Capture not ready");
             }
 
             Console.WriteLine("Capture complete");
             Thread.Sleep(50);
+            var jpegData = camera.read_fifo_burst();
             camera.clear_fifo_flag();
-            camera.read_fifo_burst();
-            camera.clear_fifo_flag();
+
+
+            if (jpegData.Length > 0)
+            {
+                var decoder = new JpegDecoder();
+                var jpg = decoder.DecodeJpeg(jpegData);
+                Console.WriteLine($"Jpeg decoded is {jpg.Length} bytes, W: {decoder.Width}, H: {decoder.Height}");
+
+                var imageBuf = new BufferRgb888(decoder.Width, decoder.Height, jpg);
+
+                var graphics = new MicroGraphics(projLab.Display);
+
+                graphics.Clear();
+                graphics.DrawBuffer(0, 0, imageBuf);
+                graphics.Show();
+            }
+            else
+            {
+                Console.WriteLine("Image capture failed");
+            }
+
 
             return Task.CompletedTask;
         }
