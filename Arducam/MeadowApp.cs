@@ -14,7 +14,7 @@ namespace ArducamMini
     {
         IProjectLabHardware projLab;
 
-        Arducam camera;
+        ArducamMini2MPPlus camera;
 
         public override Task Initialize()
         {
@@ -22,10 +22,10 @@ namespace ArducamMini
 
             projLab = ProjectLab.Create();
 
-            camera = new Arducam(projLab.MikroBus2.SpiBus,
+            camera = new ArducamMini2MPPlus(projLab.MikroBus2.SpiBus,
                 projLab.MikroBus2.Pins.CS,
                 projLab.MikroBus2.I2cBus,
-                (byte)Arducam.Addresses.Default);
+                (byte)ArducamMini2MPPlus.Addresses.Default);
 
             return Task.CompletedTask;
         }
@@ -34,15 +34,15 @@ namespace ArducamMini
         {
             Console.WriteLine("Run...");
 
-            camera.write_reg(0x07, 0x80);
+            camera.WriteRegisterSPI(0x07, 0x80);
             Thread.Sleep(100);
-            camera.write_reg(0x07, 0x00);
+            camera.WriteRegisterSPI(0x07, 0x00);
             Thread.Sleep(100);
 
             while (true)
             {
-                camera.write_reg(Arducam.ARDUCHIP_TEST1, 0x55);
-                var value = camera.read_reg(0x00);
+                camera.WriteRegisterSPI(ArducamBase.ARDUCHIP_TEST1, 0x55);
+                var value = camera.ReadRegister(0x00);
                 if (value == 0x55)
                 {
                     Console.WriteLine("Camera initialized");
@@ -54,9 +54,9 @@ namespace ArducamMini
 
             while (true)
             {
-                camera.wrSensorReg8_8(0xff, 0x01);
-                byte vid = camera.rdSensorReg8_8(Ov2640Regs.OV2640_CHIPID_HIGH);
-                byte pid = camera.rdSensorReg8_8(Ov2640Regs.OV2640_CHIPID_LOW);
+                camera.WriteSensorRegister(0xff, 0x01);
+                byte vid = camera.ReadSensorRegister(Ov2640Regs.OV2640_CHIPID_HIGH);
+                byte pid = camera.ReadSensorRegister(Ov2640Regs.OV2640_CHIPID_LOW);
 
                 if ((vid != 0x26) && ((pid != 0x41) || (pid != 0x42)))
                 {
@@ -70,23 +70,23 @@ namespace ArducamMini
                 }
             }
 
-            camera.set_format((byte)Arducam.ImageFormat.Jpeg);
+            camera.set_format((byte)ArducamBase.ImageFormat.Jpeg);
             camera.Initialize();
             Thread.Sleep(1000);
-            camera.clear_fifo_flag();
-            camera.write_reg(Arducam.ARDUCHIP_FRAMES, 0x00); //number of frames to capture
+            camera.ClearFifoFlag();
+            camera.WriteRegisterSPI(ArducamBase.ARDUCHIP_FRAMES, 0x00); //number of frames to capture
 
             //may always need to be set, even if it matches the res in Initialize
-            camera.wrSensorRegs8_8(Ov2640Regs.OV2640_320x240_JPEG);
+            camera.WriteSensorRegisters(Ov2640Regs.OV2640_352x288_JPEG);
             Thread.Sleep(1000);
 
-            camera.flush_fifo();
-            camera.clear_fifo_flag();
+            camera.FlushFifo();
+            camera.ClearFifoFlag();
 
-            camera.start_capture();
+            camera.StartCapture();
             Console.WriteLine("Start capture");
 
-            while (camera.get_bit(Arducam.ARDUCHIP_TRIG, Arducam.CAP_DONE_MASK) != 0)
+            while (camera.GetBit(ArducamBase.ARDUCHIP_TRIG, ArducamBase.CAP_DONE_MASK) != 0)
             {
                 Thread.Sleep(1000);
                 Console.WriteLine("Capture not ready");
@@ -94,8 +94,8 @@ namespace ArducamMini
 
             Console.WriteLine("Capture complete");
             Thread.Sleep(50);
-            var jpegData = camera.read_fifo_burst();
-            camera.clear_fifo_flag();
+            var jpegData = camera.ReadFifoBurst();
+            camera.ClearFifoFlag();
 
 
             if (jpegData.Length > 0)

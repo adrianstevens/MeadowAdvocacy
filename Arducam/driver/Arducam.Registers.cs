@@ -1,20 +1,10 @@
 ﻿namespace Meadow.Foundation.Sensors.Camera;
 
-public partial class Arducam
+public partial class ArducamBase
 {
     private const byte BMP = 0;
     private const byte JPEG = 1;
     private const byte RAW = 2;
-
-    private const byte OV2640_160x120 = 0;	//160x120
-    private const byte OV2640_176x144 = 1;	//176x144
-    private const byte OV2640_320x240 = 2;	//320x240
-    private const byte OV2640_352x288 = 3;	//352x288
-    private const byte OV2640_640x480 = 4;	//640x480
-    private const byte OV2640_800x600 = 5;	//800x600
-    private const byte OV2640_1024x768 = 6;	//1024x768
-    private const byte OV2640_1280x1024 = 7;	//1280x1024
-    private const byte OV2640_1600x1200 = 8; //1600x1200
 
     private const byte MCU2LCD_MODE = 0x00;
     private const byte CAM2LCD_MODE = 0x01;

@@ -1,6 +1,6 @@
 ﻿namespace Meadow.Foundation.Sensors.Camera;
 
-public partial class Arducam
+public partial class ArducamBase
 {
     /// <summary>
     /// Valid addresses for the sensor.
