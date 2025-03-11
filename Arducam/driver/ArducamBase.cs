@@ -13,16 +13,16 @@ namespace Meadow.Foundation.Sensors.Camera;
 /// </summary>
 public abstract partial class ArducamBase : ICamera, ISpiPeripheral, II2cPeripheral
 {
-    //ToDo
-    private byte imageFormat;
+    //ToDo change to an enum
+    protected ImageFormat format;
 
-    protected virtual uint MAX_FIFO_SIZE => 0x5FFFF; //384KByte - OV2640 support
+    protected virtual int MAX_FIFO_SIZE => 0x5FFFF; //384KByte - OV2640 support
 
 
     /// <summary>
     /// The default SPI bus speed for the device
     /// </summary>
-    public virtual Frequency DefaultSpiBusSpeed => new Frequency(8, Frequency.UnitType.Megahertz);
+    public virtual Frequency DefaultSpiBusSpeed => new Frequency(2, Frequency.UnitType.Megahertz);
 
     /// <summary>
     /// The SPI bus speed for the device
@@ -68,57 +68,68 @@ public abstract partial class ArducamBase : ICamera, ISpiPeripheral, II2cPeriphe
 
     internal ArducamBase(ISpiBus spiBus, IDigitalOutputPort chipSelectPort, II2cBus i2cBus, byte i2cAddress)
     {
+        Console.WriteLine("ArducamBase");
+
         i2cComms = new I2cCommunications(i2cBus, i2cAddress);
         spiComms = new SpiCommunications(spiBus, chipSelectPort, DefaultSpiBusSpeed, DefaultSpiBusMode);
 
-        Resolver.Log.Info("Adrucam init...");
+        ResetCamera();
 
-        //  Initialize();
+        Thread.Sleep(1000);
+
+        ValidateCamera();
+
+        SetImageFormat(ImageFormat.JPEG);
+        Initialize();
+        Thread.Sleep(1000);
+        ClearFifoFlag();
+        //spiComms.WriteRegister(ARDUCHIP_FRAMES, 0x00); .... not needed for 2MP plus???
     }
 
-    /// <summary>
-    /// Init for OV2640 + Mini + Mini 2mp Plus
-    /// </summary>
-    public void Initialize()
+    protected void ResetCamera()
     {
-        WriteSensorRegister(0xff, 0x01);
-        WriteSensorRegister(0x12, 0x80);
+        Console.WriteLine("ResetCamera");
 
+        spiComms.WriteRegister(0x07, 0x80);
         Thread.Sleep(100);
+        spiComms.WriteRegister(0x07, 0x00);
+        Thread.Sleep(100);
+    }
 
-        if (imageFormat == JPEG)
-        {
-            WriteSensorRegisters(Ov2640Regs.OV2640_JPEG_INIT);
-            WriteSensorRegisters(Ov2640Regs.OV2640_YUV422);
-            WriteSensorRegisters(Ov2640Regs.OV2640_JPEG);
-            WriteSensorRegister(0xff, 0x01);
-            WriteSensorRegister(0x15, 0x00);
-            WriteSensorRegisters(Ov2640Regs.OV2640_320x240_JPEG); //leave this in place at 320x240
-        }
-        else
-        {
-            WriteSensorRegisters(Ov2640Regs.OV2640_QVGA);
-        }
+    public abstract void ValidateCamera();
+
+    public abstract void Initialize();
+
+    public bool IsCaptureComplete()
+    {
+        return GetBit(ARDUCHIP_TRIG, CAP_DONE_MASK) != 0;
     }
 
     public void FlushFifo()
     {
-        WriteRegisterSPI(ARDUCHIP_FIFO, FIFO_CLEAR_MASK);
+        spiComms.WriteRegister(ARDUCHIP_FIFO, FIFO_CLEAR_MASK);
     }
 
     public void StartCapture()
     {
-        WriteRegisterSPI(ARDUCHIP_FIFO, FIFO_START_MASK);
+        spiComms.WriteRegister(ARDUCHIP_FIFO, FIFO_START_MASK);
     }
 
     public void ClearFifoFlag()
     {
-        WriteRegisterSPI(ARDUCHIP_FIFO, FIFO_CLEAR_MASK);
+        spiComms.WriteRegister(ARDUCHIP_FIFO, FIFO_CLEAR_MASK);
     }
 
     public byte[] ReadFifoBurst()
     {
-        uint length = ReadFifoLength();
+        int length = 0;
+
+        while (length == 0)
+        {
+            length = ReadFifoLength();
+            Console.WriteLine($"The fifo length is = {length}");
+            Thread.Sleep(500);
+        }
         Console.WriteLine($"The fifo length is = {length}");
 
         if (length >= MAX_FIFO_SIZE)
@@ -134,7 +145,7 @@ public abstract partial class ArducamBase : ICamera, ISpiPeripheral, II2cPeriphe
         }
 
         var tx = new byte[length + 1];
-        tx[0] = 0x3C;
+        tx[0] = BURST_FIFO_READ;
         var rx = new byte[length + 1];
 
         spiComms.Exchange(tx, rx, DuplexType.Full);
@@ -143,7 +154,7 @@ public abstract partial class ArducamBase : ICamera, ISpiPeripheral, II2cPeriphe
         int footer = -1;
 
         //search for jpeg header and footer
-        for (int p = 0; p < rx.Length; p++)
+        for (int p = 0; p < rx.Length - 1; p++)
         {
             if (rx[p] == 0xFF && rx[p + 1] == 0xD8)
             {
@@ -153,7 +164,7 @@ public abstract partial class ArducamBase : ICamera, ISpiPeripheral, II2cPeriphe
             if (rx[p] == 0xFF && rx[p + 1] == 0xD9)
             {
                 Console.WriteLine($"Found footer {p}");
-                footer = p;
+                footer = p + 2;
                 if (header != -1)
                 {
                     break;
@@ -161,18 +172,10 @@ public abstract partial class ArducamBase : ICamera, ISpiPeripheral, II2cPeriphe
             }
         }
 
-        if (header == -1)
+        if (header == -1 || footer == -1)
         {
             Console.WriteLine("No image found");
             return new byte[0];
-        }
-        if (footer == -1)
-        {
-            footer = (int)length;
-        }
-        else
-        {
-            footer += 2; //pad out to include footer bytes 
         }
 
         var image = new byte[footer - header];
@@ -183,13 +186,14 @@ public abstract partial class ArducamBase : ICamera, ISpiPeripheral, II2cPeriphe
         return image;
     }
 
-    private uint ReadFifoLength()
+    private int ReadFifoLength()
     {
-        uint len1, len2, len3, length = 0;
+        byte len1, len2, len3;
         len1 = ReadRegister(FIFO_SIZE1);
         len2 = ReadRegister(FIFO_SIZE2);
-        len3 = (uint)(ReadRegister(FIFO_SIZE3) & 0x7f);
-        length = ((len3 << 16) | (len2 << 8) | len1) & 0x07fffff;
+        len3 = (byte)(ReadRegister(FIFO_SIZE3) & 0x7f);
+        Console.WriteLine($"{len1}, {len2}, {len3}");
+        var length = (len3 << 16) | (len2 << 8) | len1;
         return length;
     }
 
@@ -200,24 +204,24 @@ public abstract partial class ArducamBase : ICamera, ISpiPeripheral, II2cPeriphe
 
     private byte ReadFifo()
     {
-        return BusReadSPI(SINGLE_FIFO_READ);
+        return spiComms.ReadRegister(SINGLE_FIFO_READ);
     }
 
     private void SetBit(byte address, byte bit)
     {
         byte temp;
         temp = ReadRegister(address);
-        WriteRegisterSPI(address, (byte)(temp | bit));
+        spiComms.WriteRegister(address, (byte)(temp | bit));
     }
 
     private void ClearBit(byte address, byte bit)
     {
         byte temp;
         temp = ReadRegister(address);
-        WriteRegisterSPI(address, (byte)(temp & (~bit)));
+        spiComms.WriteRegister(address, (byte)(temp & (~bit)));
     }
 
-    public byte GetBit(byte address, byte bit)
+    private byte GetBit(byte address, byte bit)
     {
         byte temp;
         temp = ReadRegister(address);
@@ -225,9 +229,9 @@ public abstract partial class ArducamBase : ICamera, ISpiPeripheral, II2cPeriphe
         return temp;
     }
 
-    public byte ReadRegister(byte address)
+    protected byte ReadRegister(byte address)
     {
-        return BusReadSPI(address);
+        return spiComms.ReadRegister(address);
     }
 
     private void SetMode(byte mode)
@@ -235,50 +239,26 @@ public abstract partial class ArducamBase : ICamera, ISpiPeripheral, II2cPeriphe
         switch (mode)
         {
             case MCU2LCD_MODE:
-                WriteRegisterSPI(ARDUCHIP_MODE, MCU2LCD_MODE);
+                spiComms.WriteRegister(ARDUCHIP_MODE, MCU2LCD_MODE);
                 break;
             case CAM2LCD_MODE:
-                WriteRegisterSPI(ARDUCHIP_MODE, CAM2LCD_MODE);
+                spiComms.WriteRegister(ARDUCHIP_MODE, CAM2LCD_MODE);
                 break;
             case LCD2MCU_MODE:
-                WriteRegisterSPI(ARDUCHIP_MODE, LCD2MCU_MODE);
+                spiComms.WriteRegister(ARDUCHIP_MODE, LCD2MCU_MODE);
                 break;
             default:
-                WriteRegisterSPI(ARDUCHIP_MODE, MCU2LCD_MODE);
+                spiComms.WriteRegister(ARDUCHIP_MODE, MCU2LCD_MODE);
                 break;
         }
     }
 
-
-    public void set_format(byte fmt)
+    public void SetImageFormat(ImageFormat format)
     {
-        if (fmt == BMP)
-            imageFormat = BMP;
-        else if (fmt == RAW)
-            imageFormat = RAW;
-        else
-            imageFormat = JPEG;
+        this.format = format;
     }
 
-
-
-
-    public void WriteRegisterSPI(byte address, byte data)
-    {
-        BusWriteSPI(address, data);
-    }
-
-    private byte BusReadSPI(byte address)
-    {
-        return spiComms.ReadRegister((byte)(address & 0x7F));
-    }
-
-    private void BusWriteSPI(byte address, byte data)
-    {
-        spiComms.WriteRegister((byte)(address | 0x80), data);
-    }
-
-    public byte ReadSensorRegister(byte regID)
+    public byte ReadRegisterI2C(byte regID)
     {
         i2cComms.Write(regID);
         var ret = new byte[1];
@@ -286,21 +266,18 @@ public abstract partial class ArducamBase : ICamera, ISpiPeripheral, II2cPeriphe
         i2cComms.Read(ret);
         return ret[0];
     }
-    public int WriteSensorRegister(byte register, byte value)
+    public void WriteRegisterI2C(byte register, byte value)
     {
         i2cComms.WriteRegister(register, value);
-        return 0;
     }
 
     // Write 8 bit values to 8 bit register regID
-    public int WriteSensorRegisters(SensorReg[] reglist)
+    public void WriteRegistersI2C(SensorReg[] reglist)
     {
         for (int i = 0; i < reglist.Length; i++)
         {
-            WriteSensorRegister(reglist[i].Register, reglist[i].Value);
+            WriteRegisterI2C(reglist[i].Register, reglist[i].Value);
         }
-
-        return 0;
     }
 
     public bool CapturePhoto()

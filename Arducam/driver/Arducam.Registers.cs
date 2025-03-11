@@ -2,18 +2,14 @@
 
 public partial class ArducamBase
 {
-    private const byte BMP = 0;
-    private const byte JPEG = 1;
-    private const byte RAW = 2;
-
     private const byte MCU2LCD_MODE = 0x00;
     private const byte CAM2LCD_MODE = 0x01;
     private const byte LCD2MCU_MODE = 0x02;
 
-    public const byte ARDUCHIP_TEST1 = 0x00;  //TEST register
-    public const byte ARDUCHIP_FRAMES = 0x01;
-    public const byte ARDUCHIP_MODE = 0x02;  //Mode register
-    private const byte ARDUCHIP_TIM = 0x03;
+    public const byte ARDUCHIP_TEST1 = 0x00;  //TEST register - no effect on camera 
+    public const byte ARDUCHIP_FRAMES = 0x01; //the value of this register + 1 equals the number of frames to capture (e.g. 1 = 2 frames)
+    public const byte ARDUCHIP_MODE = 0x02;  //Mode register - Determine who is owner of the data bus
+    private const byte ARDUCHIP_TIMING = 0x03; //Sensor Interface Timing Register 
     private const byte ARDUCHIP_FIFO = 0x04;  //FIFO and I2C control
     private const byte ARDUCHIP_REV = 0x40;  //ArduCHIP revision
     public const byte ARDUCHIP_TRIG = 0x41;
