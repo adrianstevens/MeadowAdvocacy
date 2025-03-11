@@ -2,6 +2,18 @@
 
 public partial class Arducam
 {
+    protected internal struct SensorReg
+    {
+        public byte Register;
+        public byte Value;
+
+        public SensorReg(byte register, byte value)
+        {
+            Register = register;
+            Value = value;
+        }
+    }
+
     private const byte MCU2LCD_MODE = 0x00;
     private const byte CAM2LCD_MODE = 0x01;
     private const byte LCD2MCU_MODE = 0x02;

@@ -13,7 +13,7 @@ namespace ArducamMini
     {
         IProjectLabHardware projLab;
 
-        Arducam camera;
+        ArducamMini2MP camera;
 
         public override Task Initialize()
         {
@@ -21,10 +21,9 @@ namespace ArducamMini
 
             projLab = ProjectLab.Create();
 
-            camera = new Arducam(projLab.MikroBus2.SpiBus,
+            camera = new ArducamMini2MP(projLab.MikroBus2.SpiBus,
                 projLab.MikroBus2.Pins.CS,
-                projLab.MikroBus2.I2cBus,
-                (byte)Arducam.Addresses.Default);
+                projLab.MikroBus2.I2cBus);
 
             return Task.CompletedTask;
         }
@@ -33,18 +32,10 @@ namespace ArducamMini
         {
             Console.WriteLine("Run...");
 
-            camera.Reset();
+            await camera.SetJpegSize(Arducam.ImageSize._352x288);
 
-            await camera.Validate();
+            var jpegData = await camera.CapturePhoto();
 
-            await camera.Initialize();
-
-            await camera.OV2640_SetJpegSize(Arducam.ImageSize._352x288);
-
-            camera.Capture();
-
-            var jpegData = camera.ReadFifoBurst();
-            camera.ClearFifoFlag();
 
             if (jpegData.Length > 0)
             {
@@ -59,23 +50,13 @@ namespace ArducamMini
                 graphics.Clear();
                 graphics.DrawBuffer(0, 0, imageBuf);
                 graphics.Show();
+
+                Console.WriteLine("Complete");
             }
             else
             {
                 Console.WriteLine("Image capture failed");
             }
-        }
-
-        async Task TakePicture()
-        {
-            camera.CapturePhoto();
-
-            using var jpegStream = await camera.GetPhotoStream();
-
-            Console.WriteLine($"Got photo stream: {jpegStream.Length}");
-
-            //     var jpeg = new JpegImage(jpegStream);
-            //     Resolver.Log.Info($"Image decoded - width:{jpeg.Width}, height:{jpeg.Height}");
         }
     }
 }

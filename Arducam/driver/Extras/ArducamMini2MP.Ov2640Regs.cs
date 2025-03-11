@@ -1,11 +1,13 @@
-﻿namespace Meadow.Foundation.Sensors.Camera
+﻿namespace Meadow.Foundation.Sensors.Camera;
+
+public partial class ArducamMini2MP
 {
     public class Ov2640Regs
     {
         public static byte OV2640_CHIPID_HIGH = 0x0A;
         public static byte OV2640_CHIPID_LOW = 0x0B;
 
-        public static readonly SensorReg[] OV2640_QVGA = new SensorReg[]
+        internal static readonly SensorReg[] OV2640_QVGA = new SensorReg[]
         {
             new SensorReg(0xff, 0x00),
             new SensorReg(0x2c, 0xff),
@@ -203,7 +205,7 @@
             new SensorReg(0xff, 0xff)
         };
 
-        public static readonly SensorReg[] OV2640_JPEG_INIT = new SensorReg[]
+        internal static readonly SensorReg[] OV2640_JPEG_INIT = new SensorReg[]
         {
             new SensorReg(0xff, 0x00),
             new SensorReg(0x2c, 0xff),
@@ -399,7 +401,7 @@
             new SensorReg(0xff, 0xff)
         };
 
-        public static readonly SensorReg[] OV2640_YUV422 = new SensorReg[]
+        internal static readonly SensorReg[] OV2640_YUV422 = new SensorReg[]
         {
             new SensorReg(0xFF, 0x00),
             new SensorReg(0x05, 0x00),
@@ -410,10 +412,9 @@
             new SensorReg(0x3C, 0x40),
             new SensorReg(0xe1, 0x77),
             new SensorReg(0x00, 0x00),
-
         };
 
-        public static readonly SensorReg[] OV2640_JPEG = new SensorReg[]
+        internal static readonly SensorReg[] OV2640_JPEG = new SensorReg[]
         {
             new SensorReg(0xe0, 0x14),
             new SensorReg(0xe1, 0x77),
@@ -423,10 +424,9 @@
             new SensorReg(0xe0, 0x00),
             new SensorReg(0xFF, 0x01),
             new SensorReg(0x04, 0x08),
-
         };
 
-        public static readonly SensorReg[] OV2640_160x120_JPEG = new SensorReg[]
+        internal static readonly SensorReg[] OV2640_160x120_JPEG = new SensorReg[]
         {
             new SensorReg(0xff, 0x01),
             new SensorReg(0x12, 0x40),
@@ -467,10 +467,9 @@
             new SensorReg(0x5b, 0x1e),
             new SensorReg(0x5c, 0x00),
             new SensorReg(0xe0, 0x00),
-
         };
 
-        public static readonly SensorReg[] OV2640_176x144_JPEG = new SensorReg[]
+        internal static readonly SensorReg[] OV2640_176x144_JPEG = new SensorReg[]
         {
             new SensorReg(0xff, 0x01),
             new SensorReg(0x12, 0x40),
@@ -511,10 +510,9 @@
             new SensorReg(0x5b, 0x24),
             new SensorReg(0x5c, 0x00),
             new SensorReg(0xe0, 0x00),
-
         };
 
-        public static readonly SensorReg[] OV2640_320x240_JPEG = new SensorReg[]
+        internal static readonly SensorReg[] OV2640_320x240_JPEG = new SensorReg[]
         {
             new SensorReg(0xff, 0x01),
             new SensorReg(0x12, 0x40),
@@ -555,10 +553,9 @@
             new SensorReg(0x5b, 0x3c),
             new SensorReg(0x5c, 0x00),
             new SensorReg(0xe0, 0x00),
-
         };
 
-        public static readonly SensorReg[] OV2640_352x288_JPEG = new SensorReg[]
+        internal static readonly SensorReg[] OV2640_352x288_JPEG = new SensorReg[]
         {
             new SensorReg(0xff, 0x01),
             new SensorReg(0x12, 0x40),
@@ -599,10 +596,9 @@
             new SensorReg(0x5b, 0x48),
             new SensorReg(0x5c, 0x00),
             new SensorReg(0xe0, 0x00),
-
         };
 
-        public static readonly SensorReg[] OV2640_640x480_JPEG = new SensorReg[]
+        internal static readonly SensorReg[] OV2640_640x480_JPEG = new SensorReg[]
         {
             new SensorReg(0xff, 0x01),
             new SensorReg(0x11, 0x01),
@@ -644,10 +640,9 @@
             new SensorReg(0x5c, 0x00),
             new SensorReg(0xd3, 0x04),
             new SensorReg(0xe0, 0x00),
-
         };
 
-        public static readonly SensorReg[] OV2640_800x600_JPEG = new SensorReg[]
+        internal static readonly SensorReg[] OV2640_800x600_JPEG = new SensorReg[]
         {
             new SensorReg(0xff, 0x01),
             new SensorReg(0x11, 0x01),
@@ -689,10 +684,9 @@
             new SensorReg(0x5c, 0x00),
             new SensorReg(0xd3, 0x02),
             new SensorReg(0xe0, 0x00),
-
         };
 
-        public static readonly SensorReg[] OV2640_1024x768_JPEG = new SensorReg[]
+        internal static readonly SensorReg[] OV2640_1024x768_JPEG = new SensorReg[]
         {
             new SensorReg(0xff, 0x01),
             new SensorReg(0x11, 0x01),
@@ -732,10 +726,9 @@
             new SensorReg(0x5b, 0xc0),
             new SensorReg(0x5c, 0x01),
             new SensorReg(0xd3, 0x02),
-
         };
 
-        public static readonly SensorReg[] OV2640_1280x1024_JPEG = new SensorReg[]
+        internal static readonly SensorReg[] OV2640_1280x1024_JPEG = new SensorReg[]
         {
             new SensorReg(0xff, 0x01),
             new SensorReg(0x11, 0x01),
@@ -777,10 +770,9 @@
             new SensorReg(0x5c, 0x01),
             new SensorReg(0xd3, 0x02),
             new SensorReg(0xe0, 0x00),
-
         };
 
-        public static readonly SensorReg[] OV2640_1600x1200_JPEG = new SensorReg[]
+        internal static readonly SensorReg[] OV2640_1600x1200_JPEG = new SensorReg[]
         {
             new SensorReg(0xff, 0x01),
             new SensorReg(0x11, 0x01),
@@ -822,10 +814,9 @@
             new SensorReg(0x5c, 0x05), // bit2->1;bit[1:0]->1
             new SensorReg(0xd3, 0x02),
             new SensorReg(0xe0, 0x00),
-
         };
 
-        public static readonly SensorReg[] OV2640_SVGA = new SensorReg[]
+        internal static readonly SensorReg[] OV2640_SVGA = new SensorReg[]
         {
             new SensorReg(0xff, 0x01),
             new SensorReg(0x12, 0x80),
@@ -1004,10 +995,9 @@
             new SensorReg(0xe0, 0x00),
             new SensorReg(0xdd, 0x7f),
             new SensorReg(0x05, 0x00),
-
         };
 
-        public static readonly SensorReg[] OV2640_640x480_JPEG2 = new SensorReg[]
+        internal static readonly SensorReg[] OV2640_640x480_JPEG2 = new SensorReg[]
         {
             new SensorReg(0xff, 0x01),  // 001
             new SensorReg(0x11, 0x01),  // 002
