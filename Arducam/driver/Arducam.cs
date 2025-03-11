@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Meadow.Foundation.Sensors.Camera;
 
 /// <summary>
-/// Class that represents a Arducam family of cameras
+/// Base class for the Arducam family of cameras
 /// </summary>
 public abstract partial class Arducam : IPhotoCamera, ISpiPeripheral, II2cPeripheral
 {
@@ -77,7 +77,7 @@ public abstract partial class Arducam : IPhotoCamera, ISpiPeripheral, II2cPeriph
 
     public abstract Task Initialize();
 
-    public void Reset()
+    protected void Reset()
     {
         WriteRegister(0x07, 0x80);
         Thread.Sleep(100);
@@ -86,11 +86,6 @@ public abstract partial class Arducam : IPhotoCamera, ISpiPeripheral, II2cPeriph
     }
 
     protected abstract Task Validate();
-
-    public void FlushFifo()
-    {
-        WriteRegister(ARDUCHIP_FIFO, FIFO_CLEAR_MASK);
-    }
 
     public async Task<byte[]> CapturePhoto()
     {
@@ -131,6 +126,11 @@ public abstract partial class Arducam : IPhotoCamera, ISpiPeripheral, II2cPeriph
         return GetBit(ARDUCHIP_TRIG, CAP_DONE_MASK) > 0;
     }
 
+    protected void FlushFifo()
+    {
+        WriteRegister(ARDUCHIP_FIFO, FIFO_CLEAR_MASK);
+    }
+
     protected void ClearFifoFlag()
     {
         WriteRegister(ARDUCHIP_FIFO, FIFO_CLEAR_MASK);
@@ -139,18 +139,14 @@ public abstract partial class Arducam : IPhotoCamera, ISpiPeripheral, II2cPeriph
     private Task<byte[]> GetPhotoData()
     {
         uint length = ReadFifoLength();
-        Console.WriteLine($"The fifo length is = {length}");
 
         if (length >= MAX_FIFO_SIZE)
         {
-            length = MAX_FIFO_SIZE;
-            Console.WriteLine("Fifo size (length) is over size.");
-            return Task.FromResult(new byte[0]);
+            throw new Exception($"Camera data - Fifo size {length} is over limit of {MAX_FIFO_SIZE}");
         }
         if (length == 0)
         {
-            Console.WriteLine("Size is 0");
-            return Task.FromResult(new byte[0]);
+            throw new Exception($"No camera data available");
         }
 
         var tx = new byte[length + 1];
@@ -163,17 +159,15 @@ public abstract partial class Arducam : IPhotoCamera, ISpiPeripheral, II2cPeriph
         int footer = -1;
 
         //search for jpeg header and footer
-        for (int p = 0; p < rx.Length; p++)
+        for (int i = 0; i < rx.Length; i++)
         {
-            if (rx[p] == 0xFF && rx[p + 1] == 0xD8)
+            if (rx[i] == 0xFF && rx[i + 1] == 0xD8)
             {
-                Console.WriteLine($"Found header {p}");
-                header = p;
+                header = i;
             }
-            if (rx[p] == 0xFF && rx[p + 1] == 0xD9)
+            if (rx[i] == 0xFF && rx[i + 1] == 0xD9)
             {
-                Console.WriteLine($"Found footer {p}");
-                footer = p;
+                footer = i + 2;
                 if (header != -1)
                 {
                     break;
@@ -181,25 +175,14 @@ public abstract partial class Arducam : IPhotoCamera, ISpiPeripheral, II2cPeriph
             }
         }
 
-        if (header == -1)
+        if (header == -1 || footer == -1)
         {
-            Console.WriteLine("No image found");
-            return Task.FromResult(new byte[0]);
-        }
-        if (footer == -1)
-        {
-            footer = (int)length;
-        }
-        else
-        {
-            footer += 2; //pad out to include footer bytes 
+            throw new Exception($"Invalid camera data detected");
         }
 
         var image = new byte[footer - header];
 
         Array.Copy(rx, header, image, 0, footer - header);
-
-        Console.WriteLine($"read_fifo_burst complete: {length}");
 
         ClearFifoFlag();
         return Task.FromResult(image);
@@ -207,7 +190,7 @@ public abstract partial class Arducam : IPhotoCamera, ISpiPeripheral, II2cPeriph
 
     private uint ReadFifoLength()
     {
-        uint len1, len2, len3, length = 0;
+        uint len1, len2, len3, length;
         len1 = ReadRegsiter(FIFO_SIZE1);
         len2 = ReadRegsiter(FIFO_SIZE2);
         len3 = (uint)(ReadRegsiter(FIFO_SIZE3) & 0x7f);
@@ -273,7 +256,7 @@ public abstract partial class Arducam : IPhotoCamera, ISpiPeripheral, II2cPeriph
 
     public abstract Task SetJpegSize(ImageSize size);
 
-    public void SetImageFormat(ImageFormat format)
+    protected void SetImageFormat(ImageFormat format)
     {
         CurrentImageFormat = format;
     }
@@ -308,7 +291,6 @@ public abstract partial class Arducam : IPhotoCamera, ISpiPeripheral, II2cPeriph
         return 0;
     }
 
-    // Write 8 bit values to 8 bit register regID
     protected internal int WriteSensorRegisters(SensorReg[] reglist)
     {
         for (int i = 0; i < reglist.Length; i++)

@@ -12,7 +12,7 @@ public partial class ArducamMini2MP : Arducam
     { }
 
     /// <summary>
-    /// Init for OV2640 + Mini + Mini 2mp Plus
+    /// Init for OV2640 + Mini + Mini 2mp Plus Arudcam
     /// </summary>
     public override async Task Initialize()
     {
@@ -83,38 +83,25 @@ public partial class ArducamMini2MP : Arducam
         ClearFifoFlag();
     }
 
-    protected override async Task Validate()
+    protected override Task Validate()
     {
-        while (true)
+        WriteRegister(ARDUCHIP_TEST1, 0x55);
+        var value = ReadRegsiter(0x00);
+        if (value != 0x55)
         {
-            WriteRegister(ARDUCHIP_TEST1, 0x55);
-            var value = ReadRegsiter(0x00);
-            if (value == 0x55)
-            {
-                Console.WriteLine("Camera initialized");
-                break;
-            }
-            Console.WriteLine("Waiting for camera");
-            await Task.Delay(1000);
+            throw new Exception("Could not communicate with camera");
         }
 
-        while (true)
-        {
-            WriteSensorRegister(0xff, 0x01);
-            byte vid = ReadSensorRegister(Ov2640Regs.OV2640_CHIPID_HIGH);
-            byte pid = ReadSensorRegister(Ov2640Regs.OV2640_CHIPID_LOW);
+        WriteSensorRegister(0xff, 0x01);
+        byte vid = ReadSensorRegister(Ov2640Regs.OV2640_CHIPID_HIGH);
+        byte pid = ReadSensorRegister(Ov2640Regs.OV2640_CHIPID_LOW);
 
-            if ((vid != 0x26) && ((pid != 0x41) || (pid != 0x42)))
-            {
-                Console.WriteLine($"Can't find OV2640 vid:{vid} pid:{pid}");
-                await Task.Delay(1000);
-            }
-            else
-            {
-                Console.WriteLine("OV2640 detected");
-                break;
-            }
+        if ((vid != 0x26) && ((pid != 0x41) || (pid != 0x42)))
+        {
+            throw new Exception($"Can't find OV2640 vid:{vid} pid:{pid}");
         }
+
+        return Task.CompletedTask;
     }
 
     public void SetLightMode(LightMode Light_Mode)

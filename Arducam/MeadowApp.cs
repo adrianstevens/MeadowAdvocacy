@@ -25,6 +25,8 @@ namespace ArducamMini
                 projLab.MikroBus2.Pins.CS,
                 projLab.MikroBus2.I2cBus);
 
+            Console.WriteLine("Camera initialized");
+
             return Task.CompletedTask;
         }
 
@@ -32,10 +34,9 @@ namespace ArducamMini
         {
             Console.WriteLine("Run...");
 
-            await camera.SetJpegSize(Arducam.ImageSize._352x288);
+            await camera.SetJpegSize(Arducam.ImageSize._160x120);
 
             var jpegData = await camera.CapturePhoto();
-
 
             if (jpegData.Length > 0)
             {
@@ -45,7 +46,7 @@ namespace ArducamMini
 
                 var imageBuf = new BufferRgb888(decoder.Width, decoder.Height, jpg);
 
-                var graphics = new MicroGraphics(projLab.Display);
+                var graphics = new MicroGraphics(projLab.Display!);
 
                 graphics.Clear();
                 graphics.DrawBuffer(0, 0, imageBuf);
