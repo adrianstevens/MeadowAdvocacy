@@ -14,7 +14,7 @@ namespace Meadow.Foundation.Sensors.Camera;
 public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
 {
     //ToDo
-    private byte m_fmt;
+    private byte imageFormat;
 
     uint MAX_FIFO_SIZE = 0x5FFFF; //384KByte - OV2640 support
 
@@ -64,8 +64,7 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
 
     public Arducam(ISpiBus spiBus, IPin chipSelectPin, II2cBus i2cBus, byte i2cAddress)
         : this(spiBus, chipSelectPin.CreateDigitalOutputPort(), i2cBus, i2cAddress)
-    {
-    }
+    { }
 
     public Arducam(ISpiBus spiBus, IDigitalOutputPort chipSelectPort, II2cBus i2cBus, byte i2cAddress)
     {
@@ -73,53 +72,124 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
         spiComms = new SpiCommunications(spiBus, chipSelectPort, DefaultSpiBusSpeed, DefaultSpiBusMode);
 
         Resolver.Log.Info("Adrucam init...");
-
-        //  Initialize();
     }
 
     /// <summary>
     /// Init for OV2640 + Mini + Mini 2mp Plus
     /// </summary>
-    public void Initialize()
+    public async Task Initialize()
     {
-        wrSensorReg8_8(0xff, 0x01);
-        wrSensorReg8_8(0x12, 0x80);
+        SetImageFormat(ImageFormat.Jpeg);
+
+        WriteSensorRegister(0xff, 0x01);
+        WriteSensorRegister(0x12, 0x80);
 
         Thread.Sleep(100);
 
-        if (m_fmt == JPEG)
+        if (imageFormat == (byte)ImageFormat.Jpeg)
         {
-            wrSensorRegs8_8(Ov2640Regs.OV2640_JPEG_INIT);
-            wrSensorRegs8_8(Ov2640Regs.OV2640_YUV422);
-            wrSensorRegs8_8(Ov2640Regs.OV2640_JPEG);
-            wrSensorReg8_8(0xff, 0x01);
-            wrSensorReg8_8(0x15, 0x00);
-            wrSensorRegs8_8(Ov2640Regs.OV2640_320x240_JPEG); //leave this in place at 320x240
+            WriteSensorRegisters(Ov2640Regs.OV2640_JPEG_INIT);
+            WriteSensorRegisters(Ov2640Regs.OV2640_YUV422);
+            WriteSensorRegisters(Ov2640Regs.OV2640_JPEG);
+            WriteSensorRegister(0xff, 0x01);
+            WriteSensorRegister(0x15, 0x00);
+            WriteSensorRegisters(Ov2640Regs.OV2640_320x240_JPEG); //leave this in place at 320x240
         }
         else
         {
-            wrSensorRegs8_8(Ov2640Regs.OV2640_QVGA);
+            WriteSensorRegisters(Ov2640Regs.OV2640_QVGA);
+        }
+
+        await Task.Delay(1000);
+        ClearFifoFlag();
+        WriteRegister(ARDUCHIP_FRAMES, 0x00); //number of frames to capture
+    }
+
+    public void Reset()
+    {
+        WriteRegister(0x07, 0x80);
+        Thread.Sleep(100);
+        WriteRegister(0x07, 0x00);
+        Thread.Sleep(100);
+    }
+
+    public async Task Validate()
+    {
+        while (true)
+        {
+            WriteRegister(ARDUCHIP_TEST1, 0x55);
+            var value = ReadRegsiter(0x00);
+            if (value == 0x55)
+            {
+                Console.WriteLine("Camera initialized");
+                break;
+            }
+            Console.WriteLine("Waiting for camera");
+            await Task.Delay(1000);
+        }
+
+        while (true)
+        {
+            WriteSensorRegister(0xff, 0x01);
+            byte vid = ReadSensorRegister(Ov2640Regs.OV2640_CHIPID_HIGH);
+            byte pid = ReadSensorRegister(Ov2640Regs.OV2640_CHIPID_LOW);
+
+            if ((vid != 0x26) && ((pid != 0x41) || (pid != 0x42)))
+            {
+                Console.WriteLine($"Can't find OV2640 vid:{vid} pid:{pid}");
+                await Task.Delay(1000);
+            }
+            else
+            {
+                Console.WriteLine("OV2640 detected");
+                break;
+            }
         }
     }
 
-    public void flush_fifo()
+    public void FlushFifo()
     {
-        write_reg(ARDUCHIP_FIFO, FIFO_CLEAR_MASK);
+        WriteRegister(ARDUCHIP_FIFO, FIFO_CLEAR_MASK);
     }
 
-    public void start_capture()
+    public void SetCaptureResolution()
     {
-        write_reg(ARDUCHIP_FIFO, FIFO_START_MASK);
+
     }
 
-    public void clear_fifo_flag()
+    public void Capture()
     {
-        write_reg(ARDUCHIP_FIFO, FIFO_CLEAR_MASK);
+        StartCapture();
+        Console.WriteLine("Start capture");
+
+        while (IsCaptureReady() == false)
+        {
+            Thread.Sleep(1000);
+            Console.WriteLine("Capture not ready");
+        }
+
+        Console.WriteLine("Capture complete");
+        Thread.Sleep(50);
     }
 
-    public byte[] read_fifo_burst()
+    public void StartCapture()
     {
-        uint length = read_fifo_length();
+        WriteRegister(ARDUCHIP_FIFO, FIFO_START_MASK);
+    }
+
+    bool IsCaptureReady()
+    {
+        return GetBit(ARDUCHIP_TRIG, CAP_DONE_MASK) > 0;
+    }
+
+    public void ClearFifoFlag()
+    {
+        WriteRegister(ARDUCHIP_FIFO, FIFO_CLEAR_MASK);
+    }
+
+    public byte[] ReadFifoBurst()
+    {
+        uint length = ReadFifoLength();
         Console.WriteLine($"The fifo length is = {length}");
 
         if (length >= MAX_FIFO_SIZE)
@@ -184,160 +254,157 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
         return image;
     }
 
-    private uint read_fifo_length()
+    private uint ReadFifoLength()
     {
         uint len1, len2, len3, length = 0;
-        len1 = read_reg(FIFO_SIZE1);
-        len2 = read_reg(FIFO_SIZE2);
-        len3 = (uint)(read_reg(FIFO_SIZE3) & 0x7f);
+        len1 = ReadRegsiter(FIFO_SIZE1);
+        len2 = ReadRegsiter(FIFO_SIZE2);
+        len3 = (uint)(ReadRegsiter(FIFO_SIZE3) & 0x7f);
         length = ((len3 << 16) | (len2 << 8) | len1) & 0x07fffff;
         return length;
     }
 
-    private void set_fifo_burst()
+    private void SetFifoBurst()
     {
         spiComms.Write(BURST_FIFO_READ);
     }
 
-    private byte read_fifo()
+    private byte ReadFifo()
     {
-        return bus_read_spi(SINGLE_FIFO_READ);
+        return BusReadSpi(SINGLE_FIFO_READ);
     }
 
-    private void set_bit(byte address, byte bit)
+    private void SetBit(byte address, byte bit)
     {
         byte temp;
-        temp = read_reg(address);
-        write_reg(address, (byte)(temp | bit));
+        temp = ReadRegsiter(address);
+        WriteRegister(address, (byte)(temp | bit));
     }
 
-    private void clear_bit(byte address, byte bit)
+    private void ClearBit(byte address, byte bit)
     {
         byte temp;
-        temp = read_reg(address);
-        write_reg(address, (byte)(temp & (~bit)));
+        temp = ReadRegsiter(address);
+        WriteRegister(address, (byte)(temp & (~bit)));
     }
 
-    public byte read_reg(byte address)
+    public byte ReadRegsiter(byte address)
     {
-        return bus_read_spi(address);
+        return BusReadSpi(address);
     }
 
-    public byte get_bit(byte address, byte bit)
+    public byte GetBit(byte address, byte bit)
     {
         byte temp;
-        temp = read_reg(address);
+        temp = ReadRegsiter(address);
         temp &= bit;
         return temp;
     }
 
-    private void set_mode(byte mode)
+    private void SetMode(byte mode)
     {
         switch (mode)
         {
             case MCU2LCD_MODE:
-                write_reg(ARDUCHIP_MODE, MCU2LCD_MODE);
+                WriteRegister(ARDUCHIP_MODE, MCU2LCD_MODE);
                 break;
             case CAM2LCD_MODE:
-                write_reg(ARDUCHIP_MODE, CAM2LCD_MODE);
+                WriteRegister(ARDUCHIP_MODE, CAM2LCD_MODE);
                 break;
             case LCD2MCU_MODE:
-                write_reg(ARDUCHIP_MODE, LCD2MCU_MODE);
+                WriteRegister(ARDUCHIP_MODE, LCD2MCU_MODE);
                 break;
             default:
-                write_reg(ARDUCHIP_MODE, MCU2LCD_MODE);
+                WriteRegister(ARDUCHIP_MODE, MCU2LCD_MODE);
                 break;
         }
     }
 
-    private void OV2640_set_JPEG_size(byte size)
+    public async Task OV2640_SetJpegSize(ImageSize size)
     {
         switch (size)
         {
-            case OV2640_160x120:
-                wrSensorRegs8_8(Ov2640Regs.OV2640_160x120_JPEG);
+            case ImageSize._160x120:
+                WriteSensorRegisters(Ov2640Regs.OV2640_160x120_JPEG);
                 break;
-            case OV2640_176x144:
-                wrSensorRegs8_8(Ov2640Regs.OV2640_176x144_JPEG);
+            case ImageSize._176x144:
+                WriteSensorRegisters(Ov2640Regs.OV2640_176x144_JPEG);
                 break;
-            case OV2640_320x240:
-                wrSensorRegs8_8(Ov2640Regs.OV2640_320x240_JPEG);
+            case ImageSize._320x240:
+                WriteSensorRegisters(Ov2640Regs.OV2640_320x240_JPEG);
                 break;
-            case OV2640_352x288:
-                wrSensorRegs8_8(Ov2640Regs.OV2640_352x288_JPEG);
+            case ImageSize._352x288:
+                WriteSensorRegisters(Ov2640Regs.OV2640_352x288_JPEG);
                 break;
-            case OV2640_640x480:
-                wrSensorRegs8_8(Ov2640Regs.OV2640_640x480_JPEG);
+            case ImageSize._640x480:
+                WriteSensorRegisters(Ov2640Regs.OV2640_640x480_JPEG);
                 break;
-            case OV2640_800x600:
-                wrSensorRegs8_8(Ov2640Regs.OV2640_800x600_JPEG);
+            case ImageSize._800x600:
+                WriteSensorRegisters(Ov2640Regs.OV2640_800x600_JPEG);
                 break;
-            case OV2640_1024x768:
-                wrSensorRegs8_8(Ov2640Regs.OV2640_1024x768_JPEG);
+            case ImageSize._1024x768:
+                WriteSensorRegisters(Ov2640Regs.OV2640_1024x768_JPEG);
                 break;
-            case OV2640_1280x1024:
-                wrSensorRegs8_8(Ov2640Regs.OV2640_1280x1024_JPEG);
+            case ImageSize._1280x1024:
+                WriteSensorRegisters(Ov2640Regs.OV2640_1280x1024_JPEG);
                 break;
-            case OV2640_1600x1200:
-                wrSensorRegs8_8(Ov2640Regs.OV2640_1600x1200_JPEG);
+            case ImageSize._1600x1200:
+                WriteSensorRegisters(Ov2640Regs.OV2640_1600x1200_JPEG);
                 break;
             default:
-                wrSensorRegs8_8(Ov2640Regs.OV2640_320x240_JPEG);
+                WriteSensorRegisters(Ov2640Regs.OV2640_320x240_JPEG);
                 break;
         }
+        await Task.Delay(1000);
+
+        FlushFifo();
+        ClearFifoFlag();
     }
 
-    public void set_format(byte fmt)
+    public void SetImageFormat(ImageFormat format)
     {
-        if (fmt == BMP)
-            m_fmt = BMP;
-        else if (fmt == RAW)
-            m_fmt = RAW;
-        else
-            m_fmt = JPEG;
+        imageFormat = (byte)format;
     }
 
-    //ToDo ... move to OV2640 specific class
-
-    private void OV2640_set_Light_Mode(LightMode Light_Mode)
+    private void OV2640_SetLightMode(LightMode Light_Mode)
     {
         switch (Light_Mode)
         {
             case LightMode.Auto:
-                wrSensorReg8_8(0xff, 0x00);
-                wrSensorReg8_8(0xc7, 0x00); //AWB on
+                WriteSensorRegister(0xff, 0x00);
+                WriteSensorRegister(0xc7, 0x00); //AWB on
                 break;
             case LightMode.Sunny:
-                wrSensorReg8_8(0xff, 0x00);
-                wrSensorReg8_8(0xc7, 0x40); //AWB off
-                wrSensorReg8_8(0xcc, 0x5e);
-                wrSensorReg8_8(0xcd, 0x41);
-                wrSensorReg8_8(0xce, 0x54);
+                WriteSensorRegister(0xff, 0x00);
+                WriteSensorRegister(0xc7, 0x40); //AWB off
+                WriteSensorRegister(0xcc, 0x5e);
+                WriteSensorRegister(0xcd, 0x41);
+                WriteSensorRegister(0xce, 0x54);
                 break;
             case LightMode.Cloudy:
-                wrSensorReg8_8(0xff, 0x00);
-                wrSensorReg8_8(0xc7, 0x40); //AWB off
-                wrSensorReg8_8(0xcc, 0x65);
-                wrSensorReg8_8(0xcd, 0x41);
-                wrSensorReg8_8(0xce, 0x4f);
+                WriteSensorRegister(0xff, 0x00);
+                WriteSensorRegister(0xc7, 0x40); //AWB off
+                WriteSensorRegister(0xcc, 0x65);
+                WriteSensorRegister(0xcd, 0x41);
+                WriteSensorRegister(0xce, 0x4f);
                 break;
             case LightMode.Office:
-                wrSensorReg8_8(0xff, 0x00);
-                wrSensorReg8_8(0xc7, 0x40); //AWB off
-                wrSensorReg8_8(0xcc, 0x52);
-                wrSensorReg8_8(0xcd, 0x41);
-                wrSensorReg8_8(0xce, 0x66);
+                WriteSensorRegister(0xff, 0x00);
+                WriteSensorRegister(0xc7, 0x40); //AWB off
+                WriteSensorRegister(0xcc, 0x52);
+                WriteSensorRegister(0xcd, 0x41);
+                WriteSensorRegister(0xce, 0x66);
                 break;
             case LightMode.Home:
-                wrSensorReg8_8(0xff, 0x00);
-                wrSensorReg8_8(0xc7, 0x40); //AWB off
-                wrSensorReg8_8(0xcc, 0x42);
-                wrSensorReg8_8(0xcd, 0x3f);
-                wrSensorReg8_8(0xce, 0x71);
+                WriteSensorRegister(0xff, 0x00);
+                WriteSensorRegister(0xc7, 0x40); //AWB off
+                WriteSensorRegister(0xcc, 0x42);
+                WriteSensorRegister(0xcd, 0x3f);
+                WriteSensorRegister(0xce, 0x71);
                 break;
             default:
-                wrSensorReg8_8(0xff, 0x00);
-                wrSensorReg8_8(0xc7, 0x00); //AWB on
+                WriteSensorRegister(0xff, 0x00);
+                WriteSensorRegister(0xc7, 0x00); //AWB on
                 break;
         }
     }
@@ -349,44 +416,44 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
         {
             case ColorSaturation.Saturation2:
 
-                wrSensorReg8_8(0xff, 0x00);
-                wrSensorReg8_8(0x7c, 0x00);
-                wrSensorReg8_8(0x7d, 0x02);
-                wrSensorReg8_8(0x7c, 0x03);
-                wrSensorReg8_8(0x7d, 0x68);
-                wrSensorReg8_8(0x7d, 0x68);
+                WriteSensorRegister(0xff, 0x00);
+                WriteSensorRegister(0x7c, 0x00);
+                WriteSensorRegister(0x7d, 0x02);
+                WriteSensorRegister(0x7c, 0x03);
+                WriteSensorRegister(0x7d, 0x68);
+                WriteSensorRegister(0x7d, 0x68);
                 break;
             case ColorSaturation.Saturation1:
-                wrSensorReg8_8(0xff, 0x00);
-                wrSensorReg8_8(0x7c, 0x00);
-                wrSensorReg8_8(0x7d, 0x02);
-                wrSensorReg8_8(0x7c, 0x03);
-                wrSensorReg8_8(0x7d, 0x58);
-                wrSensorReg8_8(0x7d, 0x58);
+                WriteSensorRegister(0xff, 0x00);
+                WriteSensorRegister(0x7c, 0x00);
+                WriteSensorRegister(0x7d, 0x02);
+                WriteSensorRegister(0x7c, 0x03);
+                WriteSensorRegister(0x7d, 0x58);
+                WriteSensorRegister(0x7d, 0x58);
                 break;
             case ColorSaturation.Saturation0:
-                wrSensorReg8_8(0xff, 0x00);
-                wrSensorReg8_8(0x7c, 0x00);
-                wrSensorReg8_8(0x7d, 0x02);
-                wrSensorReg8_8(0x7c, 0x03);
-                wrSensorReg8_8(0x7d, 0x48);
-                wrSensorReg8_8(0x7d, 0x48);
+                WriteSensorRegister(0xff, 0x00);
+                WriteSensorRegister(0x7c, 0x00);
+                WriteSensorRegister(0x7d, 0x02);
+                WriteSensorRegister(0x7c, 0x03);
+                WriteSensorRegister(0x7d, 0x48);
+                WriteSensorRegister(0x7d, 0x48);
                 break;
             case ColorSaturation.Saturation_1:
-                wrSensorReg8_8(0xff, 0x00);
-                wrSensorReg8_8(0x7c, 0x00);
-                wrSensorReg8_8(0x7d, 0x02);
-                wrSensorReg8_8(0x7c, 0x03);
-                wrSensorReg8_8(0x7d, 0x38);
-                wrSensorReg8_8(0x7d, 0x38);
+                WriteSensorRegister(0xff, 0x00);
+                WriteSensorRegister(0x7c, 0x00);
+                WriteSensorRegister(0x7d, 0x02);
+                WriteSensorRegister(0x7c, 0x03);
+                WriteSensorRegister(0x7d, 0x38);
+                WriteSensorRegister(0x7d, 0x38);
                 break;
             case ColorSaturation.Saturation_2:
-                wrSensorReg8_8(0xff, 0x00);
-                wrSensorReg8_8(0x7c, 0x00);
-                wrSensorReg8_8(0x7d, 0x02);
-                wrSensorReg8_8(0x7c, 0x03);
-                wrSensorReg8_8(0x7d, 0x28);
-                wrSensorReg8_8(0x7d, 0x28);
+                WriteSensorRegister(0xff, 0x00);
+                WriteSensorRegister(0x7c, 0x00);
+                WriteSensorRegister(0x7d, 0x02);
+                WriteSensorRegister(0x7c, 0x03);
+                WriteSensorRegister(0x7d, 0x28);
+                WriteSensorRegister(0x7d, 0x28);
                 break;
         }
     }
@@ -396,44 +463,44 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
         switch (brightness)
         {
             case Brightness.Brightness2:
-                wrSensorReg8_8(0xff, 0x00);
-                wrSensorReg8_8(0x7c, 0x00);
-                wrSensorReg8_8(0x7d, 0x04);
-                wrSensorReg8_8(0x7c, 0x09);
-                wrSensorReg8_8(0x7d, 0x40);
-                wrSensorReg8_8(0x7d, 0x00);
+                WriteSensorRegister(0xff, 0x00);
+                WriteSensorRegister(0x7c, 0x00);
+                WriteSensorRegister(0x7d, 0x04);
+                WriteSensorRegister(0x7c, 0x09);
+                WriteSensorRegister(0x7d, 0x40);
+                WriteSensorRegister(0x7d, 0x00);
                 break;
             case Brightness.Brightness1:
-                wrSensorReg8_8(0xff, 0x00);
-                wrSensorReg8_8(0x7c, 0x00);
-                wrSensorReg8_8(0x7d, 0x04);
-                wrSensorReg8_8(0x7c, 0x09);
-                wrSensorReg8_8(0x7d, 0x30);
-                wrSensorReg8_8(0x7d, 0x00);
+                WriteSensorRegister(0xff, 0x00);
+                WriteSensorRegister(0x7c, 0x00);
+                WriteSensorRegister(0x7d, 0x04);
+                WriteSensorRegister(0x7c, 0x09);
+                WriteSensorRegister(0x7d, 0x30);
+                WriteSensorRegister(0x7d, 0x00);
                 break;
             case Brightness.Brightness0:
-                wrSensorReg8_8(0xff, 0x00);
-                wrSensorReg8_8(0x7c, 0x00);
-                wrSensorReg8_8(0x7d, 0x04);
-                wrSensorReg8_8(0x7c, 0x09);
-                wrSensorReg8_8(0x7d, 0x20);
-                wrSensorReg8_8(0x7d, 0x00);
+                WriteSensorRegister(0xff, 0x00);
+                WriteSensorRegister(0x7c, 0x00);
+                WriteSensorRegister(0x7d, 0x04);
+                WriteSensorRegister(0x7c, 0x09);
+                WriteSensorRegister(0x7d, 0x20);
+                WriteSensorRegister(0x7d, 0x00);
                 break;
             case Brightness.Brightness_1:
-                wrSensorReg8_8(0xff, 0x00);
-                wrSensorReg8_8(0x7c, 0x00);
-                wrSensorReg8_8(0x7d, 0x04);
-                wrSensorReg8_8(0x7c, 0x09);
-                wrSensorReg8_8(0x7d, 0x10);
-                wrSensorReg8_8(0x7d, 0x00);
+                WriteSensorRegister(0xff, 0x00);
+                WriteSensorRegister(0x7c, 0x00);
+                WriteSensorRegister(0x7d, 0x04);
+                WriteSensorRegister(0x7c, 0x09);
+                WriteSensorRegister(0x7d, 0x10);
+                WriteSensorRegister(0x7d, 0x00);
                 break;
             case Brightness.Brightness_2:
-                wrSensorReg8_8(0xff, 0x00);
-                wrSensorReg8_8(0x7c, 0x00);
-                wrSensorReg8_8(0x7d, 0x04);
-                wrSensorReg8_8(0x7c, 0x09);
-                wrSensorReg8_8(0x7d, 0x00);
-                wrSensorReg8_8(0x7d, 0x00);
+                WriteSensorRegister(0xff, 0x00);
+                WriteSensorRegister(0x7c, 0x00);
+                WriteSensorRegister(0x7d, 0x04);
+                WriteSensorRegister(0x7c, 0x09);
+                WriteSensorRegister(0x7d, 0x00);
+                WriteSensorRegister(0x7d, 0x00);
                 break;
         }
     }
@@ -444,77 +511,75 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
         {
             case Contrast.Contrast2:
 
-                wrSensorReg8_8(0xff, 0x00);
-                wrSensorReg8_8(0x7c, 0x00);
-                wrSensorReg8_8(0x7d, 0x04);
-                wrSensorReg8_8(0x7c, 0x07);
-                wrSensorReg8_8(0x7d, 0x20);
-                wrSensorReg8_8(0x7d, 0x28);
-                wrSensorReg8_8(0x7d, 0x0c);
-                wrSensorReg8_8(0x7d, 0x06);
+                WriteSensorRegister(0xff, 0x00);
+                WriteSensorRegister(0x7c, 0x00);
+                WriteSensorRegister(0x7d, 0x04);
+                WriteSensorRegister(0x7c, 0x07);
+                WriteSensorRegister(0x7d, 0x20);
+                WriteSensorRegister(0x7d, 0x28);
+                WriteSensorRegister(0x7d, 0x0c);
+                WriteSensorRegister(0x7d, 0x06);
                 break;
             case Contrast.Contrast1:
-                wrSensorReg8_8(0xff, 0x00);
-                wrSensorReg8_8(0x7c, 0x00);
-                wrSensorReg8_8(0x7d, 0x04);
-                wrSensorReg8_8(0x7c, 0x07);
-                wrSensorReg8_8(0x7d, 0x20);
-                wrSensorReg8_8(0x7d, 0x24);
-                wrSensorReg8_8(0x7d, 0x16);
-                wrSensorReg8_8(0x7d, 0x06);
+                WriteSensorRegister(0xff, 0x00);
+                WriteSensorRegister(0x7c, 0x00);
+                WriteSensorRegister(0x7d, 0x04);
+                WriteSensorRegister(0x7c, 0x07);
+                WriteSensorRegister(0x7d, 0x20);
+                WriteSensorRegister(0x7d, 0x24);
+                WriteSensorRegister(0x7d, 0x16);
+                WriteSensorRegister(0x7d, 0x06);
                 break;
             case Contrast.Contrast0:
-                wrSensorReg8_8(0xff, 0x00);
-                wrSensorReg8_8(0x7c, 0x00);
-                wrSensorReg8_8(0x7d, 0x04);
-                wrSensorReg8_8(0x7c, 0x07);
-                wrSensorReg8_8(0x7d, 0x20);
-                wrSensorReg8_8(0x7d, 0x20);
-                wrSensorReg8_8(0x7d, 0x20);
-                wrSensorReg8_8(0x7d, 0x06);
+                WriteSensorRegister(0xff, 0x00);
+                WriteSensorRegister(0x7c, 0x00);
+                WriteSensorRegister(0x7d, 0x04);
+                WriteSensorRegister(0x7c, 0x07);
+                WriteSensorRegister(0x7d, 0x20);
+                WriteSensorRegister(0x7d, 0x20);
+                WriteSensorRegister(0x7d, 0x20);
+                WriteSensorRegister(0x7d, 0x06);
                 break;
             case Contrast.Contrast_1:
-                wrSensorReg8_8(0xff, 0x00);
-                wrSensorReg8_8(0x7c, 0x00);
-                wrSensorReg8_8(0x7d, 0x04);
-                wrSensorReg8_8(0x7c, 0x07);
-                wrSensorReg8_8(0x7d, 0x20);
-                wrSensorReg8_8(0x7d, 0x20);
-                wrSensorReg8_8(0x7d, 0x2a);
-                wrSensorReg8_8(0x7d, 0x06);
+                WriteSensorRegister(0xff, 0x00);
+                WriteSensorRegister(0x7c, 0x00);
+                WriteSensorRegister(0x7d, 0x04);
+                WriteSensorRegister(0x7c, 0x07);
+                WriteSensorRegister(0x7d, 0x20);
+                WriteSensorRegister(0x7d, 0x20);
+                WriteSensorRegister(0x7d, 0x2a);
+                WriteSensorRegister(0x7d, 0x06);
                 break;
             case Contrast.Contrast_2:
-                wrSensorReg8_8(0xff, 0x00);
-                wrSensorReg8_8(0x7c, 0x00);
-                wrSensorReg8_8(0x7d, 0x04);
-                wrSensorReg8_8(0x7c, 0x07);
-                wrSensorReg8_8(0x7d, 0x20);
-                wrSensorReg8_8(0x7d, 0x18);
-                wrSensorReg8_8(0x7d, 0x34);
-                wrSensorReg8_8(0x7d, 0x06);
+                WriteSensorRegister(0xff, 0x00);
+                WriteSensorRegister(0x7c, 0x00);
+                WriteSensorRegister(0x7d, 0x04);
+                WriteSensorRegister(0x7c, 0x07);
+                WriteSensorRegister(0x7d, 0x20);
+                WriteSensorRegister(0x7d, 0x18);
+                WriteSensorRegister(0x7d, 0x34);
+                WriteSensorRegister(0x7d, 0x06);
                 break;
         }
     }
 
 
-    public void write_reg(byte address, byte data)
+    public void WriteRegister(byte address, byte data)
     {
-        bus_write(address, data);
+        BusWrite(address, data);
     }
 
-    private byte bus_read_spi(byte address)
+    private byte BusReadSpi(byte address)
     {
         return spiComms.ReadRegister((byte)(address & 0x7F));
     }
 
-    private void bus_write(byte address, byte data)
+    private void BusWrite(byte address, byte data)
     {
         spiComms.WriteRegister((byte)(address | 0x80), data);
-        //   spiComms.Write(regID);
-        //   spiComms.Write(data);
     }
 
-    public byte rdSensorReg8_8(byte regID)
+    public byte ReadSensorRegister(byte regID)
     {
         i2cComms.Write(regID);
         var ret = new byte[1];
@@ -522,18 +587,18 @@ public partial class Arducam : ICamera, ISpiPeripheral, II2cPeripheral
         i2cComms.Read(ret);
         return ret[0];
     }
-    public int wrSensorReg8_8(byte register, byte value)
+    public int WriteSensorRegister(byte register, byte value)
     {
         i2cComms.WriteRegister(register, value);
         return 0;
     }
 
     // Write 8 bit values to 8 bit register regID
-    public int wrSensorRegs8_8(SensorReg[] reglist)
+    public int WriteSensorRegisters(SensorReg[] reglist)
     {
         for (int i = 0; i < reglist.Length; i++)
         {
-            wrSensorReg8_8(reglist[i].Register, reglist[i].Value);
+            WriteSensorRegister(reglist[i].Register, reglist[i].Value);
         }
 
         return 0;

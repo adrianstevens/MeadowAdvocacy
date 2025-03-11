@@ -25,6 +25,19 @@ public partial class Arducam
         Default = Address_0x30
     }
 
+    public enum ImageSize
+    {
+        _160x120 = 0,
+        _176x144 = 1,
+        _320x240 = 2,
+        _352x288 = 3,
+        _640x480 = 4,
+        _800x600 = 5,
+        _1024x768 = 6,
+        _1280x1024 = 7,
+        _1600x1200 = 8,
+    }
+
     /// <summary>
     /// The camara light mode
     /// </summary>
