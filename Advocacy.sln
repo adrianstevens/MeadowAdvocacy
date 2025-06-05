@@ -173,6 +173,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Displays.ePaperWaveShare", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Displays.ePaper", "..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\Displays.ePaper\Driver\Displays.ePaper.csproj", "{7B99DB9D-A6D0-4CF3-AD4A-943876129E2A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilkLayouts", "SilkLayouts\SilkLayouts.csproj", "{1474CE7D-A0C0-552D-A926-F3E301AF37A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graphics.MicroLayout", "..\Meadow.Foundation\Source\Meadow.Foundation.Libraries_and_Frameworks\Graphics.MicroLayout\Driver\Graphics.MicroLayout.csproj", "{51572976-921A-5A2D-1671-4C67434FDB2F}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RogueLike", "RogueLike\RogueLike.csproj", "{0DCB2177-4A91-0FE8-FB3A-4650AEFA4115}"
 EndProject
 Global
@@ -627,6 +631,14 @@ Global
 		{7B99DB9D-A6D0-4CF3-AD4A-943876129E2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B99DB9D-A6D0-4CF3-AD4A-943876129E2A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7B99DB9D-A6D0-4CF3-AD4A-943876129E2A}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{1474CE7D-A0C0-552D-A926-F3E301AF37A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1474CE7D-A0C0-552D-A926-F3E301AF37A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1474CE7D-A0C0-552D-A926-F3E301AF37A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1474CE7D-A0C0-552D-A926-F3E301AF37A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51572976-921A-5A2D-1671-4C67434FDB2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51572976-921A-5A2D-1671-4C67434FDB2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51572976-921A-5A2D-1671-4C67434FDB2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51572976-921A-5A2D-1671-4C67434FDB2F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0DCB2177-4A91-0FE8-FB3A-4650AEFA4115}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0DCB2177-4A91-0FE8-FB3A-4650AEFA4115}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DCB2177-4A91-0FE8-FB3A-4650AEFA4115}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -687,6 +699,7 @@ Global
 		{4AE944B6-19D7-4882-BFCB-6416B799FC99} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
 		{0CD9971F-418D-4CF7-89FB-1050B68AABE7} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
 		{7B99DB9D-A6D0-4CF3-AD4A-943876129E2A} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
+		{51572976-921A-5A2D-1671-4C67434FDB2F} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {59B85D60-3E0C-446F-8620-3B88DCA35E21}
