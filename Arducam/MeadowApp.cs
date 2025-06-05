@@ -27,6 +27,7 @@ namespace ArducamMini
 
             Console.WriteLine("Camera initialized");
 
+
             return Task.CompletedTask;
         }
 

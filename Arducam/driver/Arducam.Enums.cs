@@ -1,9 +1,9 @@
 ﻿namespace Meadow.Foundation.Sensors.Camera;
 
-public partial class Arducam
+public partial class ArducamBase
 {
     /// <summary>
-    /// Valid addresses for the sensor.
+    /// Valid addresses for the sensor
     /// </summary>
     public enum Addresses : byte
     {
@@ -100,7 +100,7 @@ public partial class Arducam
     public enum ImageFormat
     {
         BMP = 0,
-        Jpeg = 1,
-        Raw = 2,
+        RAW = 1,
+        JPEG = 2
     }
 }

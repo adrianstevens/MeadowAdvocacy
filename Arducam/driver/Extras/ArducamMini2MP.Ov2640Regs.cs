@@ -623,6 +623,7 @@ public partial class ArducamMini2MP
             new SensorReg(0x06, 0x02),
             new SensorReg(0x0d, 0xb7),
             new SensorReg(0x0e, 0x01),
+
             new SensorReg(0xff, 0x00),
             new SensorReg(0xe0, 0x04),
             new SensorReg(0xc0, 0xc8),
