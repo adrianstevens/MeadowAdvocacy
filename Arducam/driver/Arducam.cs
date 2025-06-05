@@ -112,7 +112,6 @@ public abstract partial class Arducam : IPhotoCamera, ISpiPeripheral, II2cPeriph
 
         await Task.Delay(50);
 
-
         return await GetPhotoData();
     }
 
