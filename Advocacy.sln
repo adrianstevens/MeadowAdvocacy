@@ -167,8 +167,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neo8ProjLab", "Neo8ProjLab\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FroggitDesktop", "Froggit-desktop-128x128\FroggitDesktop.csproj", "{C04CBCE1-4AED-4619-A256-B1C9E9ADEA57}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arducam.ProjLab", "Arducam\Arducam.ProjLab.csproj", "{AC9225C9-B87E-4AD7-BD49-1B3EE4E81462}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectLab4ColorEPaper", "ProjLab4ColorEPaper\ProjectLab4ColorEPaper.csproj", "{DF180D47-D408-4790-AEB4-09BF5AE5A4CC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Displays.ePaperWaveShare", "..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\Displays.ePaperWaveShare\Driver\Displays.ePaperWaveShare.csproj", "{0CD9971F-418D-4CF7-89FB-1050B68AABE7}"
@@ -178,6 +176,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilkLayouts", "SilkLayouts\SilkLayouts.csproj", "{1474CE7D-A0C0-552D-A926-F3E301AF37A3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graphics.MicroLayout", "..\Meadow.Foundation\Source\Meadow.Foundation.Libraries_and_Frameworks\Graphics.MicroLayout\Driver\Graphics.MicroLayout.csproj", "{51572976-921A-5A2D-1671-4C67434FDB2F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RogueLike", "RogueLike\RogueLike.csproj", "{0DCB2177-4A91-0FE8-FB3A-4650AEFA4115}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -613,12 +613,6 @@ Global
 		{C04CBCE1-4AED-4619-A256-B1C9E9ADEA57}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C04CBCE1-4AED-4619-A256-B1C9E9ADEA57}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C04CBCE1-4AED-4619-A256-B1C9E9ADEA57}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AC9225C9-B87E-4AD7-BD49-1B3EE4E81462}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AC9225C9-B87E-4AD7-BD49-1B3EE4E81462}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AC9225C9-B87E-4AD7-BD49-1B3EE4E81462}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{AC9225C9-B87E-4AD7-BD49-1B3EE4E81462}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AC9225C9-B87E-4AD7-BD49-1B3EE4E81462}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AC9225C9-B87E-4AD7-BD49-1B3EE4E81462}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{DF180D47-D408-4790-AEB4-09BF5AE5A4CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DF180D47-D408-4790-AEB4-09BF5AE5A4CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF180D47-D408-4790-AEB4-09BF5AE5A4CC}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
@@ -645,6 +639,10 @@ Global
 		{51572976-921A-5A2D-1671-4C67434FDB2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51572976-921A-5A2D-1671-4C67434FDB2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51572976-921A-5A2D-1671-4C67434FDB2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DCB2177-4A91-0FE8-FB3A-4650AEFA4115}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DCB2177-4A91-0FE8-FB3A-4650AEFA4115}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DCB2177-4A91-0FE8-FB3A-4650AEFA4115}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DCB2177-4A91-0FE8-FB3A-4650AEFA4115}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -19,7 +19,7 @@ namespace WaterQualityTracker
 
             sensor = new Y4000(client, 1);
 
-            sensor.Updated += Y4000Updated;
+           // sensor. += Y4000Updated;
 
             await sensor.Initialize();
         }
