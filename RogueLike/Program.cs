@@ -8,6 +8,7 @@ using Meadow.Foundation.Sensors.Hid;
 using Meadow.Hardware;
 using Meadow.Peripherals.Displays;
 using Meadow.Peripherals.Sensors.Buttons;
+using RogueLike;
 using SimpleJpegDecoder;
 using System.Reflection;
 
@@ -20,17 +21,16 @@ public class Program
     static SilkDisplay? display;
     static MicroGraphics graphics = default!;
 
-    static PixelBufferBase image = default!;
-
     static Keyboard keyboard = default!;
 
     static TextDisplayMenu menu = default!;
 
+    static RogueGame game = default!;
 
-    static IButton next = default!;
-    static IButton previous = default!;
-    static IButton select = default!;
-    static IButton back = default!;
+    static IButton left = default!;
+    static IButton right = default!;
+    static IButton up = default!;
+    static IButton down = default!;
 
     public static void Main()
     {
@@ -52,70 +52,83 @@ public class Program
 
         keyboard = new Keyboard();
 
-        //image = LoadJpeg() as PixelBufferBase;
+        down = GetPushButton(keyboard.Pins.Down);
+        right = GetPushButton(keyboard.Pins.Right);
+        up = GetPushButton(keyboard.Pins.Up);
+        left = GetPushButton(keyboard.Pins.Left);
 
-        var bmp = Image.LoadFromResource("lecs-logo.bmp");
+        down.Clicked += Down_Clicked;
+        right.Clicked += Right_Clicked;
+        up.Clicked += Up_Clicked;
+        left.Clicked += Left_Clicked;
+      
+        game = new RogueGame();
+        game.NewGame();
+    }
 
-        image = ((PixelBufferBase)bmp.DisplayBuffer).Convert<BufferRgb444>();
+    private static void Left_Clicked(object? sender, EventArgs e)
+    {
+        game.OnLeft();
+    }
 
-        Console.WriteLine("Load menu data...");
+    private static void Up_Clicked(object? sender, EventArgs e)
+    {
+        game.OnUp();
+    }
 
-        var menuData = LoadResource("menu.json");
+    private static void Right_Clicked(object? sender, EventArgs e)
+    {
+        game.OnRight();
+    }
 
-        Console.WriteLine($"Data length: {menuData.Length}...");
-
-        Console.WriteLine("Create menu...");
-
-        menu = new TextDisplayMenu(graphics, menuData, false);
-        menu.ValueChanged += Menu_ValueChanged;
-        Console.WriteLine("Create buttons...");
-
-        next = GetPushButton(keyboard.Pins.Down);
-        next.Clicked += (s, e) => { menu.Next(); };
-
-        select = GetPushButton(keyboard.Pins.Right);
-        select.Clicked += (s, e) => { menu.Select(); };
-
-        previous = GetPushButton(keyboard.Pins.Up);
-        previous.Clicked += (s, e) => { menu.Previous(); };
-
-        back = GetPushButton(keyboard.Pins.Back);
-        back.Clicked += (s, e) => { menu.Back(); };
-
-        Console.WriteLine("Enable menu...");
-
-        menu.Enable();
+    private static void Down_Clicked(object? sender, EventArgs e)
+    {
+        game.OnDown();
     }
 
     public static void Run()
     {
+        int scale = 16;
+
+        graphics.Clear();
+
+   
         Task.Run(() =>
         {
-            // var grayImage = image.Convert<BufferGray8>();
-            // var scaledImage = image.Resize<BufferGray8>(320, 320);
-            // var rotatedImage = image.Rotate<BufferGray8>(new Meadow.Units.Angle(60));
+            while (true)
+            {
+                graphics.Clear();
 
-            graphics.Clear();
+                for (int i = 0; i < game.Width; i++)
+                {
+                    for (int j = 0; j < game.Height; j++)
+                    {
+                        if (game.MapTiles[i, j] == TileType.Room)
+                        {
+                            graphics.DrawRectangle(i * scale, j * scale, scale, scale, Color.LightGray, true);
+                        }
+                        if (game.MapTiles[i, j] == TileType.Wall)
+                        {
+                            graphics.DrawRectangle(i * scale, j * scale, scale, scale, Color.DarkGray, true);
+                        }
+                        if (game.MapTiles[i, j] == TileType.Path)
+                        {
+                            graphics.DrawRectangle(i * scale, j * scale, scale, scale, Color.Brown, true);
+                        }
+                    }
+                }
 
-            // draw the image centered
-            // graphics.DrawBuffer((display!.Width - rotatedImage.Width) / 2, (display!.Height - rotatedImage.Height) / 2, rotatedImage);
+                graphics.DrawRectangle(game.Hero.X * scale, game.Hero.Y * scale, scale, scale, Color.Cyan, true);
+                graphics.DrawRectangle(game.Exit.X * scale, game.Exit.Y * scale, scale, scale, Color.Red, true);
 
-            graphics.DrawBuffer(0, 0, image);
+                graphics.Show();
 
-            var color = Color.Cyan;
-            //   color = Color.FromHsba(180, 1, 0.18f);
-
-            //color = Color.FromAhsv(1.0f, 180, 0.5f, 1.0f);
-
-            color = Color.FromHsba(180, 1, 1);
-
-
-            graphics.DrawRectangle(10, 10, 110, 110, color, true);
-
-            graphics.Show();
+                Thread.Sleep(20);
+            }
         });
 
         display!.Run();
+
     }
 
     private static IButton GetPushButton(IPin pin)
@@ -150,7 +163,7 @@ public class Program
     static byte[] LoadResource(string filename)
     {
         var assembly = Assembly.GetExecutingAssembly();
-        var resourceName = $"SilkDisplayTest.{filename}";
+        var resourceName = $"RogueLike.{filename}";
 
         using Stream stream = assembly.GetManifestResourceStream(resourceName);
         using var ms = new MemoryStream();

@@ -7,13 +7,9 @@
     <LangVersion>10.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="lecs-logo.bmp" />
-    <None Remove="maple.jpg" />
     <None Remove="menu.json" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="lecs-logo.bmp" />
-    <EmbeddedResource Include="maple.jpg" />
     <EmbeddedResource Include="menu.json" />
   </ItemGroup>
   <ItemGroup>
