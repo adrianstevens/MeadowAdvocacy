@@ -7,6 +7,14 @@
     <LangVersion>10.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="zelda.nes" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="zelda.nes">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="SimpleJpegDecoder" Version="0.4.0" />
   </ItemGroup>
   <ItemGroup>
@@ -15,5 +23,10 @@
     <ProjectReference Include="..\..\Meadow.Foundation\Source\Meadow.Foundation.Libraries_and_Frameworks\Graphics.MicroLayout\Driver\Graphics.MicroLayout.csproj" />
     <ProjectReference Include="..\..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\Displays.Silk\Driver\Displays.Silk.csproj" />
     <ProjectReference Include="..\..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\Sensors.Hid.Keyboard\Driver\Sensors.Hid.Keyboard.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="smb3.nes">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

@@ -24,6 +24,8 @@ public class Program
     static IButton select = default!;
     static IButton back = default!;
 
+    static NES nes;
+
     public static void Main()
     {
         Initialize();
@@ -34,7 +36,7 @@ public class Program
 
     public static void Initialize()
     {
-        display = new SilkDisplay(320, 240, displayScale: 4f);
+        display = new SilkDisplay(320, 240, displayScale: 2f);
 
         graphics = new MicroGraphics(display)
         {
@@ -53,16 +55,20 @@ public class Program
         previous = GetPushButton(keyboard.Pins.Up);
         back = GetPushButton(keyboard.Pins.Back);
 
-
         var layout = new StackLayout(0, 0, graphics.Width, graphics.Height, StackLayout.Orientation.Vertical);
 
+        Helper.display = display;
+        nes = new NES();
     }
 
     public static void Run()
     {
         Task.Run(() =>
         {
-
+            while(true)
+            {
+                nes.Run();
+            }
         });
 
         display!.Run();

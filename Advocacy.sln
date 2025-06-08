@@ -181,6 +181,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RogueLike", "RogueLike\Rogu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NESEmu", "NESEmu\NESEmu.csproj", "{47880200-2260-1286-4523-65450A2557A8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NESEmuProjLab", "NESEmuProjLab\NESEmuProjLab.csproj", "{F2848A4F-F060-B5D5-FA35-F5F40DF0EBD5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -649,6 +651,12 @@ Global
 		{47880200-2260-1286-4523-65450A2557A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47880200-2260-1286-4523-65450A2557A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47880200-2260-1286-4523-65450A2557A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2848A4F-F060-B5D5-FA35-F5F40DF0EBD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2848A4F-F060-B5D5-FA35-F5F40DF0EBD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2848A4F-F060-B5D5-FA35-F5F40DF0EBD5}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F2848A4F-F060-B5D5-FA35-F5F40DF0EBD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2848A4F-F060-B5D5-FA35-F5F40DF0EBD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2848A4F-F060-B5D5-FA35-F5F40DF0EBD5}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

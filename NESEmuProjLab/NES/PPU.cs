@@ -1,5 +1,7 @@
 
 using Meadow;
+using Meadow.Foundation.Graphics.Buffers;
+using System;
 
 public class PPU
 {
@@ -38,7 +40,10 @@ public class PPU
     public int textureX = 0;
     public int textureY = 0;
 
-    Color[] scanlineBuffer = new Color[ScreenWidth];
+    int[] scanlineBuffer = new int[ScreenWidth];
+    ushort[] nesPallet;
+
+    BufferRgb565 frameBuffer;
 
     public PPU(Bus bus)
     {
@@ -57,6 +62,15 @@ public class PPU
 
         scanlineCycle = 0;
         scanline = 0;
+
+        nesPallet = new ushort[NesPaletteColors.Length];
+
+        for (int i = 0; i < nesPallet.Length; i++)
+        {
+            nesPallet[i] = NesPaletteColors[i].Color16bppRgb565;
+        }
+
+        frameBuffer = Helper.displayBuffer;
 
         Console.WriteLine("PPU init");
     }
@@ -123,7 +137,7 @@ public class PPU
     bool[] bgMask = new bool[ScreenWidth];
     private void RenderScanline(int scanline)
     {
-        Array.Clear(scanlineBuffer, 0, ScreenWidth);
+       // Array.Clear(scanlineBuffer, 0, ScreenWidth);
         Array.Clear(bgMask, 0, ScreenWidth);
 
         RenderBackground(bgMask);
@@ -131,7 +145,7 @@ public class PPU
 
         for (int i = 0; i < ScreenWidth; i++)
         {
-            Helper.display.DrawPixel(i, scanline, scanlineBuffer[i]);
+            frameBuffer.SetPixel(i, scanline, nesPallet[scanlineBuffer[i]]);
         }
     }
 
@@ -479,33 +493,34 @@ public class PPU
         v = (ushort)((v & 0xFBE0) | (t & 0x041F));
     }
 
-    private Color GetSpriteColor(int colorIndex, int paletteIndex)
+    private int GetSpriteColor(int colorIndex, int paletteIndex)
     {
         int paletteBase = 0x11 + paletteIndex * 4;
         byte paletteColor = paletteRAM[paletteBase + (colorIndex - 1)];
-        return NesPalette[paletteColor % 64];
+        return paletteColor % 64;
     }
 
-    private Color GetColorFromPalette(int colorIndex, int paletteIndex)
+    
+    private int GetColorFromPalette(int colorIndex, int paletteIndex)
     {
         if (colorIndex == 0)
         {
             byte bgColorIndex = paletteRAM[0];
-            return NesPalette[bgColorIndex % 64];
+            return bgColorIndex % 64;
         }
 
         int paletteBase = 1 + (paletteIndex * 4);
         byte paletteColorIndex = paletteRAM[(paletteBase + colorIndex - 1) % 32];
-        return NesPalette[paletteColorIndex % 64];
+        return paletteColorIndex % 64;
     }
-
-    public void DrawFrame(int scale)
+    
+    public void DrawFrame()
     {
         Helper.display.Show();
     }
 
     //NES 64 Color Palette
-    static readonly Color[] NesPalette = new Color[] {
+    static readonly Color[] NesPaletteColors = new Color[] {
         new Color(84, 84, 84, 255),    new Color(0, 30, 116, 255),   new Color(8, 16, 144, 255),   new Color(48, 0, 136, 255),
         new Color(68, 0, 100, 255),    new Color(92, 0, 48, 255),    new Color(84, 4, 0, 255),     new Color(60, 24, 0, 255),
         new Color(32, 42, 0, 255),     new Color(8, 58, 0, 255),     new Color(0, 64, 0, 255),     new Color(0, 60, 0, 255),
