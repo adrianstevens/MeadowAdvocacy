@@ -68,9 +68,9 @@ public class Program
 
         var pic = new Picture(image.Width, image.Height, image);
 
-        layout.Add(pic);
+        layout.Controls.Add(pic);
 
-        layout.Add(new Label(100, 30, "Maple")
+        layout.Controls.Add(new Label(100, 30, "Maple")
         {
             Font = new Font8x8(),
             VerticalAlignment = VerticalAlignment.Center,
@@ -78,7 +78,7 @@ public class Program
             TextColor = Color.LightGreen,
             BackgroundColor = Color.Blue
         });
-        layout.Add(new Label(100, 30, "Trees")
+        layout.Controls.Add(new Label(100, 30, "Trees")
         {
             Font = new Font8x12(),
             VerticalAlignment = VerticalAlignment.Center,
@@ -86,7 +86,7 @@ public class Program
             TextColor = Color.LawnGreen,
             BackgroundColor = Color.Blue
         });
-        layout.Add(new Label(100, 30, "Are")
+        layout.Controls.Add(new Label(100, 30, "Are")
         {
             Font = new Font12x16(),
             VerticalAlignment = VerticalAlignment.Center,
@@ -94,7 +94,7 @@ public class Program
             TextColor = Color.Green,
             BackgroundColor = Color.Blue
         });
-        layout.Add(new Label(100, 30, "Cool")
+        layout.Controls.Add(new Label(100, 30, "Cool")
         {
             Font = new Font16x24(),
             VerticalAlignment = VerticalAlignment.Center,
