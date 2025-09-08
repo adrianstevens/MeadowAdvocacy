@@ -52,7 +52,9 @@ public class Program
             {
                 graphics.Clear(Color.White);
 
-                graphics.DrawRectangle(4, 4, 120, 80, Color.Black, false);
+                //graphics.DrawRectangle(4, 4, 120, 80, Color.Black, false);
+                graphics.DrawCircle(54, 44, 37, Color.Orange, true);
+                graphics.DrawCircle(54, 44, 37, Color.Black, false);
 
                 graphics.DrawText(150, 20, "22", Color.Black, ScaleFactor.X2, font: fontLarge);
                 graphics.DrawText(220, 20, "°C", Color.Black, ScaleFactor.X1, font: fontMedium);
