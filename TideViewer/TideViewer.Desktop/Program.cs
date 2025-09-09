@@ -1,6 +1,9 @@
-﻿using Meadow;
+﻿using Graphics.MicroGraphics.Dither;
+using Meadow;
 using Meadow.Foundation.Displays;
 using Meadow.Foundation.Graphics;
+using Meadow.Peripherals.Displays;
+using System.Reflection;
 
 namespace SilkDisplay_Sample;
 
@@ -14,6 +17,18 @@ public class Program
     static IFont fontLarge;
     static IFont fontMedium;
     static IFont fontSmall;
+
+    static Image image;
+
+    static IPixelBuffer ditheredBuffer;
+
+    static Program()
+    {
+        _assemblyName = Assembly
+             .GetExecutingAssembly()
+             .GetName()
+             .Name;
+    }
 
     public static void Main()
     {
@@ -33,6 +48,22 @@ public class Program
         display = new SilkDisplay(displayScale: 1f);
 
         var virtualDisplay = new SimulatedEpd5in65f(rotate: true, displayRenderer: display);
+        //var virtualDisplay = new SimulatedRm68140(rotate: true, displayRenderer: display, colorMode: ColorMode.Format12bppRgb444);
+
+        image = GetImageResource("weather.bmp");
+
+        var palette = new Color[]
+        {
+            Color.Black,
+            Color.White,
+            Color.Green,
+            Color.Blue,
+            Color.Red,
+            Color.Yellow,
+            Color.Orange
+        };
+
+        ditheredBuffer = PixelBufferDither.ToIndexed4(image.DisplayBuffer, palette, DitherMode.FloydSteinberg, true);
 
         graphics = new MicroGraphics(virtualDisplay)
         {
@@ -50,6 +81,10 @@ public class Program
         {
             while (true)
             {
+                graphics.DrawBuffer(0, 0, ditheredBuffer);
+                graphics.Show();
+
+                /*
                 graphics.Clear(Color.White);
 
                 //graphics.DrawRectangle(4, 4, 120, 80, Color.Black, false);
@@ -98,10 +133,42 @@ public class Program
                 graphics.DrawRectangle(274, 200, 322, 245, Color.Black, false);
 
                 graphics.Show();
+                */
             }
         });
 
         display!.Run();
+    }
+
+    private static readonly Dictionary<string, Image> _images = new();
+    private static readonly string _assemblyName;
+    private static Image GetImageResource(string name)
+    {
+        if (!_images.ContainsKey(name))
+        {
+            try
+            {
+                _images.Add(name, Image.LoadFromResource($"{_assemblyName}.{name}"));
+            }
+            catch
+            {
+                var availableResources = Assembly.GetExecutingAssembly().GetManifestResourceNames();
+
+                var match = availableResources.FirstOrDefault(r => r.Contains(name, StringComparison.OrdinalIgnoreCase));
+
+                if (match != null)
+                {
+                    var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(match);
+                    _images.Add(name, Image.LoadFromStream(stream));
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+        return _images[name];
     }
 }
 
