@@ -193,6 +193,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TideViewer.Meadow", "TideVi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TideViewer.Desktop", "TideViewer\TideViewer.Desktop\TideViewer.Desktop.csproj", "{E0826F49-82EE-D74E-08D1-54861E3D5E34}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rd03d", "Rd03d\Rd03d.csproj", "{CF403757-3AD3-3876-69DD-72424F558C76}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -683,6 +685,12 @@ Global
 		{E0826F49-82EE-D74E-08D1-54861E3D5E34}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0826F49-82EE-D74E-08D1-54861E3D5E34}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0826F49-82EE-D74E-08D1-54861E3D5E34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF403757-3AD3-3876-69DD-72424F558C76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF403757-3AD3-3876-69DD-72424F558C76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF403757-3AD3-3876-69DD-72424F558C76}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{CF403757-3AD3-3876-69DD-72424F558C76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF403757-3AD3-3876-69DD-72424F558C76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF403757-3AD3-3876-69DD-72424F558C76}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
