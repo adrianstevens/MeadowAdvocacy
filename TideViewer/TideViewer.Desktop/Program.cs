@@ -4,6 +4,7 @@ using Meadow.Foundation.Displays;
 using Meadow.Foundation.Graphics;
 using Meadow.Peripherals.Displays;
 using System.Reflection;
+using TideViewer;
 
 namespace SilkDisplay_Sample;
 
@@ -38,8 +39,12 @@ public class Program
         Thread.Sleep(Timeout.Infinite);
     }
 
-    public static void Initialize()
+    public static async void Initialize()
     {
+
+
+
+
         fontLarge = new Font16x24();
         fontMedium = new Font12x20();
         fontSmall = new Font8x12();
@@ -70,6 +75,41 @@ public class Program
             CurrentFont = fontMedium,
             Stroke = 1,
         };
+
+        // Set your Stormglass API key
+        string apiKey = "8723c3ca-937d-11f0-b07a-0242ac130006-8723c456-937d-11f0-b07a-0242ac130006";
+
+        // Coordinates for Entrance Island Lighthouse (north Gabriola Island)
+        double lat = 49.208979;
+        double lng = -123.809392;
+
+        // Create service
+        var tideService = new StormglassTideService(apiKey);
+
+        // Time window: now → next 24h
+        var start = DateTime.Now;
+        var end = start.AddHours(24);
+
+        try
+        {
+            // Fetch tide points
+            List<TidePoint> points = await tideService.GetSeaLevelAsync(lat, lng, start, end);
+
+            // Print simple table of times + heights
+            Console.WriteLine($"Tides for Entrance Island {start:yyyy-MM-dd}");
+            Console.WriteLine("Time (local)          Height (ft)");
+            Console.WriteLine("-------------------  -----------");
+            foreach (var p in points)
+            {
+                Console.WriteLine($"{p.Time:yyyy-MM-dd HH:mm}  {p.Level,8:0.00}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error fetching tides: " + ex.Message);
+        }
+
+
     }
 
     public static void Run()
