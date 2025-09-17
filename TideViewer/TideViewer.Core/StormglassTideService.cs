@@ -4,25 +4,48 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace TideViewer;
 
+
 public class StormglassTideService
 {
-    static readonly HttpClient http = new();
+    private static readonly HttpClient http = new HttpClient();
+    private readonly string apiKey;
 
-    readonly string apiKey;
-    public StormglassTideService(string apiKey) { this.apiKey = apiKey; }
+    // ==== Embedded debug cache you can paste over as needed ====
+    private static TideCache EmbeddedCache = new TideCache
+    {
+        Lat = 49.208979,
+        Lng = -123.809392, // Entrance Island (north Gabriola)
+        StartLocal = new DateTime(2025, 09, 16, 0, 0, 0),
+        EndLocal = new DateTime(2025, 09, 17, 0, 0, 0),
+        FetchedAtLocal = new DateTime(2025, 09, 16, 08, 00, 00),
+        Points = new[]
+        {
+                // sample; replace via GenerateEmbeddedCacheSnippet(...)
+                new TidePoint(new DateTime(2025,09,16,00,00,00),  3.21),
+                new TidePoint(new DateTime(2025,09,16,03,00,00),  7.02),
+                new TidePoint(new DateTime(2025,09,16,06,00,00),  4.12),
+                new TidePoint(new DateTime(2025,09,16,09,00,00),  9.35),
+            }
+    };
 
+    public StormglassTideService(string apiKey)
+    {
+        this.apiKey = apiKey;
+    }
+
+    /// Fetch directly from Stormglass (uses MicroJson)
     public async Task<List<TidePoint>> GetSeaLevelAsync(
         double lat, double lng, DateTime startLocal, DateTime endLocal)
     {
-        // Stormglass expects ISO-8601 UTC
         string start = startLocal.ToUniversalTime().ToString("o");
         string end = endLocal.ToUniversalTime().ToString("o");
 
-        var url =
+        string url =
             $"https://api.stormglass.io/v2/tide/sea-level/point?lat={lat:F6}&lng={lng:F6}&start={Uri.EscapeDataString(start)}&end={Uri.EscapeDataString(end)}";
 
         var req = new HttpRequestMessage(HttpMethod.Get, url);
@@ -30,34 +53,102 @@ public class StormglassTideService
 
         var res = await http.SendAsync(req);
         res.EnsureSuccessStatusCode();
-        var json = await res.Content.ReadAsStringAsync();
+        string json = await res.Content.ReadAsStringAsync();
 
-        // Response: { "data": [ { "time": "...", "sg": <meters> }, ... ], "meta": { ... } }
         var dto = MicroJson.Deserialize<SeaLevelResponse>(json);
-        if (dto?.data == null || dto.data.Length == 0)
+        if (dto == null || dto.data == null || dto.data.Length == 0)
             return new List<TidePoint>();
 
-        // Convert meters -> feet (or keep meters if you prefer)
         var points = new List<TidePoint>(dto.data.Length);
-        foreach (var p in dto.data)
+        for (int i = 0; i < dto.data.Length; i++)
         {
-            // Stormglass time is ISO8601 UTC; convert to local for your plot axis
+            var p = dto.data[i];
+            // Stormglass time is ISO8601 UTC
             var tLocal = DateTime.Parse(p.time, null, DateTimeStyles.AdjustToUniversal).ToLocalTime();
+            // meters -> feet (keep in meters if you prefer)
             points.Add(new TidePoint(tLocal, p.sg * 3.28084));
         }
 
         return points.OrderBy(p => p.Time).ToList();
     }
 
-    // DTOs w/ property names matching JSON (MicroJson uses name matching)
-    class SeaLevelResponse
+    /// Prefer embedded cache if it matches; otherwise fetch & update cache.
+    public async Task<List<TidePoint>> GetSeaLevelCachedAsync(
+        double lat, double lng, DateTime startLocal, DateTime endLocal,
+        bool preferEmbedded = true, TimeSpan? cacheWindowTolerance = null)
+    {
+        if (cacheWindowTolerance == null)
+            cacheWindowTolerance = TimeSpan.FromHours(1);
+
+        if (preferEmbedded && EmbeddedCache.Points != null && EmbeddedCache.Points.Length > 0)
+        {
+            bool coordsOk = Math.Abs(EmbeddedCache.Lat - lat) < 0.001 &&
+                            Math.Abs(EmbeddedCache.Lng - lng) < 0.001;
+
+            bool windowOk = EmbeddedCache.StartLocal <= startLocal + cacheWindowTolerance.Value &&
+                            EmbeddedCache.EndLocal >= endLocal - cacheWindowTolerance.Value;
+
+            if (coordsOk && windowOk)
+                return EmbeddedCache.Points.OrderBy(p => p.Time).ToList();
+        }
+
+        var fresh = await GetSeaLevelAsync(lat, lng, startLocal, endLocal);
+
+        // Update in-memory cache so GenerateEmbeddedCacheSnippet can use it
+        EmbeddedCache = new TideCache
+        {
+            Lat = lat,
+            Lng = lng,
+            StartLocal = startLocal,
+            EndLocal = endLocal,
+            FetchedAtLocal = DateTime.Now,
+            Points = fresh.ToArray()
+        };
+
+        return fresh;
+    }
+
+    /// Emit a C# initializer you can paste into the EmbeddedCache block above.
+    public static string GenerateEmbeddedCacheSnippet(TideCache cache, string indent = "        ")
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("new TideCache");
+        sb.AppendLine(indent + "{");
+        sb.AppendLine(string.Format(CultureInfo.InvariantCulture, "{0}Lat = {1:F6}, Lng = {2:F6},", indent, cache.Lat, cache.Lng));
+        sb.AppendLine(string.Format(CultureInfo.InvariantCulture,
+            "{0}StartLocal = new DateTime({1}, {2}, {3}, {4}, {5}, {6}),",
+            indent, cache.StartLocal.Year, cache.StartLocal.Month, cache.StartLocal.Day,
+            cache.StartLocal.Hour, cache.StartLocal.Minute, cache.StartLocal.Second));
+        sb.AppendLine(string.Format(CultureInfo.InvariantCulture,
+            "{0}EndLocal   = new DateTime({1}, {2}, {3}, {4}, {5}, {6}),",
+            indent, cache.EndLocal.Year, cache.EndLocal.Month, cache.EndLocal.Day,
+            cache.EndLocal.Hour, cache.EndLocal.Minute, cache.EndLocal.Second));
+        sb.AppendLine(string.Format(CultureInfo.InvariantCulture,
+            "{0}FetchedAtLocal = new DateTime({1}, {2}, {3}, {4}, {5}, {6}),",
+            indent, cache.FetchedAtLocal.Year, cache.FetchedAtLocal.Month, cache.FetchedAtLocal.Day,
+            cache.FetchedAtLocal.Hour, cache.FetchedAtLocal.Minute, cache.FetchedAtLocal.Second));
+        sb.AppendLine(indent + "Points = new[]");
+        sb.AppendLine(indent + "{");
+        foreach (var p in cache.Points.OrderBy(p => p.Time))
+        {
+            sb.AppendLine(string.Format(CultureInfo.InvariantCulture,
+                "{0}    new TidePoint(new DateTime({1}, {2}, {3}, {4}, {5}, {6}), {7:0.#####}),",
+                indent, p.Time.Year, p.Time.Month, p.Time.Day, p.Time.Hour, p.Time.Minute, p.Time.Second, p.Level));
+        }
+        sb.AppendLine(indent + "}");
+        sb.AppendLine(indent + "};");
+        return sb.ToString();
+    }
+
+    // DTOs for MicroJson (names match JSON)
+    private class SeaLevelResponse
     {
         public SeaLevelPoint[] data { get; set; } = Array.Empty<SeaLevelPoint>();
     }
 
-    class SeaLevelPoint
+    private class SeaLevelPoint
     {
         public string time { get; set; } = "";
-        public double sg { get; set; }
+        public double sg { get; set; }   // meters
     }
 }

@@ -12,16 +12,7 @@ public enum TideUnits { English, Metric }
 public enum NoaaTimeZone { Gmt, Local }
 
 
-public class TidePoint
-{
-    public DateTime Time { get; }
-    public double Level { get; }
-    public TidePoint(DateTime time, double level)
-    {
-        Time = time;
-        Level = level;
-    }
-}
+
 
 
 public class NoaaTideService

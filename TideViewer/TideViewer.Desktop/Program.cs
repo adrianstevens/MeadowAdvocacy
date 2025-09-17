@@ -77,7 +77,7 @@ public class Program
         };
 
         // Set your Stormglass API key
-        string apiKey = "8723c3ca-937d-11f0-b07a-0242ac130006-8723c456-937d-11f0-b07a-0242ac130006";
+        string apiKey = "";
 
         // Coordinates for Entrance Island Lighthouse (north Gabriola Island)
         double lat = 49.208979;
