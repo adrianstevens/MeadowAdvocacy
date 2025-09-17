@@ -3,6 +3,7 @@ using Meadow;
 using Meadow.Foundation.Displays;
 using Meadow.Foundation.Graphics;
 using Meadow.Peripherals.Displays;
+using System.Globalization;
 using System.Reflection;
 using TideViewer;
 
@@ -14,6 +15,7 @@ public class Program
 {
     static SilkDisplay? display;
     static MicroGraphics graphics = default!;
+    static StormglassTideService tideService;
 
     static IFont fontLarge;
     static IFont fontMedium;
@@ -41,14 +43,9 @@ public class Program
 
     public static async void Initialize()
     {
-
-
-
-
         fontLarge = new Font16x24();
         fontMedium = new Font12x20();
         fontSmall = new Font8x12();
-
 
         display = new SilkDisplay(displayScale: 1f);
 
@@ -79,12 +76,14 @@ public class Program
         // Set your Stormglass API key
         string apiKey = "";
 
+
+
+        // Create service
+        tideService = new StormglassTideService(apiKey);
+
         // Coordinates for Entrance Island Lighthouse (north Gabriola Island)
         double lat = 49.208979;
         double lng = -123.809392;
-
-        // Create service
-        var tideService = new StormglassTideService(apiKey);
 
         // Time window: now → next 24h
         var start = DateTime.Now;
@@ -93,7 +92,25 @@ public class Program
         try
         {
             // Fetch tide points
-            List<TidePoint> points = await tideService.GetSeaLevelAsync(lat, lng, start, end);
+            var points = await tideService.GetSeaLevelCachedAsync(lat, lng, start, end, preferEmbedded: true);
+
+            /* 
+             
+            //To refresh
+              
+            var fresh = await tideService.GetSeaLevelAsync(lat, lng, start, end);
+            var cache = new TideCache
+            {
+                Lat = lat,
+                Lng = lng,
+                StartLocal = start,
+                EndLocal = end,
+                FetchedAtLocal = DateTime.Now,
+                Points = fresh.ToArray()
+            };
+
+            string snippet = StormglassTideService.GenerateEmbeddedCacheSnippet(cache);
+            */
 
             // Print simple table of times + heights
             Console.WriteLine($"Tides for Entrance Island {start:yyyy-MM-dd}");
@@ -108,23 +125,27 @@ public class Program
         {
             Console.WriteLine("Error fetching tides: " + ex.Message);
         }
-
-
     }
 
-    public static void Run()
+    public static async void Run()
     {
         int xCol1 = 40;
         int xCol2 = 180;
 
-        Task.Run(() =>
+        // Coordinates for Entrance Island Lighthouse (north Gabriola Island)
+        double lat = 49.208979;
+        double lng = -123.809392;
+
+        // Time window: now → next 24h
+        var start = DateTime.Now;
+        var end = start.AddHours(24);
+
+        var points = await tideService.GetSeaLevelCachedAsync(lat, lng, start, end, preferEmbedded: true);
+
+        _ = Task.Run(() =>
         {
             while (true)
             {
-                graphics.DrawBuffer(0, 0, ditheredBuffer);
-                graphics.Show();
-
-                /*
                 graphics.Clear(Color.White);
 
                 //graphics.DrawRectangle(4, 4, 120, 80, Color.Black, false);
@@ -170,15 +191,107 @@ public class Program
                 graphics.DrawText(xCol2, 350, "Visibility", Color.Black, font: fontSmall);
                 graphics.DrawText(xCol2, 362, "> 3km", Color.Black, font: fontMedium);
 
-                graphics.DrawRectangle(274, 200, 322, 245, Color.Black, false);
+                //  graphics.DrawRectangle(274, 200, 322, 245, Color.Black, false);
+
+                DrawTideGraph(graphics, points, 274, 200, 274 + 322, 200 + 245, "ft");
 
                 graphics.Show();
-                */
+
             }
         });
 
         display!.Run();
     }
+
+    static void DrawTideGraph(
+    MicroGraphics graphics,
+    IList<TidePoint> points,
+    int x0, int y0, int x1, int y1,
+    string yUnits = "ft")
+    {
+        // normalize corners → box
+        int left = Math.Min(x0, x1);
+        int top = Math.Min(y0, y1);
+        int right = Math.Max(x0, x1);
+        int bottom = Math.Max(y0, y1);
+        int W = right - left;
+        int H = bottom - top;
+
+        // inner padding for axes/labels
+        int padL = 26, padR = 6, padT = 6, padB = 12;
+        int plotX = left + padL;
+        int plotY = top + padT;
+        int plotW = Math.Max(1, W - padL - padR);
+        int plotH = Math.Max(1, H - padT - padB);
+
+        // frame (outer box)
+        graphics.DrawRectangle(left, top, right, bottom, Color.Black, false);
+
+        // no data?
+        if (points == null || points.Count < 2)
+        {
+            graphics.CurrentFont = new Font6x8();
+            graphics.DrawText(left + 4, top + 4, "no tide data");
+            return;
+        }
+
+        // scale
+        double minV = points.Min(p => p.Level);
+        double maxV = points.Max(p => p.Level);
+        if (Math.Abs(maxV - minV) < 0.1) { maxV += 0.5; minV -= 0.5; }
+
+        DateTime t0 = points.First().Time;
+        DateTime t1 = points.Last().Time;
+        double totalMin = Math.Max(1, (t1 - t0).TotalMinutes);
+
+        // y grid + labels
+        graphics.CurrentFont = new Font6x8();
+        int yGrids = 3;
+
+        for (int i = 0; i <= yGrids; i++)
+        {
+            int y = plotY + (int)Math.Round(plotH * (1.0 - i / (double)yGrids));
+            graphics.DrawLine(plotX, y, plotX + plotW, y, Color.Black);
+
+            double v = minV + (maxV - minV) * (i / (double)yGrids);
+            graphics.DrawText(left + 2, y - 4, v.ToString("0.0", CultureInfo.InvariantCulture));
+        }
+
+        graphics.DrawText(left + 2, top + 2, yUnits);
+
+        // x ticks every 6h
+        var step = TimeSpan.FromHours(6);
+        var tick = RoundUp(t0, step);
+
+        for (var t = tick; t <= t1; t = t.Add(step))
+        {
+            int x = plotX + (int)Math.Round(plotW * ((t - t0).TotalMinutes / totalMin));
+            graphics.DrawLine(x, plotY, x, plotY + plotH, Color.Black);
+            graphics.DrawText(x - 8, bottom - 9, t.ToString("HH"));
+        }
+
+        // plot line
+        int? lx = null, ly = null;
+        foreach (var p in points)
+        {
+            int x = plotX + (int)Math.Round(plotW * ((p.Time - t0).TotalMinutes / totalMin));
+            int y = plotY + (int)Math.Round(plotH * (1.0 - (p.Level - minV) / (maxV - minV)));
+
+            if (lx.HasValue)
+            {
+                graphics.DrawLine(lx.Value, ly!.Value, x, y, Color.Blue);
+            }
+
+            lx = x; ly = y;
+        }
+    }
+
+    static DateTime RoundUp(DateTime dt, TimeSpan step)
+    {
+        long ticks = ((dt.Ticks + step.Ticks - 1) / step.Ticks) * step.Ticks;
+        return new DateTime(ticks, dt.Kind);
+    }
+
 
     private static readonly Dictionary<string, Image> _images = new();
     private static readonly string _assemblyName;
