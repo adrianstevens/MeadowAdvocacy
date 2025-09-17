@@ -19,18 +19,38 @@ public class StormglassTideService
     private static TideCache EmbeddedCache = new TideCache
     {
         Lat = 49.208979,
-        Lng = -123.809392, // Entrance Island (north Gabriola)
-        StartLocal = new DateTime(2025, 09, 16, 0, 0, 0),
-        EndLocal = new DateTime(2025, 09, 17, 0, 0, 0),
-        FetchedAtLocal = new DateTime(2025, 09, 16, 08, 00, 00),
+        Lng = -123.809392,
+        StartLocal = new DateTime(2025, 9, 16, 21, 43, 56),
+        EndLocal = new DateTime(2025, 9, 17, 21, 43, 56),
+        FetchedAtLocal = new DateTime(2025, 9, 16, 21, 43, 57),
         Points = new[]
         {
-                // sample; replace via GenerateEmbeddedCacheSnippet(...)
-                new TidePoint(new DateTime(2025,09,16,00,00,00),  3.21),
-                new TidePoint(new DateTime(2025,09,16,03,00,00),  7.02),
-                new TidePoint(new DateTime(2025,09,16,06,00,00),  4.12),
-                new TidePoint(new DateTime(2025,09,16,09,00,00),  9.35),
-            }
+            new TidePoint(new DateTime(2025, 9, 16, 21, 0, 0), 0.72178),
+            new TidePoint(new DateTime(2025, 9, 16, 22, 0, 0), 0.75459),
+            new TidePoint(new DateTime(2025, 9, 16, 23, 0, 0), 1.11549),
+            new TidePoint(new DateTime(2025, 9, 17, 0, 0, 0), 1.60761),
+            new TidePoint(new DateTime(2025, 9, 17, 1, 0, 0), 1.90289),
+            new TidePoint(new DateTime(2025, 9, 17, 2, 0, 0), 1.70604),
+            new TidePoint(new DateTime(2025, 9, 17, 3, 0, 0), 0.95144),
+            new TidePoint(new DateTime(2025, 9, 17, 4, 0, 0), -0.32808),
+            new TidePoint(new DateTime(2025, 9, 17, 5, 0, 0), -1.9685),
+            new TidePoint(new DateTime(2025, 9, 17, 6, 0, 0), -3.77297),
+            new TidePoint(new DateTime(2025, 9, 17, 7, 0, 0), -5.44619),
+            new TidePoint(new DateTime(2025, 9, 17, 8, 0, 0), -6.56168),
+            new TidePoint(new DateTime(2025, 9, 17, 9, 0, 0), -6.82415),
+            new TidePoint(new DateTime(2025, 9, 17, 10, 0, 0), -6.13517),
+            new TidePoint(new DateTime(2025, 9, 17, 11, 0, 0), -4.6916),
+            new TidePoint(new DateTime(2025, 9, 17, 12, 0, 0), -2.59186),
+            new TidePoint(new DateTime(2025, 9, 17, 13, 0, 0), -0.26247),
+            new TidePoint(new DateTime(2025, 9, 17, 14, 0, 0), 1.80446),
+            new TidePoint(new DateTime(2025, 9, 17, 15, 0, 0), 3.28084),
+            new TidePoint(new DateTime(2025, 9, 17, 16, 0, 0), 4.03543),
+            new TidePoint(new DateTime(2025, 9, 17, 17, 0, 0), 4.06824),
+            new TidePoint(new DateTime(2025, 9, 17, 18, 0, 0), 3.41207),
+            new TidePoint(new DateTime(2025, 9, 17, 19, 0, 0), 2.29659),
+            new TidePoint(new DateTime(2025, 9, 17, 20, 0, 0), 1.04987),
+            new TidePoint(new DateTime(2025, 9, 17, 21, 0, 0), 0.13123),
+        }
     };
 
     public StormglassTideService(string apiKey)
