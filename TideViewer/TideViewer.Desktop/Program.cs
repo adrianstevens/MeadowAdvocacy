@@ -41,7 +41,7 @@ public class Program
         Thread.Sleep(Timeout.Infinite);
     }
 
-    public static async void Initialize()
+    public static void Initialize()
     {
         fontLarge = new Font16x24();
         fontMedium = new Font12x20();
@@ -81,12 +81,13 @@ public class Program
         // Create service
         tideService = new StormglassTideService(apiKey);
 
+        /*
         // Coordinates for Entrance Island Lighthouse (north Gabriola Island)
         double lat = 49.208979;
         double lng = -123.809392;
 
         // Time window: now → next 24h
-        var start = DateTime.Now;
+        var start = DateTime.Today;
         var end = start.AddHours(24);
 
         try
@@ -94,10 +95,10 @@ public class Program
             // Fetch tide points
             var points = await tideService.GetSeaLevelCachedAsync(lat, lng, start, end, preferEmbedded: true);
 
-            /* 
-             
+
+
             //To refresh
-              
+
             var fresh = await tideService.GetSeaLevelAsync(lat, lng, start, end);
             var cache = new TideCache
             {
@@ -110,7 +111,7 @@ public class Program
             };
 
             string snippet = StormglassTideService.GenerateEmbeddedCacheSnippet(cache);
-            */
+
 
             // Print simple table of times + heights
             Console.WriteLine($"Tides for Entrance Island {start:yyyy-MM-dd}");
@@ -125,9 +126,10 @@ public class Program
         {
             Console.WriteLine("Error fetching tides: " + ex.Message);
         }
+        */
     }
 
-    public static async void Run()
+    public static void Run()
     {
         int xCol1 = 40;
         int xCol2 = 180;
@@ -140,7 +142,7 @@ public class Program
         var start = DateTime.Now;
         var end = start.AddHours(24);
 
-        var points = await tideService.GetSeaLevelCachedAsync(lat, lng, start, end, preferEmbedded: true);
+        var points = tideService.GetSeaLevelCached();
 
         _ = Task.Run(() =>
         {
@@ -193,7 +195,7 @@ public class Program
 
                 //  graphics.DrawRectangle(274, 200, 322, 245, Color.Black, false);
 
-                DrawTideGraph(graphics, points, 274, 200, 274 + 322, 200 + 245, "ft");
+                DrawTideGraph(points, 274, 200, 274 + 322, 200 + 245, "m");
 
                 graphics.Show();
 
@@ -203,28 +205,21 @@ public class Program
         display!.Run();
     }
 
-    static void DrawTideGraph(
-    MicroGraphics graphics,
-    IList<TidePoint> points,
-    int x0, int y0, int x1, int y1,
-    string yUnits = "ft")
+    static void DrawTideGraph(IList<TidePoint> points, int x0, int y0, int x1, int y1, string yUnits = "m")
     {
         // normalize corners → box
         int left = Math.Min(x0, x1);
         int top = Math.Min(y0, y1);
         int right = Math.Max(x0, x1);
         int bottom = Math.Max(y0, y1);
+
         int W = right - left;
         int H = bottom - top;
 
-        // inner padding for axes/labels
-        int padL = 26, padR = 6, padT = 6, padB = 12;
-        int plotX = left + padL;
-        int plotY = top + padT;
-        int plotW = Math.Max(1, W - padL - padR);
-        int plotH = Math.Max(1, H - padT - padB);
-
         // frame (outer box)
+        graphics.DrawHorizontalGradient(left, top, W, H, Color.SkyBlue, Color.White);
+
+
         graphics.DrawRectangle(left, top, right, bottom, Color.Black, false);
 
         // no data?
@@ -236,13 +231,18 @@ public class Program
         }
 
         // scale
-        double minV = points.Min(p => p.Level);
-        double maxV = points.Max(p => p.Level);
-        if (Math.Abs(maxV - minV) < 0.1) { maxV += 0.5; minV -= 0.5; }
+        double minV = points.Min(p => p.Level) - 0.1;
+        double maxV = points.Max(p => p.Level) + 0.1;
 
-        DateTime t0 = points.First().Time;
-        DateTime t1 = points.Last().Time;
-        double totalMin = Math.Max(1, (t1 - t0).TotalMinutes);
+        if (Math.Abs(maxV - minV) < 0.1)
+        {
+            maxV += 0.5;
+            minV -= 0.5;
+        }
+
+        DateTime timeStart = points.First().Time;
+        DateTime timeEnd = points.Last().Time;
+        double totalMinutes = Math.Max(1, (timeEnd - timeStart).TotalMinutes);
 
         // y grid + labels
         graphics.CurrentFont = new Font6x8();
@@ -250,32 +250,34 @@ public class Program
 
         for (int i = 0; i <= yGrids; i++)
         {
-            int y = plotY + (int)Math.Round(plotH * (1.0 - i / (double)yGrids));
-            graphics.DrawLine(plotX, y, plotX + plotW, y, Color.Black);
+            int y = top + (int)Math.Round(H * (1.0 - i / (double)yGrids));
+            graphics.DrawLine(left, y, left + W, y, Color.Black);
 
             double v = minV + (maxV - minV) * (i / (double)yGrids);
-            graphics.DrawText(left + 2, y - 4, v.ToString("0.0", CultureInfo.InvariantCulture));
+            graphics.DrawText(left + 2, y - 9, v.ToString("0.0", CultureInfo.InvariantCulture) + yUnits, Color.Black);
         }
-
-        graphics.DrawText(left + 2, top + 2, yUnits);
 
         // x ticks every 6h
         var step = TimeSpan.FromHours(6);
-        var tick = RoundUp(t0, step);
+        var tick = RoundUp(timeStart, step);
 
-        for (var t = tick; t <= t1; t = t.Add(step))
+        for (var t = tick; t <= timeEnd; t = t.Add(step))
         {
-            int x = plotX + (int)Math.Round(plotW * ((t - t0).TotalMinutes / totalMin));
-            graphics.DrawLine(x, plotY, x, plotY + plotH, Color.Black);
-            graphics.DrawText(x - 8, bottom - 9, t.ToString("HH"));
+            int x = left + (int)Math.Round(W * ((t - timeStart).TotalMinutes / totalMinutes));
+            graphics.DrawLine(x, top, x, top + H, Color.Black);
+            if (t != tick)
+            {
+                graphics.DrawText(x - 2, bottom - 9, t.ToString("H:mm"), Color.Black, alignmentH: HorizontalAlignment.Right);
+            }
         }
 
         // plot line
         int? lx = null, ly = null;
+
         foreach (var p in points)
         {
-            int x = plotX + (int)Math.Round(plotW * ((p.Time - t0).TotalMinutes / totalMin));
-            int y = plotY + (int)Math.Round(plotH * (1.0 - (p.Level - minV) / (maxV - minV)));
+            int x = left + (int)Math.Round(W * ((p.Time - timeStart).TotalMinutes / totalMinutes));
+            int y = top + (int)Math.Round(H * (1.0 - (p.Level - minV) / (maxV - minV)));
 
             if (lx.HasValue)
             {
