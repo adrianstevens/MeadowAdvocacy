@@ -217,10 +217,7 @@ public class Program
         int H = bottom - top;
 
         // frame (outer box)
-        graphics.DrawHorizontalGradient(left, top, W, H, Color.SkyBlue, Color.White);
-
-
-        graphics.DrawRectangle(left, top, right, bottom, Color.Black, false);
+        graphics.DrawHorizontalGradient(left, top, W, H, Color.White, Color.SkyBlue);
 
         // no data?
         if (points == null || points.Count < 2)
@@ -231,8 +228,8 @@ public class Program
         }
 
         // scale
-        double minV = points.Min(p => p.Level) - 0.1;
-        double maxV = points.Max(p => p.Level) + 0.1;
+        double minV = points.Min(p => p.Level) - 2;
+        double maxV = points.Max(p => p.Level) + 2;
 
         if (Math.Abs(maxV - minV) < 0.1)
         {
@@ -267,7 +264,7 @@ public class Program
             graphics.DrawLine(x, top, x, top + H, Color.Black);
             if (t != tick)
             {
-                graphics.DrawText(x - 2, bottom - 9, t.ToString("H:mm"), Color.Black, alignmentH: HorizontalAlignment.Right);
+                //    graphics.DrawText(x - 2, bottom - 9, t.ToString("H:mm"), Color.Black, alignmentH: HorizontalAlignment.Right);
             }
         }
 
