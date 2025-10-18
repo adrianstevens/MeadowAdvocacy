@@ -50,7 +50,7 @@ namespace ThermalCamera
                         min = Math.Min(min, value);
                         max = Math.Max(max, value);
 
-                        pixelColor = new Color(value, value, 0);
+                        pixelColor = new Color(value, value, (byte)0, (byte)255);
                         graphics.DrawRectangle(8 + w * pixelW, h * pixelH, pixelW, pixelH, pixelColor, true);
                     }
                 }
