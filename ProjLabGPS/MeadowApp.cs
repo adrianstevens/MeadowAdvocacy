@@ -58,11 +58,11 @@ namespace ProjectLabGPS
 
         void RegisterGPSData()
         {
+            //GGA
             gps.GgaReceived += (object sender, GnssPositionInfo location) =>
             {
                 Resolver.Log.Info("GGA *********************************************");
                 Resolver.Log.Info($"{lastPosition = location}");
-                Resolver.Log.Info("GGA *********************************************");
 
                 UpdateDisplay("GGA");
             };
@@ -71,7 +71,6 @@ namespace ProjectLabGPS
             {
                 Resolver.Log.Info("GLL *********************************************");
                 Resolver.Log.Info($"{lastPosition = location}");
-                Resolver.Log.Info("GLL *********************************************");
 
                 UpdateDisplay("GLL");
             };
@@ -89,7 +88,6 @@ namespace ProjectLabGPS
             {
                 Resolver.Log.Info("RMC *********************************************");
                 Resolver.Log.Info($"{positionCourseAndTime}");
-                Resolver.Log.Info("RMC *********************************************");
 
                 UpdateDisplay("RMC");
             };
@@ -98,16 +96,14 @@ namespace ProjectLabGPS
             {
                 Resolver.Log.Info("VTG *********************************************");
                 Resolver.Log.Info($"{courseAndVelocity}");
-                Resolver.Log.Info("VTG *********************************************");
 
                 UpdateDisplay("VTG");
             };
-            // GSV (satellites in view)
+            // GSV (satelliteCount in view)
             gps.GsvReceived += (object sender, SatellitesInView satellites) =>
             {
                 Resolver.Log.Info("GSV *********************************************");
                 Resolver.Log.Info($"{satellitesInView = satellites}");
-                Resolver.Log.Info("GSV *********************************************");
 
                 UpdateDisplay("GSV");
             };
@@ -134,18 +130,23 @@ namespace ProjectLabGPS
             var elapsedSeconds = (int)Math.Round((syncTime! - startTime).Value.TotalSeconds);
             graphics.DrawText(0, 20, $"Synced in {elapsedSeconds}s", color: Color.LawnGreen);
 
-            var satellites = activeSatellites.SatellitesUsedForFix?.Length.ToString() ?? "N/A";
+            var satelliteCount = activeSatellites.SatellitesUsedForFix?.Length.ToString() ?? "N/A";
+            var satellitesList = activeSatellites.SatellitesUsedForFix is not null &&
+                activeSatellites.SatellitesUsedForFix.Length > 0
+                ? string.Join(",", activeSatellites.SatellitesUsedForFix) : "N/A";
+
             var quality = lastPosition?.FixQuality?.ToString() ?? "N/A";
             var altitude = $"{lastPosition?.Position?.Altitude.Meters:F1} m" ?? "N/A";
             var latitude = $"{lastPosition?.Position?.Latitude:F6}°" ?? "N/A";
             var longitude = $"{lastPosition?.Position?.Longitude:F6}°" ?? "N/A";
 
-            graphics.DrawText(0, 60, $"# satellites: {satellites}", color: Color.Yellow);
-            graphics.DrawText(0, 80, $"Fix quality:  {quality}", color: Color.Yellow);
-            graphics.DrawText(0, 110, $"Altitude:    {altitude}", color: Color.Yellow);
+            graphics.DrawText(0, 60, $"# satellites: {satelliteCount}", color: Color.Yellow);
+            graphics.DrawText(0, 80, $"Used for fix: {satellitesList}", color: Color.Yellow);
+            graphics.DrawText(0, 100, $"Fix quality: {quality}", color: Color.Yellow);
 
-            graphics.DrawText(0, 140, $"Latitude:    {latitude}", color: Color.Yellow);
-            graphics.DrawText(0, 170, $"Longitude:   {longitude}", color: Color.Yellow);
+            graphics.DrawText(0, 140, $"Altitude:    {altitude}", color: Color.Yellow);
+            graphics.DrawText(0, 160, $"Latitude:    {latitude}", color: Color.Yellow);
+            graphics.DrawText(0, 180, $"Longitude:   {longitude}", color: Color.Yellow);
 
             return graphics.ShowBuffered();
         }
