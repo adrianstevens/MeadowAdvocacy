@@ -141,7 +141,7 @@ namespace ProjectLabGPS
             var longitude = $"{lastPosition?.Position?.Longitude:F6}°" ?? "N/A";
 
             graphics.DrawText(0, 60, $"# satellites: {satelliteCount}", color: Color.Yellow);
-            graphics.DrawText(0, 80, $"Used for fix: {satellitesList}", color: Color.Yellow);
+            graphics.DrawText(0, 80, $"{satellitesList}", color: Color.Yellow);
             graphics.DrawText(0, 100, $"Fix quality: {quality}", color: Color.Yellow);
 
             graphics.DrawText(0, 140, $"Altitude:    {altitude}", color: Color.Yellow);
