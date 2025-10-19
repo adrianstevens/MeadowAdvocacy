@@ -142,11 +142,11 @@ namespace ProjectLabGPS
 
             graphics.DrawText(0, 60, $"# satellites: {satelliteCount}", color: Color.Yellow);
             graphics.DrawText(0, 80, $"{satellitesList}", color: Color.Yellow);
-            graphics.DrawText(0, 100, $"Fix quality: {quality}", color: Color.Yellow);
+            graphics.DrawText(0, 100, $"Fix quality:  {quality}", color: Color.Yellow);
 
-            graphics.DrawText(0, 140, $"Altitude:    {altitude}", color: Color.Yellow);
-            graphics.DrawText(0, 160, $"Latitude:    {latitude}", color: Color.Yellow);
-            graphics.DrawText(0, 180, $"Longitude:   {longitude}", color: Color.Yellow);
+            graphics.DrawText(0, 140, $"Altitude:     {altitude}", color: Color.Orange);
+            graphics.DrawText(0, 160, $"Latitude:     {latitude}", color: Color.Orange);
+            graphics.DrawText(0, 180, $"Longitude:    {longitude}", color: Color.Orange);
 
             return graphics.ShowBuffered();
         }
