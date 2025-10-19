@@ -31,6 +31,7 @@ namespace ProjectLabGPS
             projLab = ProjectLab.Create();
 
             graphics = new MicroGraphics(projLab.Display!);
+            graphics.CurrentFont = new Font12x20();
 
             gps = new CGNSS10(projLab.MikroBus2.SpiBus, projLab.MikroBus2.Pins.CS, projLab.MikroBus2.Pins.RST);
 
@@ -59,76 +60,92 @@ namespace ProjectLabGPS
         {
             gps.GgaReceived += (object sender, GnssPositionInfo location) =>
             {
-                Resolver.Log.Info("*********************************************");
+                Resolver.Log.Info("GGA *********************************************");
                 Resolver.Log.Info($"{lastPosition = location}");
-                Resolver.Log.Info("*********************************************");
+                Resolver.Log.Info("GGA *********************************************");
 
-                UpdateDisplay();
+                UpdateDisplay("GGA");
             };
             // GLL
             gps.GllReceived += (object sender, GnssPositionInfo location) =>
             {
-                Resolver.Log.Info("*********************************************");
+                Resolver.Log.Info("GLL *********************************************");
                 Resolver.Log.Info($"{lastPosition = location}");
-                Resolver.Log.Info("*********************************************");
+                Resolver.Log.Info("GLL *********************************************");
 
-                UpdateDisplay();
+                UpdateDisplay("GLL");
             };
             // GSA
             gps.GsaReceived += (object sender, ActiveSatellites activeSatellites) =>
             {
-                Resolver.Log.Info("*********************************************");
+                Resolver.Log.Info("GSA *********************************************");
                 Resolver.Log.Info($"{this.activeSatellites = activeSatellites}");
-                Resolver.Log.Info("*********************************************");
+                Resolver.Log.Info("GSA *********************************************");
+
+                UpdateDisplay("GSA");
             };
             // RMC (recommended minimum)
             gps.RmcReceived += (object sender, GnssPositionInfo positionCourseAndTime) =>
             {
-                Resolver.Log.Info("*********************************************");
+                Resolver.Log.Info("RMC *********************************************");
                 Resolver.Log.Info($"{positionCourseAndTime}");
-                Resolver.Log.Info("*********************************************");
+                Resolver.Log.Info("RMC *********************************************");
 
-                UpdateDisplay();
+                UpdateDisplay("RMC");
             };
             // VTG (course made good)
             gps.VtgReceived += (object sender, CourseOverGround courseAndVelocity) =>
             {
-                Resolver.Log.Info("*********************************************");
+                Resolver.Log.Info("VTG *********************************************");
                 Resolver.Log.Info($"{courseAndVelocity}");
-                Resolver.Log.Info("*********************************************");
+                Resolver.Log.Info("VTG *********************************************");
 
-                UpdateDisplay();
+                UpdateDisplay("VTG");
             };
             // GSV (satellites in view)
             gps.GsvReceived += (object sender, SatellitesInView satellites) =>
             {
-                Resolver.Log.Info("*********************************************");
+                Resolver.Log.Info("GSV *********************************************");
                 Resolver.Log.Info($"{satellitesInView = satellites}");
-                Resolver.Log.Info("*********************************************");
+                Resolver.Log.Info("GSV *********************************************");
 
-                UpdateDisplay();
+                UpdateDisplay("GSV");
             };
         }
 
-        public Task UpdateDisplay()
+        public Task UpdateDisplay(string signalType)
         {
-            syncTime ??= DateTime.Now;
-
             graphics.Clear();
 
-            graphics.DrawText(0, 0, $"GPS Tracker {syncTime - startTime}", color: Color.White);
+            graphics.DrawText(0, 0, "GPS Tester", color: Color.White);
 
-            if (lastPosition != null)
+            graphics.DrawText(graphics.Width, 0, signalType, color: Color.Blue, alignmentH: HorizontalAlignment.Right);
+
+            var hasFix = lastPosition?.Position is not null;
+
+            if (!hasFix)
             {
-                graphics.DrawText(0, 40, $"# satellites: {lastPosition?.NumberOfSatellites}", color: Color.LawnGreen);
-                graphics.DrawText(0, 60, $"Fix quality: {lastPosition?.FixQuality}", color: Color.LawnGreen);
-
-                graphics.DrawText(0, 100, $"Lattitude:", color: Color.LawnGreen);
-                graphics.DrawText(0, 120, $"{lastPosition?.Position!.Longitude}", color: Color.LawnGreen);
-
-                graphics.DrawText(0, 160, $"Longitude:", color: Color.LawnGreen);
-                graphics.DrawText(0, 180, $"{lastPosition?.Position!.Latitude}", color: Color.LawnGreen);
+                graphics.DrawText(0, 20, "No GPS signal", color: Color.Red);
+                return graphics.ShowBuffered();
             }
+
+            syncTime ??= DateTime.Now;
+
+            var elapsedSeconds = (int)Math.Round((syncTime! - startTime).Value.TotalSeconds);
+            graphics.DrawText(0, 20, $"Synced in {elapsedSeconds}s", color: Color.LawnGreen);
+
+            var satellites = activeSatellites.SatellitesUsedForFix?.Length.ToString() ?? "N/A";
+            var quality = lastPosition?.FixQuality?.ToString() ?? "N/A";
+            var altitude = $"{lastPosition?.Position?.Altitude.Meters:F1} m" ?? "N/A";
+            var latitude = $"{lastPosition?.Position?.Latitude:F6}°" ?? "N/A";
+            var longitude = $"{lastPosition?.Position?.Longitude:F6}°" ?? "N/A";
+
+            graphics.DrawText(0, 60, $"# satellites: {satellites}", color: Color.Yellow);
+            graphics.DrawText(0, 80, $"Fix quality:  {quality}", color: Color.Yellow);
+            graphics.DrawText(0, 110, $"Altitude:    {altitude}", color: Color.Yellow);
+
+            graphics.DrawText(0, 140, $"Latitude:    {latitude}", color: Color.Yellow);
+            graphics.DrawText(0, 170, $"Longitude:   {longitude}", color: Color.Yellow);
 
             return graphics.ShowBuffered();
         }
