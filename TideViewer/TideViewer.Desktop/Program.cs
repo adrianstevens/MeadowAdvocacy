@@ -1,11 +1,11 @@
-﻿using Graphics.MicroGraphics.Dither;
-using Meadow;
+﻿using Meadow;
 using Meadow.Foundation.Displays;
 using Meadow.Foundation.Graphics;
 using Meadow.Peripherals.Displays;
 using System.Globalization;
 using System.Reflection;
 using TideViewer;
+using TideViewer.assets;
 
 namespace SilkDisplay_Sample;
 
@@ -21,16 +21,10 @@ public class Program
     static IFont fontMedium;
     static IFont fontSmall;
 
-    static Image image;
-
-    static IPixelBuffer ditheredBuffer;
+    static IPixelBuffer ditheredWeatherToday;
 
     static Program()
     {
-        _assemblyName = Assembly
-             .GetExecutingAssembly()
-             .GetName()
-             .Name;
     }
 
     public static void Main()
@@ -50,22 +44,8 @@ public class Program
         display = new SilkDisplay(displayScale: 1f);
 
         var virtualDisplay = new SimulatedEpd5in65f(rotate: true, displayRenderer: display);
-        //var virtualDisplay = new SimulatedRm68140(rotate: true, displayRenderer: display, colorMode: ColorMode.Format12bppRgb444);
 
-        image = GetImageResource("weather.bmp");
-
-        var palette = new Color[]
-        {
-            Color.Black,
-            Color.White,
-            Color.Green,
-            Color.Blue,
-            Color.Red,
-            Color.Yellow,
-            Color.Orange
-        };
-
-        ditheredBuffer = PixelBufferDither.ToIndexed4(image.DisplayBuffer, palette, DitherMode.FloydSteinberg, true);
+        ditheredWeatherToday = Resources.GetDitheredIcon(IconType.night_clear);
 
         graphics = new MicroGraphics(virtualDisplay)
         {
@@ -74,9 +54,7 @@ public class Program
         };
 
         // Set your Stormglass API key
-        string apiKey = "";
-
-
+        string apiKey = "8723c3ca-937d-11f0-b07a-0242ac130006-8723c456-937d-11f0-b07a-0242ac130006";
 
         // Create service
         tideService = new StormglassTideService(apiKey);
@@ -144,6 +122,14 @@ public class Program
 
         var points = tideService.GetSeaLevelCached();
 
+        var sunrise = Resources.GetDitheredIcon(IconType.sunrise_sm);
+        var wind = Resources.GetDitheredIcon(IconType.windy_sm);
+        var uv = Resources.GetDitheredIcon(IconType.sunny_sm);
+        var humidity = Resources.GetDitheredIcon(IconType.humidity_sm);
+        var pressure = Resources.GetDitheredIcon(IconType.pressure_sm);
+        var aqi = Resources.GetDitheredIcon(IconType.aqi_sm);
+
+
         _ = Task.Run(() =>
         {
             while (true)
@@ -151,8 +137,11 @@ public class Program
                 graphics.Clear(Color.White);
 
                 //graphics.DrawRectangle(4, 4, 120, 80, Color.Black, false);
-                graphics.DrawCircle(54, 44, 37, Color.Orange, true);
-                graphics.DrawCircle(54, 44, 37, Color.Black, false);
+                //    graphics.DrawCircle(54, 44, 37, Color.Orange, true);
+                //    graphics.DrawCircle(54, 44, 37, Color.Black, false);
+
+                graphics.DrawBuffer(20, 20, ditheredWeatherToday);
+
 
                 graphics.DrawText(150, 20, "22", Color.Black, ScaleFactor.X2, font: fontLarge);
                 graphics.DrawText(220, 20, "°C", Color.Black, ScaleFactor.X1, font: fontMedium);
@@ -161,31 +150,38 @@ public class Program
                 graphics.DrawText(display!.Width - 4, 4, "Gabriola,BC", Color.Black, ScaleFactor.X1, HorizontalAlignment.Right, font: fontLarge);
                 graphics.DrawText(display!.Width - 4, 30, "Sunday,September 7", Color.Black, ScaleFactor.X1, HorizontalAlignment.Right, font: fontMedium);
 
-                graphics.DrawRectangle(4, 200, 30, 30, Color.Black, false);
+                //graphics.DrawRectangle(4, 200, 30, 30, Color.Black, false);
+                graphics.DrawBuffer(4, 200, sunrise);
                 graphics.DrawText(xCol1, 200, "Sunrise", Color.Black, font: fontSmall);
                 graphics.DrawText(xCol1, 212, "7:17am", Color.Black, font: fontMedium);
 
-                graphics.DrawRectangle(144, 200, 30, 30, Color.Black, false);
+                //graphics.DrawRectangle(144, 200, 30, 30, Color.Black, false);
+                graphics.DrawBuffer(144, 200, sunrise);
                 graphics.DrawText(xCol2, 200, "Sunset", Color.Black, font: fontSmall);
                 graphics.DrawText(xCol2, 212, "7:17pm", Color.Black, font: fontMedium);
 
-                graphics.DrawRectangle(4, 250, 30, 30, Color.Black, false);
+                //graphics.DrawRectangle(4, 250, 30, 30, Color.Black, false);
+                graphics.DrawBuffer(4, 250, wind);
                 graphics.DrawText(xCol1, 250, "Wind", Color.Black, font: fontSmall);
                 graphics.DrawText(xCol1, 262, "12kn", Color.Black, font: fontMedium);
 
-                graphics.DrawRectangle(144, 250, 30, 30, Color.Black, false);
+                //graphics.DrawRectangle(144, 250, 30, 30, Color.Black, false);
+                graphics.DrawBuffer(144, 250, uv);
                 graphics.DrawText(xCol2, 250, "UV Index", Color.Black, font: fontSmall);
                 graphics.DrawText(xCol2, 262, "12", Color.Black, font: fontMedium);
 
-                graphics.DrawRectangle(4, 300, 30, 30, Color.Black, false);
+                //graphics.DrawRectangle(4, 300, 30, 30, Color.Black, false);
+                graphics.DrawBuffer(4, 300, humidity);
                 graphics.DrawText(xCol1, 300, "Humidity", Color.Black, font: fontSmall);
                 graphics.DrawText(xCol1, 312, "80%", Color.Black, font: fontMedium);
 
-                graphics.DrawRectangle(144, 300, 30, 30, Color.Black, false);
+                //graphics.DrawRectangle(144, 300, 30, 30, Color.Black, false);
+                graphics.DrawBuffer(144, 300, pressure);
                 graphics.DrawText(xCol2, 300, "Pressure", Color.Black, font: fontSmall);
                 graphics.DrawText(xCol2, 312, "1.01atm", Color.Black, font: fontMedium);
 
-                graphics.DrawRectangle(4, 350, 30, 30, Color.Black, false);
+                //graphics.DrawRectangle(4, 350, 30, 30, Color.Black, false);
+                graphics.DrawBuffer(4, 350, aqi);
                 graphics.DrawText(xCol1, 350, "Air Quality", Color.Black, font: fontSmall);
                 graphics.DrawText(xCol1, 362, "30", Color.Black, font: fontMedium);
 

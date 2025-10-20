@@ -8,9 +8,91 @@
 	<Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="assets\aqi.bmp" />
+    <None Remove="assets\aqi_sm.bmp" />
+    <None Remove="assets\cloudy.bmp" />
+    <None Remove="assets\cloudy_sm.bmp" />
+    <None Remove="assets\freezing.bmp" />
+    <None Remove="assets\freezing_sm.bmp" />
+    <None Remove="assets\humidity.bmp" />
+    <None Remove="assets\humidity_sm.bmp" />
+    <None Remove="assets\lightning.bmp" />
+    <None Remove="assets\lightning_sm.bmp" />
+    <None Remove="assets\light_rain.bmp" />
+    <None Remove="assets\light_rain_sm.bmp" />
+    <None Remove="assets\night_clear.bmp" />
+    <None Remove="assets\night_clear_sm.bmp" />
+    <None Remove="assets\night_cloudy.bmp" />
+    <None Remove="assets\night_cloudy_sm.bmp" />
+    <None Remove="assets\partial_sun.bmp" />
+    <None Remove="assets\partial_sun_sm.bmp" />
+    <None Remove="assets\pressure.bmp" />
+    <None Remove="assets\pressure_sm.bmp" />
+    <None Remove="assets\rain_heavy.bmp" />
+    <None Remove="assets\rain_heavy_sm.bmp" />
+    <None Remove="assets\rain_lightining.bmp" />
+    <None Remove="assets\rain_lightining_sm.bmp" />
+    <None Remove="assets\snow.bmp" />
+    <None Remove="assets\snow_sm.bmp" />
+    <None Remove="assets\sunny.bmp" />
+    <None Remove="assets\sunny_sm.bmp" />
+    <None Remove="assets\sunrise.bmp" />
+    <None Remove="assets\sunrise_sm.bmp" />
+    <None Remove="assets\sun_rain.bmp" />
+    <None Remove="assets\sun_rain_sm.bmp" />
+    <None Remove="assets\temperature.bmp" />
+    <None Remove="assets\temperature_sm.bmp" />
+    <None Remove="assets\very_cloudy.bmp" />
+    <None Remove="assets\very_cloudy_sm.bmp" />
+    <None Remove="assets\windy.bmp" />
+    <None Remove="assets\windy_ms.bmp" />
+    <None Remove="assets\windy_sm.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="assets\aqi.bmp" />
+    <EmbeddedResource Include="assets\aqi_sm.bmp" />
+    <EmbeddedResource Include="assets\cloudy.bmp" />
+    <EmbeddedResource Include="assets\cloudy_sm.bmp" />
+    <EmbeddedResource Include="assets\freezing.bmp" />
+    <EmbeddedResource Include="assets\freezing_sm.bmp" />
+    <EmbeddedResource Include="assets\humidity.bmp" />
+    <EmbeddedResource Include="assets\humidity_sm.bmp" />
+    <EmbeddedResource Include="assets\lightning.bmp" />
+    <EmbeddedResource Include="assets\lightning_sm.bmp" />
+    <EmbeddedResource Include="assets\light_rain.bmp" />
+    <EmbeddedResource Include="assets\light_rain_sm.bmp" />
+    <EmbeddedResource Include="assets\night_clear.bmp" />
+    <EmbeddedResource Include="assets\night_clear_sm.bmp" />
+    <EmbeddedResource Include="assets\night_cloudy.bmp" />
+    <EmbeddedResource Include="assets\night_cloudy_sm.bmp" />
+    <EmbeddedResource Include="assets\partial_sun.bmp" />
+    <EmbeddedResource Include="assets\partial_sun_sm.bmp" />
+    <EmbeddedResource Include="assets\pressure.bmp" />
+    <EmbeddedResource Include="assets\pressure_sm.bmp" />
+    <EmbeddedResource Include="assets\rain_heavy.bmp" />
+    <EmbeddedResource Include="assets\rain_heavy_sm.bmp" />
+    <EmbeddedResource Include="assets\rain_lightining.bmp" />
+    <EmbeddedResource Include="assets\rain_lightining_sm.bmp" />
+    <EmbeddedResource Include="assets\snow.bmp" />
+    <EmbeddedResource Include="assets\snow_sm.bmp" />
+    <EmbeddedResource Include="assets\sunny.bmp" />
+    <EmbeddedResource Include="assets\sunny_sm.bmp" />
+    <EmbeddedResource Include="assets\sunrise.bmp" />
+    <EmbeddedResource Include="assets\sunrise_sm.bmp" />
+    <EmbeddedResource Include="assets\sun_rain.bmp" />
+    <EmbeddedResource Include="assets\sun_rain_sm.bmp" />
+    <EmbeddedResource Include="assets\temperature.bmp" />
+    <EmbeddedResource Include="assets\temperature_sm.bmp" />
+    <EmbeddedResource Include="assets\very_cloudy.bmp" />
+    <EmbeddedResource Include="assets\very_cloudy_sm.bmp" />
+    <EmbeddedResource Include="assets\windy.bmp" />
+    <EmbeddedResource Include="assets\windy_sm.bmp" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="SunCalcNet" Version="1.2.3" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Meadow.Foundation\Source\Meadow.Foundation.Libraries_and_Frameworks\Graphics.MicroGraphics\Driver\Graphics.MicroGraphics.csproj" />
     <ProjectReference Include="..\..\..\Meadow.Foundation\Source\Meadow.Foundation.Libraries_and_Frameworks\Serialization.MicroJson\Driver\Serialization.MicroJson.csproj" />
   </ItemGroup>
 </Project>
