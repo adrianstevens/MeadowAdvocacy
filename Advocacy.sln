@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.4.33213.308
+# Visual Studio Version 18
+VisualStudioVersion = 18.1.11312.151 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AirQualityTracker", "AirQualityTracker\AirQualityTracker.csproj", "{46203385-0604-4F4F-9CB9-85C8A76EAAB0}"
 EndProject
@@ -198,6 +198,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serialization.MicroJson", "..\Meadow.Foundation\Source\Meadow.Foundation.Libraries_and_Frameworks\Serialization.MicroJson\Driver\Serialization.MicroJson.csproj", "{00F14D24-30C1-52F3-C423-7E3DE0961660}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectLabGPS", "ProjLabGPS\ProjectLabGPS.csproj", "{B3FB90C5-57D3-6E23-7E8A-56ADE0A2DFFA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Displays.Led.FourteenSegment", "..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\Displays.Led.FourteenSegment\Driver\Displays.Led.FourteenSegment.csproj", "{A6BBA40E-9DDC-7590-B690-6B16FC8A4EE0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meadow.Units.Generators", "..\Meadow.Units\Source\Meadow.Units.Generators\Meadow.Units.Generators.csproj", "{5EC83F77-944D-0EFC-FCD6-4E82F8CF84A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -705,6 +709,14 @@ Global
 		{B3FB90C5-57D3-6E23-7E8A-56ADE0A2DFFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3FB90C5-57D3-6E23-7E8A-56ADE0A2DFFA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B3FB90C5-57D3-6E23-7E8A-56ADE0A2DFFA}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{A6BBA40E-9DDC-7590-B690-6B16FC8A4EE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6BBA40E-9DDC-7590-B690-6B16FC8A4EE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6BBA40E-9DDC-7590-B690-6B16FC8A4EE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6BBA40E-9DDC-7590-B690-6B16FC8A4EE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EC83F77-944D-0EFC-FCD6-4E82F8CF84A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EC83F77-944D-0EFC-FCD6-4E82F8CF84A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EC83F77-944D-0EFC-FCD6-4E82F8CF84A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EC83F77-944D-0EFC-FCD6-4E82F8CF84A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -766,6 +778,8 @@ Global
 		{BB633CD1-3CAD-4F1E-740B-3F491B9E5DB9} = {C505C076-CECE-4219-B09D-4F36EFE3E653}
 		{E0826F49-82EE-D74E-08D1-54861E3D5E34} = {C505C076-CECE-4219-B09D-4F36EFE3E653}
 		{00F14D24-30C1-52F3-C423-7E3DE0961660} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
+		{A6BBA40E-9DDC-7590-B690-6B16FC8A4EE0} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
+		{5EC83F77-944D-0EFC-FCD6-4E82F8CF84A5} = {9CBC96D2-E5DC-43F5-B7CE-3C9AC1A2C756}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {59B85D60-3E0C-446F-8620-3B88DCA35E21}
