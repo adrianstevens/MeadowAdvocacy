@@ -8,6 +8,7 @@ using TideViewer;
 using TideViewer.assets;
 using TideViewer.Configuration;
 using TideViewer.Desktop.Configuration;
+using TideViewer.Models;
 
 namespace SilkDisplay_Sample;
 
@@ -18,6 +19,7 @@ public class Program
     static SilkDisplay? display;
     static MicroGraphics graphics = default!;
     static StormglassTideService tideService;
+    static OpenWeatherMapService weatherService;
 
     static IFont fontLarge;
     static IFont fontMedium;
@@ -42,14 +44,24 @@ public class Program
         // Load configuration
         var config = ConfigurationLoader.LoadConfiguration();
         var tideServiceConfig = config.GetSection("TideService").Get<TideServiceConfiguration>();
+        var weatherServiceConfig = config.GetSection("WeatherService").Get<WeatherServiceConfiguration>();
         var apiEndpointsConfig = config.GetSection("ApiEndpoints").Get<ApiEndpointConfiguration>();
 
-        // Validate configuration (warning only - app works with sample data)
+        // Validate tide service configuration (warning only - app works with sample data)
         if (tideServiceConfig == null || string.IsNullOrWhiteSpace(tideServiceConfig.StormglassApiKey))
         {
-            Console.WriteLine("WARNING: StormglassApiKey not configured. Using sample data.");
+            Console.WriteLine("WARNING: StormglassApiKey not configured. Using sample tide data.");
             Console.WriteLine("To use real API data, set it in appsettings.json or environment variable: TIDEVIEWER_TideService__StormglassApiKey");
             tideServiceConfig = new TideServiceConfiguration { StormglassApiKey = "dummy-key-for-development" };
+        }
+
+        // Validate weather service configuration (warning only - app works with sample data)
+        if (weatherServiceConfig == null || string.IsNullOrWhiteSpace(weatherServiceConfig.OpenWeatherMapApiKey))
+        {
+            Console.WriteLine("WARNING: OpenWeatherMapApiKey not configured. Using sample weather data.");
+            Console.WriteLine("To use real weather data, set it in appsettings.json or environment variable: TIDEVIEWER_WeatherService__OpenWeatherMapApiKey");
+            Console.WriteLine("Get a free API key from: https://openweathermap.org/api");
+            weatherServiceConfig = new WeatherServiceConfiguration { OpenWeatherMapApiKey = "dummy-key-for-development" };
         }
 
         fontLarge = new Font16x24();
@@ -68,9 +80,10 @@ public class Program
             Stroke = 1,
         };
 
-        // Create service with configuration
+        // Create services with configuration
         string baseUrl = apiEndpointsConfig?.StormglassBaseUrl ?? "https://api.stormglass.io";
         tideService = new StormglassTideService(tideServiceConfig.StormglassApiKey, baseUrl);
+        weatherService = new OpenWeatherMapService(weatherServiceConfig);
     }
 
     public static void Run()
@@ -79,16 +92,49 @@ public class Program
         var config = ConfigurationLoader.LoadConfiguration();
         var locationConfig = config.GetSection("Location").Get<LocationConfiguration>();
         var uiConfig = config.GetSection("UI").Get<UIConfiguration>();
+        var weatherConfig = config.GetSection("WeatherService").Get<WeatherServiceConfiguration>();
 
         int xCol1 = uiConfig?.ColumnPositions?.Col1 ?? UILayoutConstants.Column1X;
         int xCol2 = uiConfig?.ColumnPositions?.Col2 ?? UILayoutConstants.Column2X;
 
         double lat = locationConfig?.Latitude ?? 49.208979;
         double lng = locationConfig?.Longitude ?? -123.809392;
+        string locationName = locationConfig?.Name ?? "Unknown";
 
         // Time window: now → next 24h
         var start = DateTime.Now;
         var end = start.AddHours(24);
+
+        // Fetch weather data (or use sample if API key not configured)
+        WeatherData? weather = null;
+        bool useRealWeather = weatherConfig != null && !string.IsNullOrWhiteSpace(weatherConfig.OpenWeatherMapApiKey)
+                               && weatherConfig.OpenWeatherMapApiKey != "dummy-key-for-development";
+
+        if (useRealWeather)
+        {
+            try
+            {
+                weather = Task.Run(async () =>
+                {
+                    var w = await weatherService.GetCurrentWeatherAsync(lat, lng);
+                    w.UvIndex = await weatherService.GetUvIndexAsync(lat, lng);
+                    w.MoonPhase = MoonPhaseCalculator.GetMoonPhase(DateTime.UtcNow);
+                    return w;
+                }).Result;
+                Console.WriteLine("Successfully fetched weather data from OpenWeatherMap");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to fetch weather data: {ex.Message}. Using sample data.");
+                weather = null;
+            }
+        }
+
+        // Fall back to sample weather data if not available
+        if (weather == null)
+        {
+            weather = GetSampleWeatherData();
+        }
 
         // Using sample data for development/testing
         // For production with API key configured, you would call:
@@ -101,6 +147,7 @@ public class Program
         var humidity = Resources.GetDitheredIcon(IconType.humidity_sm);
         var pressure = Resources.GetDitheredIcon(IconType.pressure_sm);
         var aqi = Resources.GetDitheredIcon(IconType.aqi_sm);
+        var night_clear = Resources.GetDitheredIcon(IconType.night_clear_sm);
 
 
         _ = Task.Run(() =>
@@ -111,45 +158,61 @@ public class Program
 
                 graphics.DrawBuffer(20, 20, ditheredWeatherToday);
 
+                // Temperature display
+                string tempUnit = weatherConfig?.Units == "imperial" ? "°F" : "°C";
+                graphics.DrawText(150, 24, $"{weather.Temperature:F0}", Color.Black, ScaleFactor.X2, font: fontLarge);
+                graphics.DrawText(230, 30, tempUnit, Color.Black, ScaleFactor.X1, font: fontMedium);
+                graphics.DrawText(150, 72, $"Feels like {weather.FeelsLike:F0}°", Color.Black, ScaleFactor.X1, font: fontSmall);
 
-                graphics.DrawText(150, 20, "22", Color.Black, ScaleFactor.X2, font: fontLarge);
-                graphics.DrawText(220, 20, "°C", Color.Black, ScaleFactor.X1, font: fontMedium);
-                graphics.DrawText(150, 70, "Feels like 80°", Color.Black, ScaleFactor.X1, font: fontSmall);
+                // Location and date
+                graphics.DrawText(display!.Width - 4, 4, locationName, Color.Black, ScaleFactor.X1, HorizontalAlignment.Right, font: fontLarge);
+                graphics.DrawText(display!.Width - 4, 30, DateTime.Now.ToString("dddd, MMMM d"), Color.Black, ScaleFactor.X1, HorizontalAlignment.Right, font: fontMedium);
 
-                graphics.DrawText(display!.Width - 4, 4, "Gabriola,BC", Color.Black, ScaleFactor.X1, HorizontalAlignment.Right, font: fontLarge);
-                graphics.DrawText(display!.Width - 4, 30, "Sunday,September 7", Color.Black, ScaleFactor.X1, HorizontalAlignment.Right, font: fontMedium);
-
+                // Sunrise
                 graphics.DrawBuffer(4, 200, sunrise);
                 graphics.DrawText(xCol1, 200, "Sunrise", Color.Black, font: fontSmall);
-                graphics.DrawText(xCol1, 212, "7:17am", Color.Black, font: fontMedium);
+                graphics.DrawText(xCol1, 212, weather.Sunrise.ToString("h:mmtt").ToLower(), Color.Black, font: fontMedium);
 
+                // Sunset
                 graphics.DrawBuffer(144, 200, sunrise);
                 graphics.DrawText(xCol2, 200, "Sunset", Color.Black, font: fontSmall);
-                graphics.DrawText(xCol2, 212, "7:17pm", Color.Black, font: fontMedium);
+                graphics.DrawText(xCol2, 212, weather.Sunset.ToString("h:mmtt").ToLower(), Color.Black, font: fontMedium);
 
+                // Wind speed (convert m/s to knots if metric)
                 graphics.DrawBuffer(4, 250, wind);
                 graphics.DrawText(xCol1, 250, "Wind", Color.Black, font: fontSmall);
-                graphics.DrawText(xCol1, 262, "12kn", Color.Black, font: fontMedium);
+                double windKnots = weatherConfig?.Units == "metric" ? weather.WindSpeed * 1.944 : weather.WindSpeed;
+                graphics.DrawText(xCol1, 262, $"{windKnots:F0}kn", Color.Black, font: fontMedium);
 
+                // UV Index
                 graphics.DrawBuffer(144, 250, uv);
                 graphics.DrawText(xCol2, 250, "UV Index", Color.Black, font: fontSmall);
-                graphics.DrawText(xCol2, 262, "12", Color.Black, font: fontMedium);
+                graphics.DrawText(xCol2, 262, $"{weather.UvIndex:F0}", Color.Black, font: fontMedium);
 
+                // Humidity
                 graphics.DrawBuffer(4, 300, humidity);
                 graphics.DrawText(xCol1, 300, "Humidity", Color.Black, font: fontSmall);
-                graphics.DrawText(xCol1, 312, "80%", Color.Black, font: fontMedium);
+                graphics.DrawText(xCol1, 312, $"{weather.Humidity}%", Color.Black, font: fontMedium);
 
+                // Pressure
                 graphics.DrawBuffer(144, 300, pressure);
                 graphics.DrawText(xCol2, 300, "Pressure", Color.Black, font: fontSmall);
-                graphics.DrawText(xCol2, 312, "1.01atm", Color.Black, font: fontMedium);
+                graphics.DrawText(xCol2, 312, $"{weather.Pressure:F2}atm", Color.Black, font: fontMedium);
 
+                // Cloud cover (using AQI icon as placeholder)
                 graphics.DrawBuffer(4, 350, aqi);
-                graphics.DrawText(xCol1, 350, "Air Quality", Color.Black, font: fontSmall);
-                graphics.DrawText(xCol1, 362, "30", Color.Black, font: fontMedium);
+                graphics.DrawText(xCol1, 350, "Clouds", Color.Black, font: fontSmall);
+                graphics.DrawText(xCol1, 362, $"{weather.CloudCover}%", Color.Black, font: fontMedium);
 
+                // Visibility
                 graphics.DrawRectangle(144, 350, 30, 30, Color.Black, false);
                 graphics.DrawText(xCol2, 350, "Visibility", Color.Black, font: fontSmall);
-                graphics.DrawText(xCol2, 362, "> 3km", Color.Black, font: fontMedium);
+                graphics.DrawText(xCol2, 362, $"{weather.Visibility:F1}km", Color.Black, font: fontMedium);
+
+                // Moon Phase (display below the weather metrics)
+                graphics.DrawBuffer(4, 400, night_clear);
+                graphics.DrawText(xCol1, 400, "Moon Phase", Color.Black, font: fontSmall);
+                graphics.DrawText(xCol1, 412, GetMoonPhaseName(weather.MoonPhase), Color.Black, font: fontMedium);
 
                 var graphSettings = uiConfig?.TideGraph;
                 int graphX = graphSettings?.X ?? UILayoutConstants.TideGraph.X;
@@ -279,6 +342,44 @@ public class Program
             new TidePoint(baseTime.AddHours(22), 2.30),
             new TidePoint(baseTime.AddHours(23), 1.05),
             new TidePoint(baseTime.AddHours(24), 0.13),
+        };
+    }
+
+    private static WeatherData GetSampleWeatherData()
+    {
+        var now = DateTime.Now;
+        return new WeatherData
+        {
+            Temperature = 22,
+            FeelsLike = 20,
+            Humidity = 65,
+            Pressure = 1.01,
+            WindSpeed = 6.17, // ~12 knots in m/s
+            CloudCover = 40,
+            Visibility = 10,
+            UvIndex = 5,
+            Description = "partly cloudy",
+            IconCode = "02d",
+            Sunrise = now.Date.AddHours(7).AddMinutes(17),
+            Sunset = now.Date.AddHours(19).AddMinutes(17),
+            Timestamp = now,
+            MoonPhase = MoonPhaseCalculator.GetMoonPhase(DateTime.UtcNow)
+        };
+    }
+
+    private static string GetMoonPhaseName(MoonPhase phase)
+    {
+        return phase switch
+        {
+            MoonPhase.NewMoon => "New",
+            MoonPhase.WaxingCrescent => "Waxing",
+            MoonPhase.FirstQuarter => "1st Qtr",
+            MoonPhase.WaxingGibbous => "Waxing",
+            MoonPhase.FullMoon => "Full",
+            MoonPhase.WaningGibbous => "Waning",
+            MoonPhase.LastQuarter => "Last Qtr",
+            MoonPhase.WaningCrescent => "Waning",
+            _ => "Unknown"
         };
     }
 }
