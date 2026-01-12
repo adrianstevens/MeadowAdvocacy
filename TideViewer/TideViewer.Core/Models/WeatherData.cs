@@ -15,6 +15,8 @@ public class WeatherData
     public int CloudCover { get; set; }
     public double Visibility { get; set; }
     public double UvIndex { get; set; }
+    public int AirQualityIndex { get; set; }
+    public int PrecipitationChance { get; set; }
     public string Description { get; set; } = string.Empty;
     public string IconCode { get; set; } = string.Empty;
     public DateTime Sunrise { get; set; }

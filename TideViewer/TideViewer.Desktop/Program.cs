@@ -72,6 +72,7 @@ public class Program
 
         var virtualDisplay = new SimulatedEpd5in65f(rotate: true, displayRenderer: display);
 
+        // Will be set dynamically based on actual weather conditions
         ditheredWeatherToday = Resources.GetDitheredIcon(IconType.night_clear);
 
         graphics = new MicroGraphics(virtualDisplay)
@@ -107,6 +108,7 @@ public class Program
 
         // Fetch weather data (or use sample if API key not configured)
         WeatherData? weather = null;
+        DailyForecast[] forecast = new DailyForecast[0];
         bool useRealWeather = weatherConfig != null && !string.IsNullOrWhiteSpace(weatherConfig.OpenWeatherMapApiKey)
                                && weatherConfig.OpenWeatherMapApiKey != "dummy-key-for-development";
 
@@ -118,15 +120,21 @@ public class Program
                 {
                     var w = await weatherService.GetCurrentWeatherAsync(lat, lng);
                     w.UvIndex = await weatherService.GetUvIndexAsync(lat, lng);
+                    w.AirQualityIndex = await weatherService.GetAirQualityIndexAsync(lat, lng);
                     w.MoonPhase = MoonPhaseCalculator.GetMoonPhase(DateTime.UtcNow);
+                    // Precipitation chance not available in current weather, using forecast
+                    w.PrecipitationChance = 0; // Will get from forecast if available
                     return w;
                 }).Result;
-                Console.WriteLine("Successfully fetched weather data from OpenWeatherMap");
+
+                forecast = Task.Run(async () => await weatherService.GetForecastAsync(lat, lng)).Result;
+                Console.WriteLine($"Successfully fetched weather data and {forecast.Length} days of forecast from OpenWeatherMap");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Failed to fetch weather data: {ex.Message}. Using sample data.");
                 weather = null;
+                forecast = new DailyForecast[0];
             }
         }
 
@@ -134,6 +142,7 @@ public class Program
         if (weather == null)
         {
             weather = GetSampleWeatherData();
+            forecast = GetSampleForecastData();
         }
 
         // Using sample data for development/testing
@@ -156,13 +165,16 @@ public class Program
             {
                 graphics.Clear(Color.White);
 
-                graphics.DrawBuffer(20, 20, ditheredWeatherToday);
+                // Dynamic weather icon based on current conditions (large version)
+                var currentWeatherIconType = GetWeatherIcon(weather.IconCode, smallVersion: false);
+                var currentWeatherIcon = Resources.GetDitheredIcon(currentWeatherIconType);
+                graphics.DrawBuffer(20, 20, currentWeatherIcon);
 
-                // Temperature display
+                // Temperature display (moved down for better spacing)
                 string tempUnit = weatherConfig?.Units == "imperial" ? "°F" : "°C";
-                graphics.DrawText(150, 24, $"{weather.Temperature:F0}", Color.Black, ScaleFactor.X2, font: fontLarge);
-                graphics.DrawText(230, 30, tempUnit, Color.Black, ScaleFactor.X1, font: fontMedium);
-                graphics.DrawText(150, 72, $"Feels like {weather.FeelsLike:F0}°", Color.Black, ScaleFactor.X1, font: fontSmall);
+                graphics.DrawText(150, 30, $"{weather.Temperature:F0}", Color.Black, ScaleFactor.X2, font: fontLarge);
+                graphics.DrawText(230, 36, tempUnit, Color.Black, ScaleFactor.X1, font: fontMedium);
+                graphics.DrawText(150, 78, $"Feels like {weather.FeelsLike:F0}°", Color.Black, ScaleFactor.X1, font: fontSmall);
 
                 // Location and date
                 graphics.DrawText(display!.Width - 4, 4, locationName, Color.Black, ScaleFactor.X1, HorizontalAlignment.Right, font: fontLarge);
@@ -219,6 +231,36 @@ public class Program
                 int graphY = graphSettings?.Y ?? UILayoutConstants.TideGraph.Y;
                 int graphW = graphSettings?.Width ?? UILayoutConstants.TideGraph.Width;
                 int graphH = graphSettings?.Height ?? UILayoutConstants.TideGraph.Height;
+
+                // Weather Forecast - horizontal display above tide graph
+                if (forecast != null && forecast.Length > 0)
+                {
+                    int forecastY = 85;
+                    int forecastStartX = 274;
+                    int maxDays = Math.Min(4, forecast.Length);
+                    int columnWidth = (display!.Width - forecastStartX) / maxDays;
+
+                    for (int i = 0; i < maxDays; i++)
+                    {
+                        var day = forecast[i];
+                        int columnX = forecastStartX + (i * columnWidth);
+
+                        // Day name
+                        string dayName = day.Date.ToString("ddd").ToUpper();
+                        graphics.DrawText(columnX + 5, forecastY, dayName, Color.Black, font: fontSmall);
+
+                        // Weather icon
+                        var iconType = GetWeatherIcon(day.IconCode);
+                        var weatherIcon = Resources.GetDitheredIcon(iconType);
+                        graphics.DrawBuffer(columnX + 5, forecastY + 15, weatherIcon);
+
+                        // Temperature range (moved down to make room for icon)
+                        string tempHigh = $"{day.TempMax:F0}°";
+                        string tempLow = $"{day.TempMin:F0}°";
+                        graphics.DrawText(columnX + 40, forecastY + 20, tempHigh, Color.Black, font: fontMedium);
+                        graphics.DrawText(columnX + 40, forecastY + 40, tempLow, Color.Black, ScaleFactor.X1, font: fontSmall);
+                    }
+                }
 
                 DrawTideGraph(points, graphX, graphY, graphX + graphW, graphY + graphH, "m");
 
@@ -377,6 +419,44 @@ public class Program
         };
     }
 
+    private static DailyForecast[] GetSampleForecastData()
+    {
+        var today = DateTime.Now.Date;
+        return new DailyForecast[]
+        {
+            new DailyForecast
+            {
+                Date = today.AddDays(1),
+                TempMin = 18,
+                TempMax = 24,
+                Description = "partly cloudy",
+                IconCode = "02d",
+                Humidity = 60,
+                WindSpeed = 5.5
+            },
+            new DailyForecast
+            {
+                Date = today.AddDays(2),
+                TempMin = 20,
+                TempMax = 26,
+                Description = "sunny",
+                IconCode = "01d",
+                Humidity = 55,
+                WindSpeed = 4.2
+            },
+            new DailyForecast
+            {
+                Date = today.AddDays(3),
+                TempMin = 17,
+                TempMax = 22,
+                Description = "light rain",
+                IconCode = "10d",
+                Humidity = 75,
+                WindSpeed = 6.8
+            }
+        };
+    }
+
     private static string GetMoonPhaseName(MoonPhase phase)
     {
         return phase switch
@@ -391,6 +471,53 @@ public class Program
             MoonPhase.WaningCrescent => "Waning",
             _ => "Unknown"
         };
+    }
+
+    private static IconType GetWeatherIcon(string openWeatherMapIconCode, bool smallVersion = true)
+    {
+        // OpenWeatherMap icon codes: https://openweathermap.org/weather-conditions
+        // 01d/01n = clear sky, 02d/02n = few clouds, 03d/03n = scattered clouds
+        // 04d/04n = broken clouds, 09d/09n = shower rain, 10d/10n = rain
+        // 11d/11n = thunderstorm, 13d/13n = snow, 50d/50n = mist
+
+        if (smallVersion)
+        {
+            return openWeatherMapIconCode switch
+            {
+                "01d" => IconType.sunny_sm,              // clear sky day
+                "01n" => IconType.night_clear_sm,        // clear sky night
+                "02d" => IconType.partial_sun_sm,        // few clouds day
+                "02n" => IconType.night_cloudy_sm,       // few clouds night
+                "03d" or "03n" => IconType.cloudy_sm,    // scattered clouds
+                "04d" or "04n" => IconType.very_cloudy_sm, // broken clouds
+                "09d" or "09n" => IconType.light_rain_sm, // shower rain
+                "10d" => IconType.sun_rain_sm,           // rain day
+                "10n" => IconType.rain_sm,               // rain night
+                "11d" or "11n" => IconType.rain_lighting_sm, // thunderstorm
+                "13d" or "13n" => IconType.snow_sm,      // snow
+                "50d" or "50n" => IconType.cloudy_sm,    // mist/fog
+                _ => IconType.cloudy_sm                   // default fallback
+            };
+        }
+        else
+        {
+            return openWeatherMapIconCode switch
+            {
+                "01d" => IconType.sunny,              // clear sky day
+                "01n" => IconType.night_clear,        // clear sky night
+                "02d" => IconType.partial_sun,        // few clouds day
+                "02n" => IconType.night_cloudy,       // few clouds night
+                "03d" or "03n" => IconType.cloudy,    // scattered clouds
+                "04d" or "04n" => IconType.very_cloudy, // broken clouds
+                "09d" or "09n" => IconType.light_rain, // shower rain
+                "10d" => IconType.sun_rain,           // rain day
+                "10n" => IconType.rain,               // rain night
+                "11d" or "11n" => IconType.rain_lighting, // thunderstorm
+                "13d" or "13n" => IconType.snow,      // snow
+                "50d" or "50n" => IconType.cloudy,    // mist/fog
+                _ => IconType.cloudy                   // default fallback
+            };
+        }
     }
 }
 
