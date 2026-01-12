@@ -2,10 +2,12 @@
 using Meadow.Foundation.Displays;
 using Meadow.Foundation.Graphics;
 using Meadow.Peripherals.Displays;
+using Microsoft.Extensions.Configuration;
 using System.Globalization;
-using System.Reflection;
 using TideViewer;
 using TideViewer.assets;
+using TideViewer.Configuration;
+using TideViewer.Desktop.Configuration;
 
 namespace SilkDisplay_Sample;
 
@@ -37,6 +39,19 @@ public class Program
 
     public static void Initialize()
     {
+        // Load configuration
+        var config = ConfigurationLoader.LoadConfiguration();
+        var tideServiceConfig = config.GetSection("TideService").Get<TideServiceConfiguration>();
+        var apiEndpointsConfig = config.GetSection("ApiEndpoints").Get<ApiEndpointConfiguration>();
+
+        // Validate configuration (warning only - app works with sample data)
+        if (tideServiceConfig == null || string.IsNullOrWhiteSpace(tideServiceConfig.StormglassApiKey))
+        {
+            Console.WriteLine("WARNING: StormglassApiKey not configured. Using sample data.");
+            Console.WriteLine("To use real API data, set it in appsettings.json or environment variable: TIDEVIEWER_TideService__StormglassApiKey");
+            tideServiceConfig = new TideServiceConfiguration { StormglassApiKey = "dummy-key-for-development" };
+        }
+
         fontLarge = new Font16x24();
         fontMedium = new Font12x20();
         fontSmall = new Font8x12();
@@ -53,74 +68,32 @@ public class Program
             Stroke = 1,
         };
 
-        // Set your Stormglass API key
-        string apiKey = "8723c3ca-937d-11f0-b07a-0242ac130006-8723c456-937d-11f0-b07a-0242ac130006";
-
-        // Create service
-        tideService = new StormglassTideService(apiKey);
-
-        /*
-        // Coordinates for Entrance Island Lighthouse (north Gabriola Island)
-        double lat = 49.208979;
-        double lng = -123.809392;
-
-        // Time window: now → next 24h
-        var start = DateTime.Today;
-        var end = start.AddHours(24);
-
-        try
-        {
-            // Fetch tide points
-            var points = await tideService.GetSeaLevelCachedAsync(lat, lng, start, end, preferEmbedded: true);
-
-
-
-            //To refresh
-
-            var fresh = await tideService.GetSeaLevelAsync(lat, lng, start, end);
-            var cache = new TideCache
-            {
-                Lat = lat,
-                Lng = lng,
-                StartLocal = start,
-                EndLocal = end,
-                FetchedAtLocal = DateTime.Now,
-                Points = fresh.ToArray()
-            };
-
-            string snippet = StormglassTideService.GenerateEmbeddedCacheSnippet(cache);
-
-
-            // Print simple table of times + heights
-            Console.WriteLine($"Tides for Entrance Island {start:yyyy-MM-dd}");
-            Console.WriteLine("Time (local)          Height (ft)");
-            Console.WriteLine("-------------------  -----------");
-            foreach (var p in points)
-            {
-                Console.WriteLine($"{p.Time:yyyy-MM-dd HH:mm}  {p.Level,8:0.00}");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Error fetching tides: " + ex.Message);
-        }
-        */
+        // Create service with configuration
+        string baseUrl = apiEndpointsConfig?.StormglassBaseUrl ?? "https://api.stormglass.io";
+        tideService = new StormglassTideService(tideServiceConfig.StormglassApiKey, baseUrl);
     }
 
     public static void Run()
     {
-        int xCol1 = 40;
-        int xCol2 = 180;
+        // Load configuration
+        var config = ConfigurationLoader.LoadConfiguration();
+        var locationConfig = config.GetSection("Location").Get<LocationConfiguration>();
+        var uiConfig = config.GetSection("UI").Get<UIConfiguration>();
 
-        // Coordinates for Entrance Island Lighthouse (north Gabriola Island)
-        double lat = 49.208979;
-        double lng = -123.809392;
+        int xCol1 = uiConfig?.ColumnPositions?.Col1 ?? UILayoutConstants.Column1X;
+        int xCol2 = uiConfig?.ColumnPositions?.Col2 ?? UILayoutConstants.Column2X;
+
+        double lat = locationConfig?.Latitude ?? 49.208979;
+        double lng = locationConfig?.Longitude ?? -123.809392;
 
         // Time window: now → next 24h
         var start = DateTime.Now;
         var end = start.AddHours(24);
 
-        var points = tideService.GetSeaLevelCached();
+        // Using sample data for development/testing
+        // For production with API key configured, you would call:
+        // var points = await tideService.GetSeaLevelAsync(lat, lng, start, end);
+        var points = GetSampleTideData();
 
         var sunrise = Resources.GetDitheredIcon(IconType.sunrise_sm);
         var wind = Resources.GetDitheredIcon(IconType.windy_sm);
@@ -136,10 +109,6 @@ public class Program
             {
                 graphics.Clear(Color.White);
 
-                //graphics.DrawRectangle(4, 4, 120, 80, Color.Black, false);
-                //    graphics.DrawCircle(54, 44, 37, Color.Orange, true);
-                //    graphics.DrawCircle(54, 44, 37, Color.Black, false);
-
                 graphics.DrawBuffer(20, 20, ditheredWeatherToday);
 
 
@@ -150,37 +119,30 @@ public class Program
                 graphics.DrawText(display!.Width - 4, 4, "Gabriola,BC", Color.Black, ScaleFactor.X1, HorizontalAlignment.Right, font: fontLarge);
                 graphics.DrawText(display!.Width - 4, 30, "Sunday,September 7", Color.Black, ScaleFactor.X1, HorizontalAlignment.Right, font: fontMedium);
 
-                //graphics.DrawRectangle(4, 200, 30, 30, Color.Black, false);
                 graphics.DrawBuffer(4, 200, sunrise);
                 graphics.DrawText(xCol1, 200, "Sunrise", Color.Black, font: fontSmall);
                 graphics.DrawText(xCol1, 212, "7:17am", Color.Black, font: fontMedium);
 
-                //graphics.DrawRectangle(144, 200, 30, 30, Color.Black, false);
                 graphics.DrawBuffer(144, 200, sunrise);
                 graphics.DrawText(xCol2, 200, "Sunset", Color.Black, font: fontSmall);
                 graphics.DrawText(xCol2, 212, "7:17pm", Color.Black, font: fontMedium);
 
-                //graphics.DrawRectangle(4, 250, 30, 30, Color.Black, false);
                 graphics.DrawBuffer(4, 250, wind);
                 graphics.DrawText(xCol1, 250, "Wind", Color.Black, font: fontSmall);
                 graphics.DrawText(xCol1, 262, "12kn", Color.Black, font: fontMedium);
 
-                //graphics.DrawRectangle(144, 250, 30, 30, Color.Black, false);
                 graphics.DrawBuffer(144, 250, uv);
                 graphics.DrawText(xCol2, 250, "UV Index", Color.Black, font: fontSmall);
                 graphics.DrawText(xCol2, 262, "12", Color.Black, font: fontMedium);
 
-                //graphics.DrawRectangle(4, 300, 30, 30, Color.Black, false);
                 graphics.DrawBuffer(4, 300, humidity);
                 graphics.DrawText(xCol1, 300, "Humidity", Color.Black, font: fontSmall);
                 graphics.DrawText(xCol1, 312, "80%", Color.Black, font: fontMedium);
 
-                //graphics.DrawRectangle(144, 300, 30, 30, Color.Black, false);
                 graphics.DrawBuffer(144, 300, pressure);
                 graphics.DrawText(xCol2, 300, "Pressure", Color.Black, font: fontSmall);
                 graphics.DrawText(xCol2, 312, "1.01atm", Color.Black, font: fontMedium);
 
-                //graphics.DrawRectangle(4, 350, 30, 30, Color.Black, false);
                 graphics.DrawBuffer(4, 350, aqi);
                 graphics.DrawText(xCol1, 350, "Air Quality", Color.Black, font: fontSmall);
                 graphics.DrawText(xCol1, 362, "30", Color.Black, font: fontMedium);
@@ -189,9 +151,13 @@ public class Program
                 graphics.DrawText(xCol2, 350, "Visibility", Color.Black, font: fontSmall);
                 graphics.DrawText(xCol2, 362, "> 3km", Color.Black, font: fontMedium);
 
-                //  graphics.DrawRectangle(274, 200, 322, 245, Color.Black, false);
+                var graphSettings = uiConfig?.TideGraph;
+                int graphX = graphSettings?.X ?? UILayoutConstants.TideGraph.X;
+                int graphY = graphSettings?.Y ?? UILayoutConstants.TideGraph.Y;
+                int graphW = graphSettings?.Width ?? UILayoutConstants.TideGraph.Width;
+                int graphH = graphSettings?.Height ?? UILayoutConstants.TideGraph.Height;
 
-                DrawTideGraph(points, 274, 200, 274 + 322, 200 + 245, "m");
+                DrawTideGraph(points, graphX, graphY, graphX + graphW, graphY + graphH, "m");
 
                 graphics.Show();
 
@@ -224,8 +190,8 @@ public class Program
         }
 
         // scale
-        double minV = points.Min(p => p.Level) - 2;
-        double maxV = points.Max(p => p.Level) + 2;
+        double minV = points.Min(p => p.Level) - UILayoutConstants.GraphPadding.MinValuePadding;
+        double maxV = points.Max(p => p.Level) + UILayoutConstants.GraphPadding.MaxValuePadding;
 
         if (Math.Abs(maxV - minV) < 0.1)
         {
@@ -239,7 +205,7 @@ public class Program
 
         // y grid + labels
         graphics.CurrentFont = new Font6x8();
-        int yGrids = 3;
+        int yGrids = UILayoutConstants.TideGraph.YAxisGridCount;
 
         for (int i = 0; i <= yGrids; i++)
         {
@@ -250,18 +216,14 @@ public class Program
             graphics.DrawText(left + 2, y - 9, v.ToString("0.0", CultureInfo.InvariantCulture) + yUnits, Color.Black);
         }
 
-        // x ticks every 6h
-        var step = TimeSpan.FromHours(6);
+        // x ticks
+        var step = TimeSpan.FromHours(UILayoutConstants.TideGraph.XAxisIntervalHours);
         var tick = RoundUp(timeStart, step);
 
         for (var t = tick; t <= timeEnd; t = t.Add(step))
         {
             int x = left + (int)Math.Round(W * ((t - timeStart).TotalMinutes / totalMinutes));
             graphics.DrawLine(x, top, x, top + H, Color.Black);
-            if (t != tick)
-            {
-                //    graphics.DrawText(x - 2, bottom - 9, t.ToString("H:mm"), Color.Black, alignmentH: HorizontalAlignment.Right);
-            }
         }
 
         // plot line
@@ -287,36 +249,37 @@ public class Program
         return new DateTime(ticks, dt.Kind);
     }
 
-
-    private static readonly Dictionary<string, Image> _images = new();
-    private static readonly string _assemblyName;
-    private static Image GetImageResource(string name)
+    private static List<TidePoint> GetSampleTideData()
     {
-        if (!_images.ContainsKey(name))
+        var baseTime = DateTime.Now.Date;
+        return new List<TidePoint>
         {
-            try
-            {
-                _images.Add(name, Image.LoadFromResource($"{_assemblyName}.{name}"));
-            }
-            catch
-            {
-                var availableResources = Assembly.GetExecutingAssembly().GetManifestResourceNames();
-
-                var match = availableResources.FirstOrDefault(r => r.Contains(name, StringComparison.OrdinalIgnoreCase));
-
-                if (match != null)
-                {
-                    var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(match);
-                    _images.Add(name, Image.LoadFromStream(stream));
-                }
-                else
-                {
-                    throw;
-                }
-            }
-        }
-
-        return _images[name];
+            new TidePoint(baseTime.AddHours(0), 0.72),
+            new TidePoint(baseTime.AddHours(1), 0.75),
+            new TidePoint(baseTime.AddHours(2), 1.12),
+            new TidePoint(baseTime.AddHours(3), 1.61),
+            new TidePoint(baseTime.AddHours(4), 1.90),
+            new TidePoint(baseTime.AddHours(5), 1.71),
+            new TidePoint(baseTime.AddHours(6), 0.95),
+            new TidePoint(baseTime.AddHours(7), -0.33),
+            new TidePoint(baseTime.AddHours(8), -1.97),
+            new TidePoint(baseTime.AddHours(9), -3.77),
+            new TidePoint(baseTime.AddHours(10), -5.45),
+            new TidePoint(baseTime.AddHours(11), -6.56),
+            new TidePoint(baseTime.AddHours(12), -6.82),
+            new TidePoint(baseTime.AddHours(13), -6.14),
+            new TidePoint(baseTime.AddHours(14), -4.69),
+            new TidePoint(baseTime.AddHours(15), -2.59),
+            new TidePoint(baseTime.AddHours(16), -0.26),
+            new TidePoint(baseTime.AddHours(17), 1.80),
+            new TidePoint(baseTime.AddHours(18), 3.28),
+            new TidePoint(baseTime.AddHours(19), 4.04),
+            new TidePoint(baseTime.AddHours(20), 4.07),
+            new TidePoint(baseTime.AddHours(21), 3.41),
+            new TidePoint(baseTime.AddHours(22), 2.30),
+            new TidePoint(baseTime.AddHours(23), 1.05),
+            new TidePoint(baseTime.AddHours(24), 0.13),
+        };
     }
 }
 

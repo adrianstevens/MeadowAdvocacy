@@ -34,8 +34,12 @@ namespace TideViewer
             if (!_ditheredBuffers.ContainsKey(name))
             {
                 var img = GetImageResource($"{icon}.bmp");
+                if (img?.DisplayBuffer == null)
+                {
+                    throw new InvalidOperationException($"Icon '{icon}' could not be loaded or has no display buffer");
+                }
 
-                var dithered = PixelBufferDither.ToIndexed4(img.DisplayBuffer!, palette, DitherMode.FloydSteinberg, true);
+                var dithered = PixelBufferDither.ToIndexed4(img.DisplayBuffer, palette, DitherMode.FloydSteinberg, true);
                 _ditheredBuffers.Add(name, dithered);
             }
 
@@ -58,12 +62,19 @@ namespace TideViewer
 
                     if (match != null)
                     {
-                        var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(match);
-                        _images.Add(name, Image.LoadFromStream(stream));
+                        using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(match);
+                        if (stream != null)
+                        {
+                            _images.Add(name, Image.LoadFromStream(stream));
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException($"Resource stream for '{name}' could not be loaded");
+                        }
                     }
                     else
                     {
-                        throw;
+                        throw new InvalidOperationException($"Resource '{name}' not found in assembly");
                     }
                 }
             }
