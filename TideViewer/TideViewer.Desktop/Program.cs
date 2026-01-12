@@ -348,6 +348,16 @@ public class Program
     private static WeatherData GetSampleWeatherData()
     {
         var now = DateTime.Now;
+
+        // Load location from configuration for accurate sunrise/sunset calculation
+        var config = ConfigurationLoader.LoadConfiguration();
+        var locationConfig = config.GetSection("Location").Get<LocationConfiguration>();
+        double lat = locationConfig?.Latitude ?? 49.208979;
+        double lng = locationConfig?.Longitude ?? -123.809392;
+
+        // Calculate actual sunrise/sunset times using SunTimesCalculator
+        var (sunrise, sunset) = SunTimesCalculator.GetSunTimes(now.Date, lat, lng);
+
         return new WeatherData
         {
             Temperature = 22,
@@ -360,8 +370,8 @@ public class Program
             UvIndex = 5,
             Description = "partly cloudy",
             IconCode = "02d",
-            Sunrise = now.Date.AddHours(7).AddMinutes(17),
-            Sunset = now.Date.AddHours(19).AddMinutes(17),
+            Sunrise = sunrise.ToLocalTime(),
+            Sunset = sunset.ToLocalTime(),
             Timestamp = now,
             MoonPhase = MoonPhaseCalculator.GetMoonPhase(DateTime.UtcNow)
         };
