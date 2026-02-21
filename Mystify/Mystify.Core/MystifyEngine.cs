@@ -59,19 +59,21 @@ public class MystifyEngine
     {
         for (int j = 0; j < Shapes.Length; j++)
         {
-            for (int i = 0; i < Shapes[j].Points.Length; i++)
-            {
-                Shapes[j].Points[i] = new Point(Shapes[j].Points[i].X + Shapes[j].XSpeed[i],
-                                                Shapes[j].Points[i].Y + Shapes[j].YSpeed[i]);
+            var points = Shapes[j].Points;
+            var xSpeed = Shapes[j].XSpeed;
+            var ySpeed = Shapes[j].YSpeed;
 
-                //bounce the corners off the walls
-                if (Shapes[j].Points[i].X < 0 || Shapes[j].Points[i].X > Width)
+            for (int i = 0; i < points.Length; i++)
+            {
+                points[i].Offset(xSpeed[i], ySpeed[i]);
+
+                if (points[i].X < 0 || points[i].X > Width)
                 {
-                    Shapes[j].XSpeed[i] = -Shapes[j].XSpeed[i];
+                    xSpeed[i] = -xSpeed[i];
                 }
-                if (Shapes[j].Points[i].Y < 0 || Shapes[j].Points[i].Y > Height)
+                if (points[i].Y < 0 || points[i].Y > Height)
                 {
-                    Shapes[j].YSpeed[i] = -Shapes[j].YSpeed[i];
+                    ySpeed[i] = -ySpeed[i];
                 }
             }
         }
