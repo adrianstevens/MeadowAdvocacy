@@ -46,12 +46,9 @@ namespace Froggit
         void DrawBackground(MicroGraphics graphics)
         {
             //draw docks
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < FrogsHome; i++)
             {
-                if (i < FrogsHome)
-                {
-                    DrawFrog(12 + 24 * i, 0, FrogState.Forward, graphics);
-                }
+                DrawFrog(12 + 24 * i, 0, FrogState.Forward, graphics);
             }
 
             //draw water
@@ -63,12 +60,12 @@ namespace Froggit
             int startPos, index, x, y;
             int cellOffset;
 
-            double offsetD;
+            float offsetD;
 
             for (byte row = 0; row < 8; row++)
             {
                 startPos = (int)(GameTime * LaneSpeeds[row]) % LaneLength;
-                offsetD = 16.0 * GameTime * LaneSpeeds[row];
+                offsetD = 16f * GameTime * LaneSpeeds[row];
 
                 cellOffset = ((int)offsetD) % cellSize;
 
@@ -82,7 +79,7 @@ namespace Froggit
                 //move the frog with the log
                 if (row < 3 && y == FrogY)
                 {
-                    FrogX -= TimeDelta * LaneSpeeds[row] * CellSize;
+                    FrogX -= (int)(TimeDelta * LaneSpeeds[row] * CellSize);
                     //if the frog moves off screen, kill it
                     if (FrogX < 0 || FrogX > graphics.Width - CellSize)
                     {
@@ -173,7 +170,7 @@ namespace Froggit
 
         void DrawFrog(MicroGraphics graphics, FrogState state = FrogState.Forward)
         {
-            DrawFrog((int)Math.Truncate(FrogX), (int)Math.Truncate(FrogY), state, graphics);
+            DrawFrog(FrogX, FrogY, state, graphics);
         }
 
         void DrawFrog(int x, int y, FrogState state, MicroGraphics graphics)

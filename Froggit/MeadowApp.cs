@@ -75,7 +75,7 @@ namespace Froggit
             //await HighScoreService.PostTime("Juego0", 1000, 20);
             //await HighScoreService.PostTime("Juego0", 500, 15);
 
-            DrawplashScreen();
+            DrawSplashScreen();
         }
 
         private void StartButton_Clicked(object sender, EventArgs e)
@@ -90,7 +90,7 @@ namespace Froggit
             else if (GameState.GameOver == gameState)
             {
                 gameState = GameState.Ready;
-                DrawplashScreen();
+                DrawSplashScreen();
             }
         }
 
@@ -120,7 +120,7 @@ namespace Froggit
             game.Update();
         }
 
-        void DrawplashScreen()
+        void DrawSplashScreen()
         {
             graphics.Clear();
             graphics.DrawText(160, 70, "Froggit", FrogItGame.FrogColor, ScaleFactor.X3, HorizontalAlignment.Center);
@@ -159,7 +159,7 @@ namespace Froggit
                     Thread.Sleep(0);
                 }
                 gameState = GameState.GameOver;
-                //DrawEndScreen();
+                DrawEndScreen();
             }, TaskCreationOptions.LongRunning);
 
             t.Start();

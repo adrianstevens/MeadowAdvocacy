@@ -18,7 +18,7 @@ namespace Froggit
         FrogState frogState;
 
         //each lane has a velocity
-        public double[] LaneSpeeds { get; private set; } = new double[8] { 1.8f, -2.0f, 1.5f, 0, -1.0f, 2.0f, -1.5f, 1.5f };
+        public float[] LaneSpeeds { get; private set; } = new float[8] { 1.8f, -2.0f, 1.5f, 0, -1.0f, 2.0f, -1.5f, 1.5f };
         public byte[,] LaneData { get; private set; } = new byte[8, 32]
         {
             //no data for docks
@@ -39,21 +39,22 @@ namespace Froggit
 
         public int FROG_GOAL = 4;
 
-        public double GameTime { get; private set; }
+        public float GameTime { get; private set; }
 
         public int Deaths { get; private set; }
 
-        public double TimeDelta => GameTime - lastTime;
+        public float TimeDelta => GameTime - lastTime;
 
         public int LaneLength => 32;
         public int Columns { get; private set; } = 20;
         public int Rows => 12;
 
-        public double FrogX { get; set; }
-        public double FrogY { get; private set; }
+        public int FrogX { get; set; }
+        public int FrogY { get; private set; }
 
         public int Lives { get; private set; }
         public int FrogsHome { get; private set; }
+
 
         public int CellSize { get; private set; }
 
@@ -73,7 +74,6 @@ namespace Froggit
             Lives = 3;
             Deaths = 0;
             FrogsHome = 0;
-
             IsPlaying = true;
             Winner = false;
         }
@@ -85,7 +85,7 @@ namespace Froggit
             frogState = FrogState.Forward;
         }
 
-        double lastTime;
+        float lastTime;
         int count = 0;
         readonly Stopwatch sw = new();
 
@@ -105,7 +105,7 @@ namespace Froggit
             count++;
 
             lastTime = GameTime;
-            GameTime = (DateTime.Now - gameStart).TotalSeconds;
+            GameTime = (float)(DateTime.Now - gameStart).TotalSeconds;
         }
 
         public void Up() => MoveFrogUp();
@@ -126,8 +126,9 @@ namespace Froggit
 
             if (FrogY == 0)
             {
-                _ = effectsAudio?.PlayGameSound(GameSoundEffect.Victory);
                 FrogsHome++;
+                _ = effectsAudio?.PlayGameSound(GameSoundEffect.Victory);
+
                 if (FrogsHome >= FROG_GOAL)
                 {
                     IsPlaying = false;
@@ -135,9 +136,6 @@ namespace Froggit
                 }
                 else
                 {
-                    Console.WriteLine("splash");
-                    _ = effectsAudio?.PlayGameSound(GameSoundEffect.Splash);
-                    Deaths++;
                     ResetFrog();
                 }
             }
@@ -146,6 +144,7 @@ namespace Froggit
                 _ = moveAudio?.PlayGameSound(GameSoundEffect.Footstep);
             }
         }
+
 
         void MoveFrogDown()
         {
