@@ -7,7 +7,7 @@ namespace Froggit
 {
     public partial class FrogItGame
     {
-        readonly byte cellSize = 16;
+        const int cellSize = 16;
 
         MicroAudio moveAudio;
         MicroAudio effectsAudio;
@@ -59,8 +59,11 @@ namespace Froggit
         {
             int startPos, index, x, y;
             int cellOffset;
-
             float offsetD;
+
+            //cache the frog's lane row (-1 if not on a lane)
+            int frogRow = (FrogY / cellSize) - 2;
+            bool frogOnRow;
 
             for (byte row = 0; row < 8; row++)
             {
@@ -75,19 +78,19 @@ namespace Froggit
                 }
 
                 y = cellSize * (row + 2);
+                frogOnRow = row == frogRow;
 
                 //move the frog with the log
-                if (row < 3 && y == FrogY)
+                if (frogOnRow && row < 3)
                 {
-                    FrogX -= (int)(TimeDelta * LaneSpeeds[row] * CellSize);
-                    //if the frog moves off screen, kill it
-                    if (FrogX < 0 || FrogX > graphics.Width - CellSize)
+                    FrogX -= (int)(TimeDelta * LaneSpeeds[row] * cellSize);
+                    if (FrogX < 0 || FrogX > graphics.Width - cellSize)
                     {
                         KillFrog();
                     }
                 }
 
-                //iterate over ever column in the lane
+                //iterate over every column in the lane
                 for (byte i = 0; i < Columns + 2; i++)
                 {
                     index = LaneData[row, (startPos + i) % LaneLength];
@@ -96,20 +99,19 @@ namespace Froggit
 
                     if (index == 0)
                     {
-                        if (row < 3)
+                        if (frogOnRow && row < 3)
                         {
-                            //if the frog is the water, kill it
-                            if (IsFrogCollisionWater(x, y) == true)
+                            //if the frog is in the water, kill it
+                            if (x >= FrogX - cellSize / 2 && x < FrogX + cellSize / 2)
                             {
                                 KillFrog();
                             }
                         }
-                        //nothing to draw in this column
                         continue;
                     }
 
                     //if column is off screen, skip it
-                    if (x < 0 || x >= graphics.Width - CellSize)
+                    if (x < 0 || x >= graphics.Width - cellSize)
                     {
                         continue;
                     }
@@ -126,38 +128,16 @@ namespace Froggit
                         case 4:
                         case 6:
                             DrawTruck(x, y, index, graphics);
-                            if (IsFrogCollision(x, y)) { KillFrog(); }
+                            if (frogOnRow && x >= FrogX - cellSize && x < FrogX + cellSize) { KillFrog(); }
                             break;
                         case 5:
                         case 7:
                             DrawCar(x, y, index, graphics);
-                            if (IsFrogCollision(x, y)) { KillFrog(); }
+                            if (frogOnRow && x >= FrogX - cellSize && x < FrogX + cellSize) { KillFrog(); }
                             break;
                     }
                 }
             }
-        }
-
-        bool IsFrogCollisionWater(int x, int y)
-        {
-            if (y == FrogY &&
-                ((x >= FrogX && x < FrogX + cellSize / 2) || (FrogX >= x && FrogX < x + cellSize / 2)))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        bool IsFrogCollision(int x, int y)
-        {
-            if (y == FrogY &&
-                ((x >= FrogX && x < FrogX + cellSize) || (FrogX >= x && FrogX < x + cellSize)))
-            {
-                return true;
-            }
-
-            return false;
         }
 
         void DrawLives(MicroGraphics graphics)

@@ -56,13 +56,10 @@ namespace Froggit
         public int FrogsHome { get; private set; }
 
 
-        public int CellSize { get; private set; }
-
         DateTime gameStart;
 
-        public FrogItGame(int cellSize = 16, int width = 320)
+        public FrogItGame(int width = 320)
         {
-            CellSize = cellSize;
             Columns = width / cellSize;
             Reset();
         }
@@ -80,8 +77,8 @@ namespace Froggit
 
         void ResetFrog()
         {
-            FrogX = Columns * CellSize / 2;
-            FrogY = (Rows - 1) * CellSize;
+            FrogX = Columns * cellSize / 2;
+            FrogY = (Rows - 1) * cellSize;
             frogState = FrogState.Forward;
         }
 
@@ -122,7 +119,7 @@ namespace Froggit
         void MoveFrogUp()
         {
             frogState = FrogState.Forward;
-            if (FrogY >= CellSize) { FrogY -= CellSize; }
+            if (FrogY >= cellSize) { FrogY -= cellSize; }
 
             if (FrogY == 0)
             {
@@ -149,21 +146,21 @@ namespace Froggit
         void MoveFrogDown()
         {
             frogState = FrogState.Forward;
-            if (FrogY < Rows * CellSize - CellSize) { FrogY += CellSize; }
+            if (FrogY < Rows * cellSize - cellSize) { FrogY += cellSize; }
             _ = moveAudio?.PlayGameSound(GameSoundEffect.Footstep);
         }
 
         void MoveFrogLeft()
         {
             frogState = FrogState.Left;
-            if (FrogX > CellSize) { FrogX -= CellSize; }
+            if (FrogX > cellSize) { FrogX -= cellSize; }
             _ = moveAudio?.PlayGameSound(GameSoundEffect.Footstep);
         }
 
         void MoveFrogRight()
         {
             frogState = FrogState.Right;
-            if (FrogX <= Columns * CellSize - CellSize) { FrogX += CellSize; }
+            if (FrogX <= Columns * cellSize - cellSize) { FrogX += cellSize; }
             _ = moveAudio?.PlayGameSound(GameSoundEffect.Footstep);
         }
 
