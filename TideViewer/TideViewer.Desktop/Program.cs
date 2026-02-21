@@ -121,9 +121,8 @@ public class Program
                     var w = await weatherService.GetCurrentWeatherAsync(lat, lng);
                     w.UvIndex = await weatherService.GetUvIndexAsync(lat, lng);
                     w.AirQualityIndex = await weatherService.GetAirQualityIndexAsync(lat, lng);
+                    w.PrecipitationChance = await weatherService.GetPrecipitationChanceAsync(lat, lng);
                     w.MoonPhase = MoonPhaseCalculator.GetMoonPhase(DateTime.UtcNow);
-                    // Precipitation chance not available in current weather, using forecast
-                    w.PrecipitationChance = 0; // Will get from forecast if available
                     return w;
                 }).Result;
 
@@ -156,6 +155,7 @@ public class Program
         var humidity = Resources.GetDitheredIcon(IconType.humidity_sm);
         var pressure = Resources.GetDitheredIcon(IconType.pressure_sm);
         var aqi = Resources.GetDitheredIcon(IconType.aqi_sm);
+        var rain = Resources.GetDitheredIcon(IconType.rain_sm);
         var night_clear = Resources.GetDitheredIcon(IconType.night_clear_sm);
 
 
@@ -211,15 +211,24 @@ public class Program
                 graphics.DrawText(xCol2, 300, "Pressure", Color.Black, font: fontSmall);
                 graphics.DrawText(xCol2, 312, $"{weather.Pressure:F2}atm", Color.Black, font: fontMedium);
 
-                // Cloud cover (using AQI icon as placeholder)
+                // Air Quality Index (AQI)
                 graphics.DrawBuffer(4, 350, aqi);
-                graphics.DrawText(xCol1, 350, "Clouds", Color.Black, font: fontSmall);
-                graphics.DrawText(xCol1, 362, $"{weather.CloudCover}%", Color.Black, font: fontMedium);
+                graphics.DrawText(xCol1, 350, "AQI", Color.Black, font: fontSmall);
+                string aqiLabel = weather.AirQualityIndex switch
+                {
+                    1 => "Good",
+                    2 => "Fair",
+                    3 => "Moderate",
+                    4 => "Poor",
+                    5 => "Very Poor",
+                    _ => "N/A"
+                };
+                graphics.DrawText(xCol1, 362, aqiLabel, Color.Black, font: fontMedium);
 
-                // Visibility
-                graphics.DrawRectangle(144, 350, 30, 30, Color.Black, false);
-                graphics.DrawText(xCol2, 350, "Visibility", Color.Black, font: fontSmall);
-                graphics.DrawText(xCol2, 362, $"{weather.Visibility:F1}km", Color.Black, font: fontMedium);
+                // Precipitation Chance
+                graphics.DrawBuffer(144, 350, rain);
+                graphics.DrawText(xCol2, 350, "Precip", Color.Black, font: fontSmall);
+                graphics.DrawText(xCol2, 362, $"{weather.PrecipitationChance}%", Color.Black, font: fontMedium);
 
                 // Moon Phase (display below the weather metrics)
                 graphics.DrawBuffer(4, 400, night_clear);
@@ -410,6 +419,8 @@ public class Program
             CloudCover = 40,
             Visibility = 10,
             UvIndex = 5,
+            AirQualityIndex = 2, // Fair
+            PrecipitationChance = 30, // 30% chance
             Description = "partly cloudy",
             IconCode = "02d",
             Sunrise = sunrise.ToLocalTime(),

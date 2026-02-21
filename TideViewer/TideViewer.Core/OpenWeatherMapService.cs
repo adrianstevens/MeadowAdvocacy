@@ -165,6 +165,36 @@ public class OpenWeatherMapService
     }
 
     /// <summary>
+    /// Fetches precipitation chance for the next 3-hour period
+    /// </summary>
+    public async Task<int> GetPrecipitationChanceAsync(double lat, double lng)
+    {
+        string url = $"{baseUrl}/forecast?lat={lat:F6}&lon={lng:F6}&appid={apiKey}&units={units}";
+
+        try
+        {
+            using var req = new HttpRequestMessage(HttpMethod.Get, url);
+            using var res = await http.SendAsync(req);
+            res.EnsureSuccessStatusCode();
+
+            string json = await res.Content.ReadAsStringAsync();
+            var dto = MicroJson.Deserialize<ForecastResponse>(json);
+
+            // Get the first forecast period (next 3 hours)
+            if (dto?.list != null && dto.list.Length > 0)
+            {
+                // pop is probability of precipitation (0-1), convert to percentage
+                return (int)(dto.list[0].pop * 100);
+            }
+            return 0;
+        }
+        catch
+        {
+            return 0; // Precipitation is optional
+        }
+    }
+
+    /// <summary>
     /// Fetches 5-day weather forecast for specified coordinates
     /// </summary>
     /// <param name="lat">Latitude (-90 to 90)</param>
@@ -347,6 +377,7 @@ public class OpenWeatherMapService
         public MainData? main { get; set; }
         public WeatherDescription[]? weather { get; set; }
         public Wind? wind { get; set; }
+        public double pop { get; set; }  // Probability of precipitation (0-1)
     }
 
     private class AirPollutionResponse
