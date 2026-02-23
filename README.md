@@ -35,6 +35,22 @@ dotnet build
 meadow app run -c release
 ```
 
+## Demos
+
+| Project | Description | Hardware |
+|---------|-------------|----------|
+| Starfield | 3D starfield warp effect | Juego, ProjectLab |
+| Mystify | Bouncing polygon screensaver | Juego, ProjectLab, Silk |
+| GameOfLife | Conway's Game of Life | ProjectLab |
+| RotatingCube | Wireframe 3D cube with accelerometer control | ProjectLab |
+| FallingSand | Particle sand simulation — tilt to control gravity | Juego |
+| Froggit | Frogger-style game | Juego |
+| RogueLike | Roguelike dungeon game | Juego |
+| Skeeball | Skeeball game | Juego |
+| Gradients | Color gradient renderer | Juego |
+| Arcs | Arc drawing demo | Juego |
+| Mystify | Bouncing polygon screensaver | Juego, ProjectLab, Silk |
+
 ## Performance Guide for F7 / Juego
 
 The Meadow F7 uses an STM32F7 microcontroller. Key constraints and patterns for getting smooth frame rates:
