@@ -21,10 +21,12 @@ namespace TravelClockProjectLab
                 Stroke = 1
             };
 
-            controller = new ClockController(graphics);
+            controller = new ClockController(graphics, projLab.Speaker);
 
             projLab.RightButton!.Clicked += (s, e) => controller.NextView();
             projLab.LeftButton!.Clicked  += (s, e) => controller.PreviousView();
+            projLab.UpButton!.Clicked    += (s, e) => controller.UpField();
+            projLab.DownButton!.Clicked  += (s, e) => controller.DownField();
 
             return base.Initialize();
         }

@@ -31,10 +31,14 @@ namespace TravelClock.Core.Views
             int dateX = (320 - dateWidth) / 2;
             graphics.DrawText(dateX, 150, dateStr, Color.LightGray);
 
-            // Alarm indicator dot (top-right)
+            // Alarm indicator — dot + time string (top-right)
             if (_alarm.AlarmTime != null)
             {
-                graphics.DrawCircle(310, 10, 5, Color.Orange, filled: true);
+                graphics.DrawCircle(10, 10, 5, Color.Orange, filled: true);
+                string alarmStr = $"alarm {_alarm.AlarmTime.Value.Hours:D2}:{_alarm.AlarmTime.Value.Minutes:D2}";
+                graphics.CurrentFont = new Font8x12();
+                int alarmW = alarmStr.Length * 8;
+                graphics.DrawText(320 - alarmW - 4, 4, alarmStr, Color.Orange);
             }
         }
     }

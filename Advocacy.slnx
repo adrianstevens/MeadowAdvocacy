@@ -34,6 +34,7 @@
     <Project Path="../Meadow.Foundation/Source/Meadow.Foundation.Core/Meadow.Foundation.Core.csproj">
       <Deploy />
     </Project>
+    <Project Path="../Meadow.Foundation/Source/Meadow.Foundation.Peripherals/Audio.ConsoleSpeaker/Driver/Audio.ConsoleSpeaker.csproj" />
     <Project Path="../Meadow.Foundation/Source/Meadow.Foundation.Libraries_and_Frameworks/Audio.MicroAudio/Driver/Audio.MicroAudio.csproj">
       <Deploy />
     </Project>

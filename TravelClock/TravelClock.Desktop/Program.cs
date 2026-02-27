@@ -1,4 +1,5 @@
 using Meadow;
+using Meadow.Foundation.Audio;
 using Meadow.Foundation.Displays;
 using Meadow.Foundation.Graphics;
 using Meadow.Foundation.Sensors.Buttons;
@@ -31,12 +32,15 @@ public class Program
             Stroke = 1
         };
 
-        controller = new ClockController(graphics);
+        var speaker = new ConsoleSpeaker();
+        controller = new ClockController(graphics, speaker);
 
         keyboard = new Keyboard();
 
         GetButton(keyboard.Pins.Right).Clicked += (s, e) => controller.NextView();
         GetButton(keyboard.Pins.Left).Clicked  += (s, e) => controller.PreviousView();
+        GetButton(keyboard.Pins.Up).Clicked    += (s, e) => controller.UpField();
+        GetButton(keyboard.Pins.Down).Clicked  += (s, e) => controller.DownField();
     }
 
     static void Run()

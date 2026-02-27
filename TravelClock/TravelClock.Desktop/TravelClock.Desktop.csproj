@@ -7,6 +7,7 @@
     <LangVersion>10.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\Audio.ConsoleSpeaker\Driver\Audio.ConsoleSpeaker.csproj" />
     <ProjectReference Include="..\..\..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\Displays.Silk\Driver\Displays.Silk.csproj" />
     <ProjectReference Include="..\..\..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\Sensors.Hid.Keyboard\Driver\Sensors.Hid.Keyboard.csproj" />
     <ProjectReference Include="..\TravelClock.Core\TravelClock.Core.csproj" />
