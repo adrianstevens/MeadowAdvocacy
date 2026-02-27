@@ -154,6 +154,11 @@
   </Folder>
   <Folder Name="/SatelliteTracker/" />
   <Folder Name="/Solution Items/" />
+  <Folder Name="/TravelClock/">
+    <Project Path="TravelClock/TravelClock.Core/TravelClock.Core.csproj" />
+    <Project Path="TravelClock/TravelClock.ProjectLab/TravelClock.ProjectLab.csproj" />
+    <Project Path="TravelClock/TravelClock.Desktop/TravelClock.Desktop.csproj" />
+  </Folder>
   <Folder Name="/TideViewer/">
     <Project Path="TideViewer/TideViewer.Core/TideViewer.Core.csproj">
       <Deploy />
