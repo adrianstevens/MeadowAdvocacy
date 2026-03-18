@@ -30,12 +30,8 @@ public class OpenWeatherMapService
         {
             throw new ArgumentNullException(nameof(config));
         }
-        if (string.IsNullOrWhiteSpace(config.OpenWeatherMapApiKey))
-        {
-            throw new ArgumentException("OpenWeatherMap API key cannot be null or empty", nameof(config));
-        }
 
-        this.apiKey = config.OpenWeatherMapApiKey;
+        this.apiKey = config.OpenWeatherMapApiKey ?? string.Empty;
         this.baseUrl = config.OpenWeatherMapBaseUrl?.TrimEnd('/') ?? "https://api.openweathermap.org/data/2.5";
         this.units = config.Units ?? "metric";
     }

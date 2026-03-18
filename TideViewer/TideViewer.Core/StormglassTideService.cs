@@ -26,17 +26,8 @@ public class StormglassTideService
     /// <exception cref="ArgumentException">Thrown when apiKey is null or empty</exception>
     public StormglassTideService(string apiKey, string baseUrl = "https://api.stormglass.io")
     {
-        if (string.IsNullOrWhiteSpace(apiKey))
-        {
-            throw new ArgumentException("API key cannot be null or empty", nameof(apiKey));
-        }
-        if (string.IsNullOrWhiteSpace(baseUrl))
-        {
-            throw new ArgumentException("Base URL cannot be null or empty", nameof(baseUrl));
-        }
-
-        this.apiKey = apiKey;
-        this.baseUrl = baseUrl.TrimEnd('/');
+        this.apiKey = apiKey ?? string.Empty;
+        this.baseUrl = (baseUrl ?? "https://api.stormglass.io").TrimEnd('/');
     }
 
     /// <summary>
