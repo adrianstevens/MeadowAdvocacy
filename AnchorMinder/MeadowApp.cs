@@ -151,12 +151,12 @@ namespace AnchorMinder
         void DrawWaitingScreen()
         {
             graphics.Clear(Color.Black);
-            graphics.DrawText(graphics.Width / 2, 10, "ANCHOR MINDER", Color.Cyan, alignmentH: HorizontalAlignment.Center);
+            graphics.DrawText(graphics.Width / 2, 2, "ANCHOR MINDER", Color.Cyan, alignmentH: HorizontalAlignment.Center);
+            graphics.DrawHorizontalLine(0, 24, graphics.Width, Color.DarkCyan);
             graphics.DrawText(graphics.Width / 2, 100, "Acquiring position...", Color.Gray, alignmentH: HorizontalAlignment.Center);
-            graphics.DrawText(graphics.Width / 2, 200, "LEFT = Drop/Weigh Anchor", Color.DarkGray, ScaleFactor.X1, HorizontalAlignment.Center);
-            graphics.DrawText(graphics.Width / 2, 220, "RIGHT = Simulate Drift", Color.DarkGray, ScaleFactor.X1, HorizontalAlignment.Center);
+            graphics.DrawText(graphics.Width / 2, 130, "LEFT = Drop Anchor", Color.DarkGray, ScaleFactor.X1, HorizontalAlignment.Center);
+            graphics.DrawText(graphics.Width / 2, 150, "RIGHT = Simulate Drift", Color.DarkGray, ScaleFactor.X1, HorizontalAlignment.Center);
             graphics.Show();
-
             projLab.RgbLed?.SetColor(Color.Blue);
         }
 
@@ -175,37 +175,63 @@ namespace AnchorMinder
 
             graphics.Clear(Color.Black);
 
-            // Title
-            graphics.DrawText(graphics.Width / 2, 5, "ANCHOR MINDER", Color.Cyan, alignmentH: HorizontalAlignment.Center);
-            graphics.DrawHorizontalLine(0, 28, graphics.Width, Color.DarkCyan);
+            // Title + divider
+            graphics.DrawText(graphics.Width / 2, 2, "ANCHOR MINDER", Color.Cyan, alignmentH: HorizontalAlignment.Center);
+            graphics.DrawHorizontalLine(0, 24, graphics.Width, Color.DarkCyan);
 
-            // Status
-            graphics.DrawText(graphics.Width / 2, 38, statusText, statusColor, ScaleFactor.X2, HorizontalAlignment.Center);
+            // Sim indicator (top right)
+            if (gps.IsDrifting)
+                graphics.DrawText(graphics.Width - 2, 2, "SIM", Color.Orange, alignmentH: HorizontalAlignment.Right);
+
+            // Status — full width
+            graphics.DrawText(graphics.Width / 2, 28, statusText, statusColor, ScaleFactor.X2, HorizontalAlignment.Center);
 
             if (anchor.IsAnchored)
             {
-                // Distance
-                graphics.DrawText(graphics.Width / 2, 85, $"{anchor.DistanceMetres:F1} m", Color.White, ScaleFactor.X2, HorizontalAlignment.Center);
+                // Left column: distance + bearing text
+                graphics.DrawText(5, 78, $"{anchor.DistanceMetres:F1} m", Color.White, ScaleFactor.X2);
+                graphics.DrawText(5, 125, $"Bearing {anchor.BearingDegrees:F0}°", Color.Yellow);
 
-                // Bearing
-                graphics.DrawText(graphics.Width / 2, 130, $"Bearing {anchor.BearingDegrees:F0}°", Color.Yellow, alignmentH: HorizontalAlignment.Center);
+                // Right column: radar circle centered at (260, 127), radius 52
+                DrawRadar(260, 127, 52);
 
-                // Radius
-                graphics.DrawText(graphics.Width / 2, 155, $"Radius: {anchor.AnchorRadiusMetres:F0}m", Color.DarkGray, ScaleFactor.X1, HorizontalAlignment.Center);
+                // Bottom rows — full width
+                graphics.DrawText(5, 155, $"Radius: {anchor.AnchorRadiusMetres:F0} m", Color.DarkGray);
 
-                // Anchor position
                 var ap = anchor.AnchorPosition!;
-                graphics.DrawText(5, 180, $"A: {ap.Latitude:F4}, {ap.Longitude:F4}", Color.DarkGray);
+                graphics.DrawText(5, 178, $"Anchor: {ap.Latitude:F4},{ap.Longitude:F4}", Color.DarkGray);
+            }
+            else
+            {
+                graphics.DrawText(graphics.Width / 2, 110, "LEFT = Drop Anchor", Color.DarkGray, ScaleFactor.X1, HorizontalAlignment.Center);
+                graphics.DrawText(5, 140, $"Radius: {anchor.AnchorRadiusMetres:F0} m", Color.DarkGray);
             }
 
-            // Current position
-            graphics.DrawText(5, 200, $"P: {pos.Latitude:F4}, {pos.Longitude:F4}", Color.DarkGray);
-
-            // Sim indicator
-            if (gps.IsDrifting)
-                graphics.DrawText(graphics.Width - 5, 5, "SIM DRIFT", Color.Orange, alignmentH: HorizontalAlignment.Right);
+            // Current position — always at bottom
+            graphics.DrawText(5, 200, $"Pos: {pos.Latitude:F4},{pos.Longitude:F4}", Color.DarkGray);
 
             graphics.Show();
+        }
+
+        void DrawRadar(int centerX, int centerY, int screenRadius)
+        {
+            var accentColor = anchor.IsDragging ? Color.Red : Color.Green;
+
+            // Anchor radius boundary circle
+            graphics.DrawCircle(centerX, centerY, screenRadius, Color.DarkGray);
+
+            // Anchor point
+            graphics.DrawCircle(centerX, centerY, 3, Color.White, true);
+
+            // Map boat position onto radar
+            var bearingRad = anchor.BearingDegrees * Math.PI / 180.0;
+            var distRatio = Math.Min(anchor.DistanceMetres / anchor.AnchorRadiusMetres, 1.4);
+
+            var boatX = centerX + (int)(Math.Sin(bearingRad) * distRatio * screenRadius);
+            var boatY = centerY - (int)(Math.Cos(bearingRad) * distRatio * screenRadius);
+
+            graphics.DrawLine(centerX, centerY, boatX, boatY, accentColor);
+            graphics.DrawCircle(boatX, boatY, 5, accentColor, true);
         }
     }
 }
