@@ -151,8 +151,8 @@ namespace AnchorMinder
         void DrawWaitingScreen()
         {
             graphics.Clear(Color.Black);
-            graphics.DrawText(graphics.Width / 2, 2, "ANCHOR MINDER", Color.Cyan, alignmentH: HorizontalAlignment.Center);
-            graphics.DrawHorizontalLine(0, 24, graphics.Width, Color.DarkCyan);
+            graphics.DrawText(graphics.Width / 2, 2, "ANCHOR MINDER", Color.Navy, alignmentH: HorizontalAlignment.Center);
+            graphics.DrawHorizontalLine(0, 24, graphics.Width, Color.Navy);
             graphics.DrawText(graphics.Width / 2, 100, "Acquiring position...", Color.Gray, alignmentH: HorizontalAlignment.Center);
             graphics.DrawText(graphics.Width / 2, 130, "LEFT = Drop Anchor", Color.DarkGray, ScaleFactor.X1, HorizontalAlignment.Center);
             graphics.DrawText(graphics.Width / 2, 150, "RIGHT = Simulate Drift", Color.DarkGray, ScaleFactor.X1, HorizontalAlignment.Center);
@@ -176,8 +176,8 @@ namespace AnchorMinder
             graphics.Clear(Color.Black);
 
             // Title + divider
-            graphics.DrawText(graphics.Width / 2, 2, "ANCHOR MINDER", Color.Cyan, alignmentH: HorizontalAlignment.Center);
-            graphics.DrawHorizontalLine(0, 24, graphics.Width, Color.DarkCyan);
+            graphics.DrawText(graphics.Width / 2, 2, "ANCHOR MINDER", Color.Navy, alignmentH: HorizontalAlignment.Center);
+            graphics.DrawHorizontalLine(0, 24, graphics.Width, Color.Navy);
 
             // Sim indicator (top right)
             if (gps.IsDrifting)
@@ -193,7 +193,7 @@ namespace AnchorMinder
                 graphics.DrawText(5, 125, $"Bearing {anchor.BearingDegrees:F0}°", Color.Yellow);
 
                 // Right column: radar circle centered at (260, 127), radius 52
-                DrawRadar(260, 127, 52);
+                DrawRadar(260, 120, 52);
 
                 // Bottom rows — full width
                 graphics.DrawText(5, 155, $"Radius: {anchor.AnchorRadiusMetres:F0} m", Color.DarkGray);
@@ -204,11 +204,11 @@ namespace AnchorMinder
             else
             {
                 graphics.DrawText(graphics.Width / 2, 110, "LEFT = Drop Anchor", Color.DarkGray, ScaleFactor.X1, HorizontalAlignment.Center);
-                graphics.DrawText(5, 140, $"Radius: {anchor.AnchorRadiusMetres:F0} m", Color.DarkGray);
+                graphics.DrawText(5, 155, $"Radius: {anchor.AnchorRadiusMetres:F0} m", Color.DarkGray);
             }
 
             // Current position — always at bottom
-            graphics.DrawText(5, 200, $"Pos: {pos.Latitude:F4},{pos.Longitude:F4}", Color.DarkGray);
+            graphics.DrawText(5, 200, $"Pos:    {pos.Latitude:F4},{pos.Longitude:F4}", Color.DarkGray);
 
             graphics.Show();
         }
