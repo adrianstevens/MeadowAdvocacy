@@ -15,6 +15,8 @@ namespace AnchorMinder
         AnchorService anchor = default!;
 
         bool _alarmActive = false;
+        bool _alarmAcknowledged = false;
+        DateTime _rightPressStart;
 
         static readonly Color ColorTitle    = new Color(0f,       124/255f, 119/255f); // 0x007C77
         static readonly Color ColorHolding  = new Color(97/255f,  231/255f, 134/255f); // 0x61E786
@@ -50,12 +52,26 @@ namespace AnchorMinder
                 }
             };
 
-            // Right button: toggle simulated drift
+            // Right button: short press = toggle drift, long press = acknowledge alarm
             projLab.RightButton!.PressStarted += (s, e) =>
             {
-                gps.ToggleDrift();
-                PlayDriftToggle();
-                UpdateDisplay();
+                _rightPressStart = DateTime.UtcNow;
+            };
+            projLab.RightButton!.PressEnded += (s, e) =>
+            {
+                var held = (DateTime.UtcNow - _rightPressStart).TotalMilliseconds;
+                if (held >= 700 && _alarmActive && !_alarmAcknowledged)
+                {
+                    _alarmAcknowledged = true;
+                    projLab.Speaker?.StopTone();
+                    UpdateDisplay();
+                }
+                else if (held < 700)
+                {
+                    gps.ToggleDrift();
+                    PlayDriftToggle();
+                    UpdateDisplay();
+                }
             };
 
             // Up button: increase radius by 5m
@@ -95,12 +111,14 @@ namespace AnchorMinder
             if (anchor.IsDragging && !_alarmActive)
             {
                 _alarmActive = true;
+                _alarmAcknowledged = false;
                 projLab.RgbLed?.SetColor(Color.Red);
                 _ = SoundAlarm();
             }
             else if (!anchor.IsDragging)
             {
                 _alarmActive = false;
+                _alarmAcknowledged = false;
                 projLab.RgbLed?.SetColor(anchor.IsAnchored ? ColorHolding : ColorNoAnchor);
                 projLab.Speaker?.StopTone();
             }
@@ -108,7 +126,7 @@ namespace AnchorMinder
 
         async Task SoundAlarm()
         {
-            while (_alarmActive)
+            while (_alarmActive && !_alarmAcknowledged)
             {
                 projLab.Speaker?.PlayTone(new Frequency(880), TimeSpan.FromMilliseconds(300));
                 await Task.Delay(600);
@@ -183,9 +201,12 @@ namespace AnchorMinder
             graphics.DrawText(graphics.Width / 2, 2, "ANCHOR MINDER", ColorTitle, alignmentH: HorizontalAlignment.Center);
             graphics.DrawHorizontalLine(0, 24, graphics.Width, ColorTitle);
 
-            // Sim indicator (top right)
+            // GPS fix + sim indicator (top right)
+            var fixText = gps.HasFix ? $"FIX({gps.SatelliteCount})" : "ACQ...";
+            var fixColor = gps.HasFix ? ColorHolding : Color.Yellow;
+            graphics.DrawText(graphics.Width - 2, 2, fixText, fixColor, alignmentH: HorizontalAlignment.Right);
             if (gps.IsDrifting)
-                graphics.DrawText(graphics.Width - 2, 2, "SIM", Color.Orange, alignmentH: HorizontalAlignment.Right);
+                graphics.DrawText(graphics.Width - 2, 14, "SIM", Color.Orange, alignmentH: HorizontalAlignment.Right);
 
             // Status — full width
             graphics.DrawText(graphics.Width / 2, 28, statusText, statusColor, ScaleFactor.X2, HorizontalAlignment.Center);
@@ -195,6 +216,12 @@ namespace AnchorMinder
                 // Left column: distance + bearing text
                 graphics.DrawText(5, 78, $"{anchor.DistanceMetres:F1} m", Color.White, ScaleFactor.X2);
                 graphics.DrawText(5, 125, $"Bearing {anchor.BearingDegrees:F0}°", Color.Yellow);
+
+                // Alarm state hint
+                if (_alarmActive && _alarmAcknowledged)
+                    graphics.DrawText(5, 143, "SILENCED", Color.Orange);
+                else if (_alarmActive)
+                    graphics.DrawText(5, 143, "HOLD RIGHT TO SILENCE", Color.DarkGray);
 
                 // Right column: radar circle centered at (260, 127), radius 52
                 DrawRadar(260, 120, 52);
@@ -207,7 +234,10 @@ namespace AnchorMinder
             }
             else
             {
-                graphics.DrawText(graphics.Width / 2, 110, "LEFT = Drop Anchor", Color.DarkGray, ScaleFactor.X1, HorizontalAlignment.Center);
+                if (gps.HasFix)
+                    graphics.DrawText(graphics.Width / 2, 110, "LEFT = Drop Anchor", Color.DarkGray, ScaleFactor.X1, HorizontalAlignment.Center);
+                else
+                    graphics.DrawText(graphics.Width / 2, 110, "Acquiring GPS fix...", Color.Yellow, ScaleFactor.X1, HorizontalAlignment.Center);
                 graphics.DrawText(5, 155, $"Radius: {anchor.AnchorRadiusMetres:F0} m", Color.DarkGray);
             }
 

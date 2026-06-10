@@ -22,11 +22,14 @@ namespace AnchorMinder
         double _currentLat = StartLatitude;
         double _currentLon = StartLongitude;
         bool _isDrifting = false;
+        int _updateCount = 0;
         CancellationTokenSource? _cts;
 
         readonly Random _rng = new Random();
 
         public bool IsDrifting => _isDrifting;
+        public bool HasFix => _updateCount >= 3;
+        public int SatelliteCount => HasFix ? 8 : 0;
 
         public void ToggleDrift() => _isDrifting = !_isDrifting;
 
@@ -35,6 +38,7 @@ namespace AnchorMinder
             _currentLat = StartLatitude;
             _currentLon = StartLongitude;
             _isDrifting = false;
+            _updateCount = 0;
         }
 
         public void Start()
@@ -62,6 +66,7 @@ namespace AnchorMinder
                     _currentLon += (_rng.NextDouble() - 0.5) * 0.000002;
                 }
 
+                _updateCount++;
                 PositionUpdated?.Invoke(this, new GeoPosition(_currentLat, _currentLon));
 
                 await Task.Delay(UpdateIntervalMs, ct).ContinueWith(_ => { });
