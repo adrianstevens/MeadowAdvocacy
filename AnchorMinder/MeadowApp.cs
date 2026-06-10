@@ -16,6 +16,10 @@ namespace AnchorMinder
 
         bool _alarmActive = false;
 
+        static readonly Color ColorTitle    = new Color(0f,       124/255f, 119/255f); // 0x007C77
+        static readonly Color ColorHolding  = new Color(97/255f,  231/255f, 134/255f); // 0x61E786
+        static readonly Color ColorNoAnchor = new Color(72/255f,  67/255f,  92/255f);  // 0x48435C
+
         public override Task Initialize()
         {
             projLab = ProjectLab.Create();
@@ -97,7 +101,7 @@ namespace AnchorMinder
             else if (!anchor.IsDragging)
             {
                 _alarmActive = false;
-                projLab.RgbLed?.SetColor(anchor.IsAnchored ? Color.Green : Color.Blue);
+                projLab.RgbLed?.SetColor(anchor.IsAnchored ? ColorHolding : ColorNoAnchor);
                 projLab.Speaker?.StopTone();
             }
         }
@@ -151,8 +155,8 @@ namespace AnchorMinder
         void DrawWaitingScreen()
         {
             graphics.Clear(Color.Black);
-            graphics.DrawText(graphics.Width / 2, 2, "ANCHOR MINDER", Color.Navy, alignmentH: HorizontalAlignment.Center);
-            graphics.DrawHorizontalLine(0, 24, graphics.Width, Color.Navy);
+            graphics.DrawText(graphics.Width / 2, 2, "ANCHOR MINDER", ColorTitle, alignmentH: HorizontalAlignment.Center);
+            graphics.DrawHorizontalLine(0, 24, graphics.Width, ColorTitle);
             graphics.DrawText(graphics.Width / 2, 100, "Acquiring position...", Color.Gray, alignmentH: HorizontalAlignment.Center);
             graphics.DrawText(graphics.Width / 2, 130, "LEFT = Drop Anchor", Color.DarkGray, ScaleFactor.X1, HorizontalAlignment.Center);
             graphics.DrawText(graphics.Width / 2, 150, "RIGHT = Simulate Drift", Color.DarkGray, ScaleFactor.X1, HorizontalAlignment.Center);
@@ -166,9 +170,9 @@ namespace AnchorMinder
             if (pos is null) return;
 
             var isDragging = anchor.IsDragging;
-            var statusColor = !anchor.IsAnchored ? Color.Blue
+            var statusColor = !anchor.IsAnchored ? ColorNoAnchor
                             : isDragging ? Color.Red
-                            : Color.Green;
+                            : ColorHolding;
             var statusText = !anchor.IsAnchored ? "NO ANCHOR"
                            : isDragging ? "DRAGGING!"
                            : "HOLDING";
@@ -176,8 +180,8 @@ namespace AnchorMinder
             graphics.Clear(Color.Black);
 
             // Title + divider
-            graphics.DrawText(graphics.Width / 2, 2, "ANCHOR MINDER", Color.Navy, alignmentH: HorizontalAlignment.Center);
-            graphics.DrawHorizontalLine(0, 24, graphics.Width, Color.Navy);
+            graphics.DrawText(graphics.Width / 2, 2, "ANCHOR MINDER", ColorTitle, alignmentH: HorizontalAlignment.Center);
+            graphics.DrawHorizontalLine(0, 24, graphics.Width, ColorTitle);
 
             // Sim indicator (top right)
             if (gps.IsDrifting)
@@ -215,13 +219,13 @@ namespace AnchorMinder
 
         void DrawRadar(int centerX, int centerY, int screenRadius)
         {
-            var accentColor = anchor.IsDragging ? Color.Red : Color.Green;
+            var accentColor = anchor.IsDragging ? Color.Red : ColorHolding;
 
             // Anchor radius boundary circle
             graphics.DrawCircle(centerX, centerY, screenRadius, Color.DarkGray);
 
-            // Anchor point
-            graphics.DrawCircle(centerX, centerY, 3, Color.White, true);
+            // Anchor icon at center
+            DrawAnchorIcon(centerX, centerY, Color.White);
 
             // Map boat position onto radar
             var bearingRad = anchor.BearingDegrees * Math.PI / 180.0;
@@ -231,7 +235,38 @@ namespace AnchorMinder
             var boatY = centerY - (int)(Math.Cos(bearingRad) * distRatio * screenRadius);
 
             graphics.DrawLine(centerX, centerY, boatX, boatY, accentColor);
-            graphics.DrawCircle(boatX, boatY, 5, accentColor, true);
+
+            // Boat icon — triangle pointing in bearing direction
+            DrawBoatIcon(boatX, boatY, bearingRad, accentColor);
+        }
+
+        void DrawAnchorIcon(int x, int y, Color color)
+        {
+            // Ring at top
+            graphics.DrawCircle(x, y - 7, 3, color);
+            // Shank (vertical line)
+            graphics.DrawLine(x, y - 4, x, y + 5, color);
+            // Stock (horizontal crossbar)
+            graphics.DrawLine(x - 5, y - 2, x + 5, y - 2, color);
+            // Flukes
+            graphics.DrawLine(x, y + 5, x - 4, y + 2, color);
+            graphics.DrawLine(x, y + 5, x + 4, y + 2, color);
+        }
+
+        void DrawBoatIcon(int x, int y, double bearingRad, Color color)
+        {
+            // Tip — forward in bearing direction
+            var tipX = x + (int)(Math.Sin(bearingRad) * 7);
+            var tipY = y - (int)(Math.Cos(bearingRad) * 7);
+            // Rear corners — 135° off bearing
+            var leftRad = bearingRad + 2.356;
+            var rightRad = bearingRad - 2.356;
+            var rearX1 = x + (int)(Math.Sin(leftRad) * 5);
+            var rearY1 = y - (int)(Math.Cos(leftRad) * 5);
+            var rearX2 = x + (int)(Math.Sin(rightRad) * 5);
+            var rearY2 = y - (int)(Math.Cos(rightRad) * 5);
+
+            graphics.DrawTriangle(tipX, tipY, rearX1, rearY1, rearX2, rearY2, color, true);
         }
     }
 }
