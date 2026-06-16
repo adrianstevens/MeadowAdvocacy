@@ -11,7 +11,7 @@ namespace AnchorMinder
     {
         IProjectLabHardware projLab = default!;
         MicroGraphics graphics = default!;
-        SimulatedGpsSource gps = default!;
+        IGpsSource gps = default!;
         AnchorService anchor = default!;
 
         bool _alarmActive = false;
@@ -34,7 +34,7 @@ namespace AnchorMinder
             anchor = new AnchorService { AnchorRadiusMetres = 25 };
             anchor.StateChanged += (s, e) => UpdateDisplay();
 
-            gps = new SimulatedGpsSource();
+            gps = new Gnss10ClickSource(projLab.MikroBus1);
             gps.PositionUpdated += OnPositionUpdated;
 
             // Left button: drop / weigh anchor
@@ -66,9 +66,9 @@ namespace AnchorMinder
                     projLab.Speaker?.StopTone();
                     UpdateDisplay();
                 }
-                else if (held < 700)
+                else if (held < 700 && gps is SimulatedGpsSource sim)
                 {
-                    gps.ToggleDrift();
+                    sim.ToggleDrift();
                     PlayDriftToggle();
                     UpdateDisplay();
                 }
@@ -205,7 +205,7 @@ namespace AnchorMinder
             var fixText = gps.HasFix ? $"FIX({gps.SatelliteCount})" : "ACQ...";
             var fixColor = gps.HasFix ? ColorHolding : Color.Yellow;
             graphics.DrawText(graphics.Width - 2, 2, fixText, fixColor, alignmentH: HorizontalAlignment.Right);
-            if (gps.IsDrifting)
+            if (gps is SimulatedGpsSource simSrc && simSrc.IsDrifting)
                 graphics.DrawText(graphics.Width - 2, 14, "SIM", Color.Orange, alignmentH: HorizontalAlignment.Right);
 
             // Status — full width
